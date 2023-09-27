@@ -1,0 +1,15 @@
+services:
+  api1:
+    container_name: api1
+    build:
+      context: .
+      target: api1
+    ports:
+      - 5001:5000
+  api2:
+    container_name: api2
+    build:
+      context: .
+      target: api2
+    ports:
+      - 5002:5000
