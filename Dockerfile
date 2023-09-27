@@ -1,9 +1,9 @@
-FROM python:3.8-alpine as api1
-COPY src/api1.py .
+FROM python:3.8-alpine as engine
+COPY src/engine/* .
 RUN pip install flask
-CMD ["python", "api1.py"]
+CMD ["python", "engine.py"]
 
-FROM python:3.8-alpine as api2
-COPY src/api2.py .
+FROM python:3.8-alpine as play-game
+COPY src/play-game/* .
 RUN pip install flask
-CMD ["python", "api2.py"]
+CMD ["python", "play-game.py"]

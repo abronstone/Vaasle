@@ -6,7 +6,7 @@ app = flask.Flask(__name__)
 @app.route('/')
 def home():
     return jsonify({
-        "message": "Hello from API #2!"
+        "message": "Hello from engine!"
     })
 
 if __name__ == '__main__':
