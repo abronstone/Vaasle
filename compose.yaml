@@ -18,5 +18,5 @@ services:
     build:
       context: ./src/cli
       target: cli
-    ports:
-      - 5003:5000
+    stdin_open: true
+    tty: true
