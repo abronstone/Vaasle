@@ -20,3 +20,6 @@ services:
       target: cli
     stdin_open: true
     tty: true
+    depends_on:
+      - engine
+      - play-game
