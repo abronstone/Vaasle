@@ -2,14 +2,14 @@ services:
   engine:
     container_name: engine
     build:
-      context: .
+      context: ./src/engine
       target: engine
     ports:
       - 5001:5000
   play-game:
     container_name: play-game
     build:
-      context: .
+      context: ./src/play-game
       target: play-game
     ports:
       - 5002:5000
