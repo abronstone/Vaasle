@@ -1,10 +1,10 @@
 FROM golang:1.21.1 as engine 
 WORKDIR /engine
 
-COPY src/engine/go.mod src/engine/go.sum ./
+COPY ./go.mod ./go.sum ./
 RUN go mod download
 
-COPY src/engine/*.go ./
+COPY ./*.go ./
 RUN go build -o engine-executable
 
 CMD [ "./engine-executable" ]
