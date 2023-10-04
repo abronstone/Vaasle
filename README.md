@@ -11,15 +11,3 @@ Note: if you executing the CLI for for first time, you may need to run the follo
 ```
 chmod +x start.sh
 ```
-
-
-Once in the command line starting with #, run:
-```
-go run cli.go
-```
-
-To exit the CLI, run:
-```
-exit
-```
-
