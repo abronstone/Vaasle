@@ -12,6 +12,7 @@ func home(c *gin.Context) {
 
 func main() {
 	router := gin.Default()
+
 	router.GET("/", home)
 	router.Run("0.0.0.0:5000")
 }
