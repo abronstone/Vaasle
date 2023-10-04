@@ -20,6 +20,7 @@ services:
       target: frontend
     ports:
       - "3000:3000"
+      
   mongo:
     # image: mongo:latest
     # pull_policy: always
@@ -35,3 +36,13 @@ services:
       MONGO_INITDB_ROOT_USERNAME: vaas1
       MONGO_INITDB_ROOT_PASSWORD: pass
       MONGO_INITDB_DATABASE: vaasdb
+  cli:
+    container_name: cli
+    build:
+      context: ./src/cli
+      target: cli
+    stdin_open: true
+    tty: true
+    depends_on:
+      - engine
+      - play-game

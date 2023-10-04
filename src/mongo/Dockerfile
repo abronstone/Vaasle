@@ -10,4 +10,4 @@
 # CMD [ "./mongo-executable" ]
 
 FROM mongo:latest as mongo
-COPY ./data ./
+# COPY ./data ./
