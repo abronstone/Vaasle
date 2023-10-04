@@ -2,22 +2,29 @@ services:
   engine:
     container_name: engine
     build:
-      context: .
+      context: ./src/engine
       target: engine
     ports:
       - 5001:5000
   play-game:
     container_name: play-game
     build:
-      context: .
+      context: ./src/play-game
       target: play-game
     ports:
       - 5002:5000
+  frontend:
+    container_name: frontend
+    build:
+      context: ./src/frontend
+      target: frontend
+    ports:
+      - "3000:3000"
   mongo:
     image: mongo:latest
-    container_name: database
+    container_name: mongo
     build:
-      context: .
+      context: ./src/mongo
       target: mongo
     ports:
       - 27017:27017
