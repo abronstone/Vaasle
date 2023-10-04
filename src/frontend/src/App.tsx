@@ -1,32 +1,29 @@
-import { useState } from 'react'
-import { engineApi } from './util/apiCalls'
-import './App.css'
+import { useState } from "react";
+import { playGameApi } from "./util/apiCalls";
+import "./App.css";
 
 function App() {
-  const [engineApiData, setEngineApiData] = useState("No response")
+  const [playGameApiData, setPlayGameApiData] = useState("No response");
 
   const handleEngineButtonClick = async () => {
-    try{
-      const data = await engineApi()
-      setEngineApiData(data)
+    try {
+      const data = await playGameApi();
+      setPlayGameApiData(data);
+    } catch (error) {
+      console.log(error);
     }
-    catch(error){
-      console.log(error)
-    }
-  }
+  };
 
   return (
     <>
       <h1>Welcome to Wordle! (Thin Thread)</h1>
-      <button className="bg-slate-500"onClick={handleEngineButtonClick}>
-        Click to call the engine container
+      <button className="bg-slate-500" onClick={handleEngineButtonClick}>
+        Click to call the play-game container
       </button>
-      <h3>Data from the engine container:</h3>
-      <p>
-        {engineApiData}
-      </p>
+      <h3>Data from the play-game container:</h3>
+      <p>{playGameApiData}</p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -1,11 +1,11 @@
-import axios from 'axios';
+import axios from "axios";
 
-export const engineApi = async (): Promise<string> => {
+export const playGameApi = async (): Promise<string> => {
   try {
-    const res = await axios.get("http://localhost:5001/");
+    const res = await axios.get("http://localhost:5002/");
 
     if (res.status !== 200) {
-        throw new Error(`HTTP error! Status: ${res.status}`);
+      throw new Error(`HTTP error! Status: ${res.status}`);
     }
 
     const data = await res.data;
