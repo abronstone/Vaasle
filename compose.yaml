@@ -21,7 +21,8 @@ services:
     ports:
       - "3000:3000"
   mongo:
-    image: mongo:latest
+    # image: mongo:latest
+    # pull_policy: always
     container_name: mongo
     build:
       context: ./src/mongo
@@ -29,7 +30,8 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ./data:/data/db
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: vaas1
-    #   MONGO_INITDB_ROOT_PASSWORD: pass
+      - ./src/mongo/data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: vaas1
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: vaasdb

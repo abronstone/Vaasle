@@ -16,7 +16,7 @@ type Game struct {
 
 func getDatabase() (*mongo.Client, error) {
 	// MongoDB connection string
-	CONNECTION_STRING := "mongodb://localhost:27017/"
+	CONNECTION_STRING := "mongodb://vaas1:pass@localhost:27017/"
 
 	// Set up client options
 	clientOptions := options.Client().ApplyURI(CONNECTION_STRING)
