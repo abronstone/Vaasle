@@ -13,3 +13,20 @@ services:
       target: play-game
     ports:
       - 5002:5001
+  frontend:
+    container_name: frontend
+    build:
+      context: ./src/frontend
+      target: frontend
+    ports:
+      - "3000:3000"
+  cli:
+    container_name: cli
+    build:
+      context: ./src/cli
+      target: cli
+    stdin_open: true
+    tty: true
+    depends_on:
+      - engine
+      - play-game
