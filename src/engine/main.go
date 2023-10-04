@@ -15,11 +15,7 @@ func main() {
 	router := gin.Default()
 
 	// Add CORS middleware
-	config := cors.DefaultConfig()
-	config.AllowAllOrigins = true // Allow any origin (not recommended for production)
-	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}
-	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type"}
-	router.Use(cors.New(config))
+	router.Use(cors.Default())
 
 	router.GET("/", home)
 	router.Run("0.0.0.0:5000")
