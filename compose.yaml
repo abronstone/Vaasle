@@ -20,3 +20,13 @@ services:
       target: frontend
     ports:
       - "3000:3000"
+  cli:
+    container_name: cli
+    build:
+      context: ./src/cli
+      target: cli
+    stdin_open: true
+    tty: true
+    depends_on:
+      - engine
+      - play-game
