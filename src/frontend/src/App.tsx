@@ -16,11 +16,14 @@ function App() {
 
   return (
     <>
-      <h1>Welcome to Wordle! (Thin Thread)</h1>
-      <button className="bg-slate-500" onClick={handleEngineButtonClick}>
+      <h1 className="mb-3">Welcome to Wordle! (Thin Thread)</h1>
+      <button
+        className="bg-slate-500 mt-3 mb-3"
+        onClick={handleEngineButtonClick}
+      >
         Click to call the play-game container
       </button>
-      <h3>Data from the play-game container:</h3>
+      <h3 className="mb-1">Data from the play-game container:</h3>
       <p>{playGameApiData}</p>
     </>
   );
