@@ -24,6 +24,8 @@ func main() {
 		fmt.Println("The GET request to play-game returned:", string(body))
 	}
 
+	fmt.Println("Please also check out our frontend at http://localhost:3000/")
+
 	fmt.Print("Enter text (entering will cause containers to shut down): ")
 	text, _ := reader.ReadString('\n')
 
