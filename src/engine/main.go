@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"net/http"
 	"strconv"
 
@@ -64,6 +65,23 @@ func newGame(c *gin.Context) {
 	c.JSON(http.StatusOK, newGame)
 }
 
+func pingPlayGame(c *gin.Context) {
+	res, err := http.Get("http://play-game:5001/")
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"error": "Ping to play-game failed"})
+		return
+	}
+	defer res.Body.Close()
+
+	bodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"error": "Ping to play-game failed"})
+		return
+	}
+
+	c.JSON(http.StatusOK, string(bodyBytes))
+}
+
 // Default home endpoint for checking if the engine is running.
 func home(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Engine is running"})
@@ -75,6 +93,7 @@ func main() {
 
 	router.GET("/", home)
 	router.GET("/newgame", newGame)
+	router.GET("/pingPlayGame", pingPlayGame)
 
 	router.Run("0.0.0.0:5001")
 }
