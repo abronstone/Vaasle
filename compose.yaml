@@ -29,13 +29,13 @@ services:
       context: ./src/mongo
       target: mongo
     ports:
-      - 27017:27017
-    volumes:
-      - ./src/mongo/data:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: vaas1
-      MONGO_INITDB_ROOT_PASSWORD: pass
-      MONGO_INITDB_DATABASE: vaasdb
+      - 8000:5000
+    # volumes:
+    #   - ./src/mongo/data:/data/db
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: vaas1
+    #   MONGO_INITDB_ROOT_PASSWORD: pass
+    #   MONGO_INITDB_DATABASE: vaasdb
   cli:
     container_name: cli
     build:
