@@ -6,3 +6,7 @@ To start the containers and run the CLI, run the following command from the root
 ```
 ./start.sh
 ```
+If you are running this script for the first time, you may need to give it permission to execute. To do this, run the following command:
+```
+chmod +x start.sh
+```
