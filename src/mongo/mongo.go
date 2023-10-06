@@ -92,32 +92,36 @@ func insertWord(c *gin.Context) {
 
 func getWords(c *gin.Context) {
 	wordLength, err := strconv.Atoi(c.Param("length"))
-	fmt.Println("1")
+
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("1")
 	// Get database
 	client, err := getDatabase()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("2")
 	database := client.Database("VaasDatabase")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("3")
 	word_collection := database.Collection("words")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("4")
-	words, err := word_collection.Distinct(context.TODO(), "word", bson.M{"wordLength": wordLength})
+	cursor, err := word_collection.Find(context.TODO(), bson.M{"wordlength": wordLength})
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("5")
+
+	var words []interface{}
+	for cursor.Next(context.TODO()) {
+		var word Word
+		if err := cursor.Decode(&word); err != nil {
+			log.Fatal(err)
+		}
+		words = append(words, word)
+	}
 	defer client.Disconnect(context.Background())
 	c.JSON(http.StatusOK, words)
 }
