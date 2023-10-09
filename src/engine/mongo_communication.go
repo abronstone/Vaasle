@@ -20,7 +20,7 @@ func submitNewGame(id string, wordLength int) (string, error) {
 	}
 	defer res.Body.Close()
 
-	bytes, err := io.ReadAll(res.Body)
+	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
 		return "", err
 	}
@@ -28,7 +28,7 @@ func submitNewGame(id string, wordLength int) (string, error) {
 	word := struct {
 		Word string `json:"word"`
 	}{}
-	err = json.Unmarshal(bytes, &word)
+	err = json.Unmarshal(bodyBytes, &word)
 	if err != nil {
 		return "", err
 	}
