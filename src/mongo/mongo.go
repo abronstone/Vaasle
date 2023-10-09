@@ -23,9 +23,9 @@ type Word struct {
 /*
 Returns a MongoDB Client instance
 */
-func getDatabase() (*mongo.Client, error) {
+func getDatabase() *mongo.Client {
 	// MongoDB connection string
-	CONNECTION_STRING := "mongodb+srv://vaas_admin:adv1software2design3@vaasdatabase.sarpr4r.mongodb.net/?retryWrites=true&w=majority"
+	CONNECTION_STRING := "mongodb+srv://vaas_admin:adv1software2design3@vaasdatabase.sarpr4r.mongodb.net"
 
 	// Set up client options
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
@@ -34,18 +34,23 @@ func getDatabase() (*mongo.Client, error) {
 	// Connect to MongoDB
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
+		return nil
 	}
+	// defer client.Disconnect(context.TODO())
 
 	// Check the connection
 	err = client.Ping(context.TODO(), nil)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
+		return nil
 	}
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
 
-	return client, nil
+	return client
 }
+
+var client *mongo.Client = getDatabase()
 
 /*
 Returns a unique UUID integer
@@ -65,10 +70,6 @@ func insertWord(c *gin.Context) {
 	}
 
 	// Get database
-	client, err := getDatabase()
-	if err != nil {
-		log.Fatal(err)
-	}
 	database := client.Database("VaasDatabase")
 
 	// Get correct collection
@@ -82,11 +83,10 @@ func insertWord(c *gin.Context) {
 
 	//Insert item
 	word_collection.InsertOne(context.TODO(), item)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 	//Return status
-	defer client.Disconnect(context.Background())
 	c.JSON(http.StatusOK, map[string]string{"message": "Word inserted successfully"})
 }
 
@@ -97,10 +97,6 @@ func getWords(c *gin.Context) {
 		log.Fatal(err)
 	}
 	// Get database
-	client, err := getDatabase()
-	if err != nil {
-		log.Fatal(err)
-	}
 	database := client.Database("VaasDatabase")
 	if err != nil {
 		log.Fatal(err)
@@ -122,7 +118,7 @@ func getWords(c *gin.Context) {
 		}
 		words = append(words, word)
 	}
-	defer client.Disconnect(context.Background())
+	//defer client.Disconnect(context.Background())
 	c.JSON(http.StatusOK, words)
 }
 
@@ -130,10 +126,6 @@ func getWords(c *gin.Context) {
 Clears all collections in database
 */
 func initializeDB(c *gin.Context) {
-	client, err := getDatabase()
-	if err != nil {
-		log.Fatal(err)
-	}
 	db := client.Database("VaasDatabase")
 
 	// collections, err := db.ListCollectionNames(context.TODO(), bson.M{})
@@ -146,7 +138,7 @@ func initializeDB(c *gin.Context) {
 	// 	db.Collection(name).DeleteMany(context.Background(), bson.M{})
 	// }
 	db.Collection("words").DeleteMany(context.Background(), bson.M{})
-	defer client.Disconnect(context.Background())
+	//defer client.Disconnect(context.Background())
 	c.JSON(http.StatusOK, map[string]string{"message": "RESET DATABASE"})
 
 }
