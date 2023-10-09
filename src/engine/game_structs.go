@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -18,21 +17,22 @@ type gameMetadata struct {
 
 // Create a new gameMetadata struct.
 func newGameMetadata(c *gin.Context) *gameMetadata {
-	wordLength := 5
-	maxGuesses := 6
+	defaultWordLength := 5
+	defaultMaxGuesses := 6
 
-	if num, err := strconv.Atoi(c.Query("wordLength")); err == nil {
-		wordLength = num
-	}
-	if num, err := strconv.Atoi(c.Query("maxGuesses")); err == nil {
-		maxGuesses = num
+	metadata := gameMetadata{
+		WordLength: defaultWordLength,
+		MaxGuesses: defaultMaxGuesses,
 	}
 
-	return &gameMetadata{
-		GameID:     uuid.NewString(),
-		WordLength: wordLength,
-		MaxGuesses: maxGuesses,
+	// Use default values if we fail to parse the POST request body.
+	if err := c.ShouldBindJSON(&metadata); err != nil {
+		metadata.WordLength = defaultWordLength
+		metadata.MaxGuesses = defaultMaxGuesses
 	}
+
+	metadata.GameID = uuid.NewString()
+	return &metadata
 }
 
 // A Wordle game.
@@ -40,7 +40,7 @@ type game struct {
 	Metadata gameMetadata `json:"metadata"`
 	Guesses  [][2]string  `json:"guesses"`
 	State    string       `json:"state"`
-	word     string
+	Word     string       `json:"-"`
 }
 
 // Create a new game struct.
@@ -54,12 +54,12 @@ func newGame(c *gin.Context) *game {
 
 // Set the secret word of a game (only allowed at game initialization).
 func (g *game) setWord(word string) error {
-	if g.word != "" {
+	if g.Word != "" {
 		return errors.New("game already has a word")
 	}
 	if len(word) != g.Metadata.WordLength {
 		return fmt.Errorf(`given word "%s" is not of length %d`, word, g.Metadata.WordLength)
 	}
-	g.word = word
+	g.Word = word
 	return nil
 }

@@ -8,3 +8,16 @@ var games map[string]*game = make(map[string]*game, 0)
 func registerGame(game *game) {
 	games[game.Metadata.GameID] = game
 }
+
+func getGame(id string) (*game, error) {
+	if game, ok := games[id]; ok {
+		return game, nil
+	}
+
+	if game, err := queryMongoForGame(id); err != nil {
+		return nil, err
+	} else {
+		registerGame(game)
+		return game, nil
+	}
+}
