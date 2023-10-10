@@ -4,20 +4,21 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"vaas/structs"
 )
 
 // Globally scoped map containing all Wordle game instances.
 // Key (string) is a UUID string, and value is the ID's associated game struct.
-var games map[string]*game = make(map[string]*game, 0)
+var games map[string]*structs.Game = make(map[string]*structs.Game, 0)
 
 // Registers a game into the global games map.
-func registerGame(game *game) {
+func registerGame(game *structs.Game) {
 	games[game.Metadata.GameID] = game
 }
 
 // Gets the game with the specified ID.
 // Queries the Mongo API if not already present in the engine's cache.
-func getGame(id string) (*game, error) {
+func getGame(id string) (*structs.Game, error) {
 	if game, ok := games[id]; ok {
 		return game, nil
 	}
@@ -33,7 +34,7 @@ func getGame(id string) (*game, error) {
 
 // Submits a guess to a game.
 // Updates the game's Guesses and State fields.
-func (g *game) makeGuess(guess string) error {
+func makeGuess(g *structs.Game, guess string) error {
 	if len(guess) != g.Metadata.WordLength {
 		return fmt.Errorf(`guess "%s" is not of length %d`, guess, g.Metadata.WordLength)
 	}
@@ -42,7 +43,7 @@ func (g *game) makeGuess(guess string) error {
 	}
 
 	g.Guesses = append(g.Guesses, [2]string{guess, getCorrections(guess, g.Word)})
-	g.updateGameState()
+	updateGameState(g)
 
 	err := mongo_updateGame(g)
 	if err != nil {
@@ -85,7 +86,7 @@ func getCorrections(guess string, correct string) string {
 
 // Updates the State field of a game by checking the most recent guess.
 // Options: "won", "lost", and "ongoing" (no change).
-func (g *game) updateGameState() {
+func updateGameState(g *structs.Game) {
 	prevCorrections := g.Guesses[len(g.Guesses)-1][1]
 
 	switch {

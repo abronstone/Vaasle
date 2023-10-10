@@ -36,7 +36,7 @@ func api_newGame(c *gin.Context) {
 		return
 	}
 
-	err = newGame.setWord(word)
+	err = setWord(newGame, word)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": "failed to initialize game"})
 		return
@@ -69,7 +69,7 @@ func api_makeGuess(c *gin.Context) {
 		return
 	}
 
-	err = game.makeGuess(requestBody.Guess)
+	err = makeGuess(game, requestBody.Guess)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return

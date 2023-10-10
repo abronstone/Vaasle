@@ -3,7 +3,7 @@ services:
   engine:
     container_name: engine
     build:
-      context: ./src/engine
+      context: ./src
       target: engine
     ports:
       - 5001:5001
