@@ -8,22 +8,23 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+/*
+Word structure schema
+*/
 type Word struct {
-	WordId     int    `json:"wordID"`
 	Word       string `json:"word"`
 	WordLength int    `json:"wordLength"`
 }
 
-/*
-Returns a MongoDB Client instance
-*/
 func getDatabase() *mongo.Client {
+	/*
+		Returns a MongoDB Client instance
+	*/
 	// MongoDB connection string
 	CONNECTION_STRING := "mongodb+srv://vaas_admin:adv1software2design3@vaasdatabase.sarpr4r.mongodb.net"
 
@@ -37,7 +38,6 @@ func getDatabase() *mongo.Client {
 		log.Fatal(err)
 		return nil
 	}
-	// defer client.Disconnect(context.TODO())
 
 	// Check the connection
 	err = client.Ping(context.TODO(), nil)
@@ -50,66 +50,58 @@ func getDatabase() *mongo.Client {
 	return client
 }
 
+// Initialize global Mongo client
 var client *mongo.Client = getDatabase()
 
-/*
-Returns a unique UUID integer
-*/
-func getWordId(wordIdGetter func() int) int {
-	wordID := wordIdGetter()
-	return wordID
-}
-
-/*
-Inserts the inputted word into the MongoDB collection based on word length
-*/
 func insertWord(c *gin.Context) {
+	/*
+		Inserts the inputted word into the MongoDB collection based on word length
 
-	naiveGetUniqueWordID := func() int {
-		return int(uuid.New().ID())
-	}
+		@param: word to be inserted (string)
+		@return: confirmation message (string)
+	*/
 
 	// Get database
 	database := client.Database("VaasDatabase")
 
 	// Get correct collection
 	word_parameter := c.Param("word")
-	//word_collection := database.Collection(strconv.Itoa(len(word_parameter)) + "-letter-words")
 	word_collection := database.Collection("words")
 
-	//Create item
-	wordID := getWordId(naiveGetUniqueWordID)
-	item := Word{WordId: wordID, Word: word_parameter, WordLength: len(word_parameter)}
+	// Create item
+	item := Word{Word: word_parameter, WordLength: len(word_parameter)}
 
-	//Insert item
+	// Insert item
 	word_collection.InsertOne(context.TODO(), item)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	//Return status
+
 	c.JSON(http.StatusOK, map[string]string{"message": "Word inserted successfully"})
 }
 
 func getWords(c *gin.Context) {
-	wordLength, err := strconv.Atoi(c.Param("length"))
+	/*
+		Gets all of the words of a certain length from Mongo
 
+		@param: word length (int)
+		@return: list of Word objects (json[])
+	*/
+
+	// Get word length parameter
+	wordLength, err := strconv.Atoi(c.Param("length"))
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Get database
+
+	// Get database and words collection
 	database := client.Database("VaasDatabase")
-	if err != nil {
-		log.Fatal(err)
-	}
 	word_collection := database.Collection("words")
-	if err != nil {
-		log.Fatal(err)
-	}
+
+	// Run "find" query on words collection
 	cursor, err := word_collection.Find(context.TODO(), bson.M{"wordlength": wordLength})
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// Append results to output list
 	var words []interface{}
 	for cursor.Next(context.TODO()) {
 		var word Word
@@ -118,36 +110,31 @@ func getWords(c *gin.Context) {
 		}
 		words = append(words, word)
 	}
-	//defer client.Disconnect(context.Background())
+
 	c.JSON(http.StatusOK, words)
 }
 
-/*
-Clears all collections in database
-*/
 func initializeDB(c *gin.Context) {
+	/*
+		Clears all collections in database (in future will just clear game history)
+
+		@param: nothing
+		@return: confirmation message
+	*/
 	db := client.Database("VaasDatabase")
-
-	// collections, err := db.ListCollectionNames(context.TODO(), bson.M{})
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	//Clear all collections
-	// for _, name := range collections {
-	// 	db.Collection(name).DeleteMany(context.Background(), bson.M{})
-	// }
+	// deleteMany function without a filter deletes all documents in a collection
 	db.Collection("words").DeleteMany(context.Background(), bson.M{})
-	//defer client.Disconnect(context.Background())
 	c.JSON(http.StatusOK, map[string]string{"message": "RESET DATABASE"})
-
 }
 
 func home(c *gin.Context) {
-	c.JSON(http.StatusOK, map[string]string{"/": "This message", "/initialize-db": "CLEARS DATABASE COLELCTIONS (use with caution)", "/insert-word/<word>": "Inserts word into database"})
+	c.JSON(http.StatusOK, map[string]string{"/": "This message", "/initialize-db": "CLEARS DATABASE COLELCTIONS (use with caution)", "/insert-word/<word>": "Inserts word into database", "/get-words/<length>": "Gets words of parameter length"})
 }
 
 func main() {
+	/*
+		GIN Router mapping
+	*/
 	router := gin.Default()
 
 	router.GET("/", home)
