@@ -17,7 +17,10 @@ CMD [ "./engine-executable" ]
 # Mongo
 FROM golang:1.21.1 as mongo
 
-WORKDIR /mongo
+WORKDIR /src/structs
+COPY /structs/* ./
+
+WORKDIR /src/mongo
 COPY ./mongo/go.mod mongo/go.sum ./
 
 RUN go mod download
@@ -28,7 +31,11 @@ CMD [ "./mongo-executable" ]
 
 # Play-Game
 FROM golang:1.21.1 as play-game
-WORKDIR /play-game
+
+WORKDIR /src/structs
+COPY /structs/* ./
+
+WORKDIR /src/play-game
 
 COPY ./play-game/go.mod ./play-game/go.sum ./
 RUN go mod download

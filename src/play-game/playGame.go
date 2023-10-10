@@ -2,7 +2,9 @@ package main
 
 import (
 	"io"
+	"log"
 	"net/http"
+	"vaas/structs"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -39,4 +41,8 @@ func main() {
 	router.GET("/pingEngine", pingEngine)
 
 	router.Run("0.0.0.0:5001")
+
+	// Proof of concept, please remove
+	game := structs.Game{}
+	log.Println(len(game.Guesses))
 }
