@@ -17,8 +17,8 @@ import (
 Word structure schema
 */
 type Word struct {
-	Word       string `json:"word"`
-	WordLength int    `json:"wordLength"`
+	Word       string `bson:"word"`
+	WordLength int    `bson:"wordLength"`
 }
 
 func getDatabase() *mongo.Client {
@@ -123,7 +123,10 @@ func initializeDB(c *gin.Context) {
 	*/
 	db := client.Database("VaasDatabase")
 	// deleteMany function without a filter deletes all documents in a collection
-	db.Collection("words").DeleteMany(context.Background(), bson.M{})
+	_, err := db.Collection("words").DeleteMany(context.Background(), bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
 	c.JSON(http.StatusOK, map[string]string{"message": "RESET DATABASE"})
 }
 
