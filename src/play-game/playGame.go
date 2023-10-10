@@ -32,7 +32,7 @@ func main() {
 	router.GET("/", api_home)
 	router.GET("/pingEngine", api_pingEngine)
 	router.POST("/newGame", api_newGame)
-	// router.GET("/getGame/:id", api_getGame)
+	router.GET("/getGame/:id", api_getGame)
 	// router.POST("/makeGuess", api_makeGuess)
 
 	router.Run("0.0.0.0:5001")
@@ -63,10 +63,11 @@ func home(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, map[string]string{"message": "Play game is running"})
 }
 
-// Calls the appropriate endpoint in the engine to make a new game and returns the game's public state as JSON.
+// Calls the appropriate endpoint in the engine to make a new game
+// and returns the game's public state as JSON.
 func api_newGame(c *gin.Context) {
 	// Call the engine's newGame endpoint
-	res, err := http.Post("http://engine:5000/newGame", "application/json", c.Request.Body)
+	res, err := http.Post("http://engine:5001/newGame", "application/json", nil)
 
 	// If the engine is down, return an error
 	if err != nil {
@@ -92,5 +93,39 @@ func api_newGame(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, newGame)
+}
 
+// Calls the appropriate endpoint in the engine to retrieve an exsisting game
+// and returns the game's public state as JSON.
+func api_getGame(c *gin.Context) {
+	// Get the gameID from the URL
+	gameID := c.Param("id")
+
+	// Call the engine's getGame endpoint
+	res, err := http.Get("http://engine:5001/getGame/" + gameID)
+
+	// If the engine is down, return an error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get game"})
+		return
+	}
+
+	defer res.Body.Close()
+
+	// Create a newGame variable and unmarshal the response body into it
+	currentGame := game{}
+	bodyBytes, err := io.ReadAll(res.Body)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed read response body"})
+		return
+	}
+
+	err = json.Unmarshal(bodyBytes, &currentGame)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal response body"})
+		return
+	}
+
+	c.JSON(http.StatusOK, currentGame)
 }
