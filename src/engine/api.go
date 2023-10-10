@@ -15,6 +15,7 @@ func main() {
 	router.GET("/", api_home)
 	router.POST("/newGame", api_newGame)
 	router.GET("/getGame/:id", api_getGame)
+	router.POST("/makeGuess", api_makeGuess)
 	router.GET("/pingPlayGame", api_pingPlayGame)
 
 	router.Run("0.0.0.0:5001")
@@ -29,7 +30,7 @@ func api_home(c *gin.Context) {
 func api_newGame(c *gin.Context) {
 	newGame := newGame(c)
 
-	word, err := submitNewGame(newGame.Metadata.GameID, newGame.Metadata.WordLength)
+	word, err := mongo_submitNewGame(newGame.Metadata.GameID, newGame.Metadata.WordLength)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": "failed to retrieve a word"})
 		return
@@ -52,6 +53,29 @@ func api_getGame(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, game)
 	}
+}
+
+// Returns the game struct with the specified ID as a JSON object.
+func api_makeGuess(c *gin.Context) {
+	requestBody := struct {
+		Id    string `json:"id"`
+		Guess string `json:"guess"`
+	}{}
+	c.ShouldBindJSON(&requestBody)
+
+	game, err := getGame(requestBody.Id)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"error": "could not find game"})
+		return
+	}
+
+	err = game.makeGuess(requestBody.Guess)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, game)
 }
 
 // Pings the play-game endpoint and forwards its response.

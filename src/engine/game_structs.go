@@ -45,9 +45,10 @@ type game struct {
 
 // Create a new game struct.
 func newGame(c *gin.Context) *game {
+	metadata := newGameMetadata(c)
 	return &game{
-		Metadata: *newGameMetadata(c),
-		Guesses:  make([][2]string, 0),
+		Metadata: *metadata,
+		Guesses:  make([][2]string, 0, metadata.MaxGuesses),
 		State:    "ongoing",
 	}
 }
