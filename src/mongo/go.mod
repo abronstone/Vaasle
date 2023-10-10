@@ -1,4 +1,4 @@
-module mongo
+module vaas/mongo
 
 go 1.21.1
 

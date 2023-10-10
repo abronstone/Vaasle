@@ -1,4 +1,4 @@
-module engine
+module vaas/play-game
 
 go 1.21.1
 
