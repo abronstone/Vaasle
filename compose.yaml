@@ -28,10 +28,10 @@ services:
     build:
       context: ./src/mongo
       target: mongo
-    ports:
-      - 8000:5000
-    # expose:
-    #   - 5000
+    # ports:
+    #   - 8000:5000
+    expose:
+      - 5000
 
     # volumes:
     #   - ./src/mongo/data:/data/db
