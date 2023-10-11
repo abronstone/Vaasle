@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"vaas/structs"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -146,4 +147,8 @@ func main() {
 	router.GET("/get-words/:length", getWords)
 
 	router.Run("0.0.0.0:5000")
+
+	// Proof of concept, please remove
+	game := structs.Game{}
+	log.Println(len(game.Guesses))
 }

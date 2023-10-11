@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"vaas/structs"
 )
 
 // Submits a new game to the Mongo API (mongo.go).
@@ -39,7 +40,7 @@ func mongo_submitNewGame(id string, wordLength int) (string, error) {
 }
 
 // Asks the Mongo API (mongo.go) for the game stored under the given ID.
-func mongo_getGame(id string) (*game, error) {
+func mongo_getGame(id string) (*structs.Game, error) {
 	res, err := http.Get("http://mongo:5000/getGame/" + id)
 	if err != nil {
 		return nil, err
@@ -51,7 +52,7 @@ func mongo_getGame(id string) (*game, error) {
 		return nil, err
 	}
 
-	game := game{}
+	game := structs.Game{}
 	err = json.Unmarshal(bodyBytes, &game)
 	if err != nil {
 		return nil, err
@@ -61,7 +62,7 @@ func mongo_getGame(id string) (*game, error) {
 }
 
 // Updates the Mongo API (mongo.go) with the new state of the given game.
-func mongo_updateGame(game *game) error {
+func mongo_updateGame(game *structs.Game) error {
 	return nil // temporary default return, as the endpoint below is not yet implemented
 
 	gameJson, err := json.Marshal(game)

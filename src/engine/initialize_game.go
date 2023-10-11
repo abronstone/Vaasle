@@ -3,24 +3,18 @@ package main
 import (
 	"errors"
 	"fmt"
+	"vaas/structs"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
-// The metadata of a Wordle game.
-type gameMetadata struct {
-	GameID     string `json:"gameID"`
-	WordLength int    `json:"wordLength"`
-	MaxGuesses int    `json:"maxGuesses"`
-}
-
 // Create a new gameMetadata struct.
-func newGameMetadata(c *gin.Context) *gameMetadata {
+func newGameMetadata(c *gin.Context) *structs.GameMetadata {
 	defaultWordLength := 5
 	defaultMaxGuesses := 6
 
-	metadata := gameMetadata{
+	metadata := structs.GameMetadata{
 		WordLength: defaultWordLength,
 		MaxGuesses: defaultMaxGuesses,
 	}
@@ -35,18 +29,10 @@ func newGameMetadata(c *gin.Context) *gameMetadata {
 	return &metadata
 }
 
-// A Wordle game.
-type game struct {
-	Metadata gameMetadata `json:"metadata"`
-	Guesses  [][2]string  `json:"guesses"`
-	State    string       `json:"state"`
-	Word     string       `json:"-"`
-}
-
 // Create a new game struct.
-func newGame(c *gin.Context) *game {
+func newGame(c *gin.Context) *structs.Game {
 	metadata := newGameMetadata(c)
-	return &game{
+	return &structs.Game{
 		Metadata: *metadata,
 		Guesses:  make([][2]string, 0, metadata.MaxGuesses),
 		State:    "ongoing",
@@ -54,7 +40,7 @@ func newGame(c *gin.Context) *game {
 }
 
 // Set the secret word of a game (only allowed at game initialization).
-func (g *game) setWord(word string) error {
+func setWord(g *structs.Game, word string) error {
 	if g.Word != "" {
 		return errors.New("game already has a word")
 	}

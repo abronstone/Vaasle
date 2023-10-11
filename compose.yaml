@@ -3,7 +3,7 @@ services:
   engine:
     container_name: engine
     build:
-      context: ./src/engine
+      context: ./src
       target: engine
     ports:
       - 5001:5001
@@ -11,7 +11,7 @@ services:
   play-game:
     container_name: play-game
     build:
-      context: ./src/play-game
+      context: ./src
       target: play-game
     ports:
       - 5002:5001
@@ -25,8 +25,9 @@ services:
       - "3000:3000"
       
   mongo:
+    container_name: mongo
     build:
-      context: ./src/mongo
+      context: ./src
       target: mongo
     expose:
       - 5000
