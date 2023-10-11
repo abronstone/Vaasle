@@ -5,24 +5,11 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"vaas/structs"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
-
-type game struct {
-	Metadata gameMetadata `json:"metadata"`
-	Guesses  [][2]string  `json:"guesses"`
-	State    string       `json:"state"`
-	Word     string       `json:"-"`
-}
-
-// The metadata of a Wordle game.
-type gameMetadata struct {
-	GameID     string `json:"gameID"`
-	WordLength int    `json:"wordLength"`
-	MaxGuesses int    `json:"maxGuesses"`
-}
 
 func main() {
 	router := gin.Default()
@@ -60,10 +47,6 @@ func api_pingEngine(c *gin.Context) {
 	c.JSON(http.StatusOK, string(bodyBytes))
 }
 
-func home(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, map[string]string{"message": "Play game is running"})
-}
-
 // Calls the appropriate endpoint in the engine to make a new game
 // and returns the game's public state as JSON.
 func api_newGame(c *gin.Context) {
@@ -79,7 +62,7 @@ func api_newGame(c *gin.Context) {
 	defer res.Body.Close()
 
 	// Create a newGame variable and unmarshal the response body into it
-	newGame := game{}
+	newGame := structs.Game{}
 	bodyBytes, err := io.ReadAll(res.Body)
 
 	if err != nil {
@@ -114,7 +97,7 @@ func api_getGame(c *gin.Context) {
 	defer res.Body.Close()
 
 	// Create a currentGame variable and unmarshal the response body into it
-	currentGame := game{}
+	currentGame := structs.Game{}
 	bodyBytes, err := io.ReadAll(res.Body)
 
 	if err != nil {
@@ -165,7 +148,7 @@ func api_makeGuess(c *gin.Context) {
 	defer res.Body.Close()
 
 	// Create a currentGame variable and unmarshal the response body into it
-	currentGame := game{}
+	currentGame := structs.Game{}
 	bodyBytes, err = io.ReadAll(res.Body)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed read response body from engine: " + err.Error()})
