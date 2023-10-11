@@ -46,14 +46,14 @@ func api_home(c *gin.Context) {
 func api_pingEngine(c *gin.Context) {
 	res, err := http.Get("http://engine:5001/")
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": "Ping to engine failed"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ping to engine failed: " + err.Error()})
 		return
 	}
 	defer res.Body.Close()
 
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": "Ping to engine failed"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failure decoding response from engine: " + err.Error()})
 		return
 	}
 
@@ -72,7 +72,7 @@ func api_newGame(c *gin.Context) {
 
 	// If the engine is down, return an error
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create a new game"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create a new game: " + err.Error()})
 		return
 	}
 
@@ -83,20 +83,20 @@ func api_newGame(c *gin.Context) {
 	bodyBytes, err := io.ReadAll(res.Body)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed read response body"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed read response body from engine: " + err.Error()})
 		return
 	}
 
 	err = json.Unmarshal(bodyBytes, &newGame)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal response body"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal response body from engine: " + err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, newGame)
 }
 
-// Calls the appropriate endpoint in the engine to retrieve an exsisting game
+// Calls the appropriate endpoint in the engine to retrieve an existing game
 // and returns the game's public state as JSON.
 func api_getGame(c *gin.Context) {
 	// Get the gameID from the URL
@@ -107,7 +107,7 @@ func api_getGame(c *gin.Context) {
 
 	// If the engine is down, return an error
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get game"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get game from engine: " + err.Error()})
 		return
 	}
 
@@ -118,13 +118,13 @@ func api_getGame(c *gin.Context) {
 	bodyBytes, err := io.ReadAll(res.Body)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed read response body"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed read response body from engine: " + err.Error()})
 		return
 	}
 
 	err = json.Unmarshal(bodyBytes, &currentGame)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal response body"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal response body from engine" + err.Error()})
 		return
 	}
 
@@ -142,14 +142,14 @@ func api_makeGuess(c *gin.Context) {
 
 	// Bind the incoming JSON body to the guess struct
 	if err := c.ShouldBindJSON(&guess); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request format"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request format, expected {id: string, guess: string}"})
 		return
 	}
 
 	// Use json.Marshal to convert the guess object to a JSON-formatted []byte
 	bodyBytes, err := json.Marshal(guess)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal the request body"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal the request body: " + err.Error()})
 		return
 	}
 
@@ -159,27 +159,21 @@ func api_makeGuess(c *gin.Context) {
 	// Call the engine's makeGuess endpoint
 	res, err := http.Post("http://engine:5001/makeGuess", "application/json", bodyBuffer)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to make guess"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to make guess with engine: " + err.Error()})
 		return
 	}
 	defer res.Body.Close()
-
-	// Check the status code of the response
-	if res.StatusCode != http.StatusOK {
-		c.JSON(res.StatusCode, gin.H{"error": "Engine returned an error"})
-		return
-	}
 
 	// Create a currentGame variable and unmarshal the response body into it
 	currentGame := game{}
 	bodyBytes, err = io.ReadAll(res.Body)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed read response body"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed read response body from engine: " + err.Error()})
 		return
 	}
 
 	if err := json.Unmarshal(bodyBytes, &currentGame); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal response body"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal response body from engine: " + err.Error()})
 		return
 	}
 

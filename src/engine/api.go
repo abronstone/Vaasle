@@ -32,13 +32,13 @@ func api_newGame(c *gin.Context) {
 
 	word, err := mongo_submitNewGame(newGame.Metadata.GameID, newGame.Metadata.WordLength)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": "failed to retrieve a word"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve a word from mongo: " + err.Error()})
 		return
 	}
 
 	err = setWord(newGame, word)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": "failed to initialize game"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to initialize game"})
 		return
 	}
 
@@ -49,7 +49,7 @@ func api_newGame(c *gin.Context) {
 // Returns the game struct with the specified ID as a JSON object.
 func api_getGame(c *gin.Context) {
 	if game, err := getGame(c.Param("id")); err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": "could not find game"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "could not find game"})
 	} else {
 		c.JSON(http.StatusOK, game)
 	}
@@ -82,14 +82,14 @@ func api_makeGuess(c *gin.Context) {
 func api_pingPlayGame(c *gin.Context) {
 	res, err := http.Get("http://play-game:5001/")
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": "ping to play-game failed"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "ping to play-game failed"})
 		return
 	}
 	defer res.Body.Close()
 
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": "ping to play-game failed"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failure to parse play-game response body: " + err.Error()})
 		return
 	}
 
