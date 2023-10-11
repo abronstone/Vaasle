@@ -207,6 +207,7 @@ func getGame(c *gin.Context) {
 	var game structs.GameExposed
 	// Run aggregation
 	cursor, err := gameCollection.Aggregate(context.TODO(), matchStage)
+	defer cursor.Close(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
