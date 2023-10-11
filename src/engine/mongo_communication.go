@@ -15,7 +15,12 @@ import (
 // The API takes the given ID and wordLength and returns a word for this game.
 // The API also initializes an empty game with this information in MongoDB.
 func mongo_submitNewGame(id string, wordLength int) (string, error) {
-	return string(make([]byte, wordLength)), nil // temporary default return, as the endpoint below is not yet implemented
+	// temporary default return, as the endpoint below is not yet implemented
+	hardCodedWord := "pizza"
+	return hardCodedWord, nil
+
+	// When the endpoint below is implemented, uncomment the code above and delete the code below.
+	// return string(make([]byte, wordLength)), nil
 
 	res, err := http.Get("http://mongo:5000/newGame/" + id + "/" + strconv.Itoa(wordLength))
 	if err != nil {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -33,7 +34,7 @@ func main() {
 	router.GET("/pingEngine", api_pingEngine)
 	router.POST("/newGame", api_newGame)
 	router.GET("/getGame/:id", api_getGame)
-	// router.POST("/makeGuess", api_makeGuess)
+	router.POST("/makeGuess", api_makeGuess)
 
 	router.Run("0.0.0.0:5001")
 }
@@ -112,7 +113,7 @@ func api_getGame(c *gin.Context) {
 
 	defer res.Body.Close()
 
-	// Create a newGame variable and unmarshal the response body into it
+	// Create a currentGame variable and unmarshal the response body into it
 	currentGame := game{}
 	bodyBytes, err := io.ReadAll(res.Body)
 
@@ -123,6 +124,61 @@ func api_getGame(c *gin.Context) {
 
 	err = json.Unmarshal(bodyBytes, &currentGame)
 	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal response body"})
+		return
+	}
+
+	c.JSON(http.StatusOK, currentGame)
+}
+
+// Calls the appropriate endpoint in the engine to make a guess
+// and returns the game's public state as JSON.
+func api_makeGuess(c *gin.Context) {
+	// Define the format of the request body
+	guess := struct {
+		Id    string `json:"id"`
+		Guess string `json:"guess"`
+	}{}
+
+	// Bind the incoming JSON body to the guess struct
+	if err := c.ShouldBindJSON(&guess); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request format"})
+		return
+	}
+
+	// Use json.Marshal to convert the guess object to a JSON-formatted []byte
+	bodyBytes, err := json.Marshal(guess)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal the request body"})
+		return
+	}
+
+	// Convert []byte to io.Reader
+	bodyBuffer := bytes.NewBuffer(bodyBytes)
+
+	// Call the engine's makeGuess endpoint
+	res, err := http.Post("http://engine:5001/makeGuess", "application/json", bodyBuffer)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to make guess"})
+		return
+	}
+	defer res.Body.Close()
+
+	// Check the status code of the response
+	if res.StatusCode != http.StatusOK {
+		c.JSON(res.StatusCode, gin.H{"error": "Engine returned an error"})
+		return
+	}
+
+	// Create a currentGame variable and unmarshal the response body into it
+	currentGame := game{}
+	bodyBytes, err = io.ReadAll(res.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed read response body"})
+		return
+	}
+
+	if err := json.Unmarshal(bodyBytes, &currentGame); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal response body"})
 		return
 	}

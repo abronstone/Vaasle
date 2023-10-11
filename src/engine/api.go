@@ -65,13 +65,13 @@ func api_makeGuess(c *gin.Context) {
 
 	game, err := getGame(requestBody.Id)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": "could not find game"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "could not find game"})
 		return
 	}
 
 	err = makeGuess(game, requestBody.Guess)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
