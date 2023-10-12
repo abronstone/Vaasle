@@ -107,7 +107,6 @@ func newGame(c *gin.Context) {
 
 	// Get metadata from HTTP body
 	headerVal := c.GetHeader("Content-Type")
-	fmt.Println(headerVal)
 	var metadata structs.GameMetadata
 	if err := c.ShouldBindJSON(&metadata); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -115,8 +114,10 @@ func newGame(c *gin.Context) {
 	}
 	gameID := metadata.GameID
 	wordLength := metadata.WordLength
+	maxGuesses := metadata.MaxGuesses
+	gameMetadata := structs.GameMetadata{GameID: gameID, WordLength: wordLength, MaxGuesses: maxGuesses}
 
-	// Get c ollections
+	// Get collections
 	database := client.Database("VaasDatabase")
 	wordCollection := database.Collection("words")
 	gameCollection := database.Collection("games")
@@ -141,12 +142,11 @@ func newGame(c *gin.Context) {
 	defer cursor.Close(context.Background())
 
 	// Create new game structure and insert into database
-	gameMetadata := structs.GameMetadata{GameID: gameID, WordLength: wordLength, MaxGuesses: 6}
 	guesses := [][2]string{}
 	game := structs.GameExposed{Word: randomWord["word"].(string), Metadata: gameMetadata, Guesses: guesses, State: "ongoing"}
 	gameCollection.InsertOne(context.TODO(), game)
 
-	// Return random word
+	// Return initialized game state
 	c.JSON(http.StatusOK, game)
 }
 
@@ -160,7 +160,6 @@ func updateGameState(c *gin.Context) {
 
 	// Gets the HTTP header and body
 	headerVal := c.GetHeader("Content-Type")
-	fmt.Println(headerVal)
 	var gameData structs.Game
 	if err := c.ShouldBindJSON(&gameData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -270,6 +269,10 @@ func initializeDB(c *gin.Context) {
 	*/
 	db := client.Database("VaasDatabase")
 	// deleteMany function without a filter deletes all documents in a collection
+	_, err := db.Collection("games").DeleteMany(context.Background(), bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
 	_, err := db.Collection("words").DeleteMany(context.Background(), bson.M{})
 	if err != nil {
 		log.Fatal(err)
@@ -282,7 +285,7 @@ func home(c *gin.Context) {
 		Help message to display routes
 	*/
 	c.JSON(http.StatusOK, map[string]string{
-		"GET: /initialize-db":      "CLEARS DATABASE COLELCTIONS (use with caution)",
+		"GET: /initialize-db":      "CLEARS DATABASE COLLELCTIONS (use with caution)",
 		"GET: /insert-word/<word>": "Inserts word into database",
 		"GET: /get-words/<length>": "Gets words of parameter length",
 		"PUT: /new-game/":          "Creates a new game based on HTTP body metadata",
