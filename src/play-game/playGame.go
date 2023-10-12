@@ -118,10 +118,7 @@ func api_getGame(c *gin.Context) {
 // and returns the game's public state as JSON.
 func api_makeGuess(c *gin.Context) {
 	// Define the format of the request body
-	guess := struct {
-		Id    string `json:"id"`
-		Guess string `json:"guess"`
-	}{}
+	guess := structs.Guess{}
 
 	// Bind the incoming JSON body to the guess struct
 	if err := c.ShouldBindJSON(&guess); err != nil {
