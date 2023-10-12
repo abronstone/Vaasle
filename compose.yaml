@@ -7,8 +7,6 @@ services:
       target: engine
     ports:
       - 5001:5001
-    depends_on:
-      - mongo
 
   play-game:
     container_name: play-game
@@ -17,8 +15,6 @@ services:
       target: play-game
     ports:
       - 5002:5001
-    depends_on:
-      - engine
 
   frontend:
     container_name: frontend
@@ -27,8 +23,6 @@ services:
       target: frontend
     ports:
       - "3000:3000"
-    depends_on:
-      - play-game
       
   mongo:
     container_name: mongo
@@ -46,4 +40,5 @@ services:
     stdin_open: true
     tty: true
     depends_on:
+      - engine
       - play-game

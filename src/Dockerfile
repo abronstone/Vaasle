@@ -10,7 +10,9 @@ COPY ./engine/go.mod ./engine/go.sum ./
 RUN go mod download
 
 COPY ./engine/*.go ./
-CMD [ "go", "run", "." ]
+RUN go build -o engine-executable
+
+CMD [ "./engine-executable" ]
 
 # Mongo
 FROM golang:1.21.1 as mongo
@@ -22,9 +24,10 @@ WORKDIR /src/mongo
 COPY ./mongo/go.mod mongo/go.sum ./
 
 RUN go mod download
-
 COPY ./mongo/*.go ./
-CMD [ "go", "run", "." ]
+
+RUN go build -o mongo-executable
+CMD [ "./mongo-executable" ]
 
 # Play-Game
 FROM golang:1.21.1 as play-game
@@ -38,4 +41,6 @@ COPY ./play-game/go.mod ./play-game/go.sum ./
 RUN go mod download
 
 COPY ./play-game/*.go ./
-CMD [ "go", "run", "." ]
+RUN go build -o playGame-executable
+
+CMD [ "./playGame-executable" ]

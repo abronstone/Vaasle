@@ -9,4 +9,6 @@ COPY go.mod ./
 RUN go mod download && go mod verify
 
 COPY . .
-CMD [ "go", "run", "." ]
+RUN go build -v -o /usr/local/bin/cli ./...
+
+CMD ["cli"]
