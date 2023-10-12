@@ -19,14 +19,16 @@ func mongo_submitNewGame(metadata structs.GameMetadata) (string, error) {
 		return "", err
 	}
 
-	client := &http.Client{}
+	endpoint := "http://mongo:8000/new-game/"
+	byteBuffer := bytes.NewBuffer(metadataJson)
 
-	req, err := http.NewRequest(http.MethodPut, "http://mongo:8000/new-game/", bytes.NewBuffer(metadataJson))
+	req, err := http.NewRequest(http.MethodPut, endpoint, byteBuffer)
 	if err != nil {
 		return "", err
 	}
 	req.Header.Set("Content-Type", "application/json")
 
+	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
 		return "", err
@@ -54,7 +56,9 @@ func mongo_submitNewGame(metadata structs.GameMetadata) (string, error) {
 
 // Asks the Mongo API (mongo.go) for the game stored under the given ID.
 func mongo_getGame(id string) (*structs.Game, error) {
-	res, err := http.Get("http://mongo:8000/get-game/" + id)
+	endpoint := "http://mongo:8000/get-game/" + id
+
+	res, err := http.Get(endpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -81,14 +85,16 @@ func mongo_updateGame(game *structs.Game) error {
 		return err
 	}
 
-	client := &http.Client{}
+	endpoint := "http://mongo:8000/update-game/"
+	byteBuffer := bytes.NewBuffer(gameJson)
 
-	req, err := http.NewRequest(http.MethodPut, "http://mongo:8000/update-game/", bytes.NewBuffer(gameJson))
+	req, err := http.NewRequest(http.MethodPut, endpoint, byteBuffer)
 	if err != nil {
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
 
+	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
 		return err
