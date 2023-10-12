@@ -19,6 +19,8 @@ func main() {
 	router.POST("/makeGuess", api_makeGuess)
 	router.GET("/pingPlayGame", api_pingPlayGame)
 
+	router.GET("/getGameExposed/:id", api_getGameExposed)
+
 	router.Run("0.0.0.0:5001")
 }
 
@@ -31,7 +33,7 @@ func api_home(c *gin.Context) {
 func api_newGame(c *gin.Context) {
 	newGame := newGame(c)
 
-	word, err := mongo_submitNewGame(newGame.Metadata.GameID, newGame.Metadata.WordLength)
+	word, err := mongo_submitNewGame(newGame.Metadata)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve a word from mongo: " + err.Error()})
 		return
@@ -53,6 +55,16 @@ func api_getGame(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "could not find game"})
 	} else {
 		c.JSON(http.StatusOK, game)
+	}
+}
+
+// Returns the game struct with the specified ID as a JSON object.
+// Exposes the word, only used for debugging.
+func api_getGameExposed(c *gin.Context) {
+	if game, err := getGame(c.Param("id")); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "could not find game"})
+	} else {
+		c.JSON(http.StatusOK, game.ConvertToGameExposed())
 	}
 }
 

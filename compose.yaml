@@ -29,8 +29,10 @@ services:
     build:
       context: ./src
       target: mongo
+    ports:
+      - "8000:8000"
     expose:
-      - 5000
+      - 8000
 
   cli:
     container_name: cli

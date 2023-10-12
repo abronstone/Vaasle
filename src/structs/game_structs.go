@@ -30,9 +30,24 @@ type Guess struct {
 	Guess string `json:"guess"`
 }
 
+// A simple message.
+type Message struct {
+	Message string `json:"message"`
+}
+
 // Convert a GameExposed to a Game (remove the ability to export Word to JSON).
 func (g *GameExposed) ConvertToGame() *Game {
 	return &Game{
+		Metadata: g.Metadata,
+		Guesses:  g.Guesses,
+		State:    g.State,
+		Word:     g.Word,
+	}
+}
+
+// Convert a Game to a GameExposed (add the ability to export Word to JSON).
+func (g *Game) ConvertToGameExposed() *GameExposed {
+	return &GameExposed{
 		Metadata: g.Metadata,
 		Guesses:  g.Guesses,
 		State:    g.State,
