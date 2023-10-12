@@ -14,6 +14,7 @@ import (
 // The API takes a metadata struct and returns an initialized game.
 // The API also initializes an empty game with this information in MongoDB.
 func mongo_submitNewGame(metadata structs.GameMetadata) (string, error) {
+	// 1. Prepare request headers and body
 	metadataJson, err := json.Marshal(metadata)
 	if err != nil {
 		return "", err
@@ -28,6 +29,7 @@ func mongo_submitNewGame(metadata structs.GameMetadata) (string, error) {
 	}
 	req.Header.Set("Content-Type", "application/json")
 
+	// 2. Send request
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
@@ -35,6 +37,7 @@ func mongo_submitNewGame(metadata structs.GameMetadata) (string, error) {
 	}
 	defer res.Body.Close()
 
+	// 3. Parse response body
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
 		return "", err
@@ -56,6 +59,7 @@ func mongo_submitNewGame(metadata structs.GameMetadata) (string, error) {
 
 // Asks the Mongo API (mongo.go) for the game stored under the given ID.
 func mongo_getGame(id string) (*structs.Game, error) {
+	// 1. Send request
 	endpoint := "http://mongo:8000/get-game/" + id
 
 	res, err := http.Get(endpoint)
@@ -64,6 +68,7 @@ func mongo_getGame(id string) (*structs.Game, error) {
 	}
 	defer res.Body.Close()
 
+	// 2. Parse response body
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
@@ -80,6 +85,7 @@ func mongo_getGame(id string) (*structs.Game, error) {
 
 // Updates the Mongo API (mongo.go) with the new state of the given game.
 func mongo_updateGame(game *structs.Game) error {
+	// 1. Prepare request headers and body
 	gameJson, err := json.Marshal(game)
 	if err != nil {
 		return err
@@ -94,6 +100,7 @@ func mongo_updateGame(game *structs.Game) error {
 	}
 	req.Header.Set("Content-Type", "application/json")
 
+	// 2. Send request
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
@@ -101,6 +108,7 @@ func mongo_updateGame(game *structs.Game) error {
 	}
 	defer res.Body.Close()
 
+	// 3. Parse response body
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
 		return err
