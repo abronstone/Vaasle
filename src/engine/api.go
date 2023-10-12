@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"vaas/structs"
 
 	"github.com/gin-gonic/gin"
 )
@@ -57,10 +58,7 @@ func api_getGame(c *gin.Context) {
 
 // Returns the game struct with the specified ID as a JSON object.
 func api_makeGuess(c *gin.Context) {
-	requestBody := struct {
-		Id    string `json:"id"`
-		Guess string `json:"guess"`
-	}{}
+	requestBody := structs.Guess{}
 	c.ShouldBindJSON(&requestBody)
 
 	game, err := getGame(requestBody.Id)

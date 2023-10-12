@@ -24,6 +24,12 @@ type GameExposed struct {
 	Word     string       `json:"word"`
 }
 
+// A guess in a Wordle game.
+type Guess struct {
+	Id    string `json:"id"`
+	Guess string `json:"guess"`
+}
+
 // Convert a GameExposed to a Game (remove the ability to export Word to JSON).
 func (g *GameExposed) ConvertToGame() *Game {
 	return &Game{
