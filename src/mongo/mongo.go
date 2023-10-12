@@ -271,7 +271,7 @@ func initializeDB(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_, err := db.Collection("words").DeleteMany(context.Background(), bson.M{})
+	_, err = db.Collection("words").DeleteMany(context.Background(), bson.M{})
 	if err != nil {
 		log.Fatal(err)
 	}
