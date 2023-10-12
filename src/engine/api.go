@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"vaas/structs"
 
@@ -83,6 +84,11 @@ func api_makeGuess(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+
+	err = mongo_updateGame(game)
+	if err != nil {
+		log.Println(err.Error()) // not a fatal error, we can just log it
 	}
 
 	c.JSON(http.StatusOK, game)
