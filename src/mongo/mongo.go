@@ -106,7 +106,6 @@ func newGame(c *gin.Context) {
 	*/
 
 	// Get metadata from HTTP body
-	headerVal := c.GetHeader("Content-Type")
 	var metadata structs.GameMetadata
 	if err := c.ShouldBindJSON(&metadata); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -159,7 +158,6 @@ func updateGameState(c *gin.Context) {
 	*/
 
 	// Gets the HTTP header and body
-	headerVal := c.GetHeader("Content-Type")
 	var gameData structs.Game
 	if err := c.ShouldBindJSON(&gameData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
