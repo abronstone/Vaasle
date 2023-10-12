@@ -180,7 +180,9 @@ func updateGameState(c *gin.Context) {
 	}
 
 	// Return confirmation message
-	c.JSON(http.StatusOK, bson.M{"message": "Game updated successfully"})
+	c.JSON(http.StatusOK, &structs.Message{
+		Message: "game updated successfully",
+	})
 }
 
 func getGame(c *gin.Context) {

@@ -106,7 +106,7 @@ func mongo_updateGame(game *structs.Game) error {
 		return err
 	}
 
-	if result.Message != "success" {
+	if result.Message != "game updated successfully" {
 		return errors.New("failed to send game updates to Mongo API")
 	}
 
