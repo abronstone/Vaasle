@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"vaas/structs"
 )
@@ -44,11 +43,6 @@ func makeGuess(g *structs.Game, guess string) error {
 
 	g.Guesses = append(g.Guesses, [2]string{guess, getCorrections(guess, g.Word)})
 	updateGameState(g)
-
-	err := mongo_updateGame(g)
-	if err != nil {
-		log.Println("failed to update game in mongo")
-	}
 
 	return nil
 }
