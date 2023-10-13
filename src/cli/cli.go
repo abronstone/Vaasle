@@ -36,6 +36,10 @@ func main() {
 
 	currentGame, err := initialize_new_game()
 
+	if currentGame == nil {
+		return
+	}
+
 	fmt.Println("New game created with ID:", currentGame.Metadata.GameID)
 
 	gameID := currentGame.Metadata.GameID
@@ -56,31 +60,24 @@ func main() {
 		// Make a guess and get the corrections
 		lastGuess, err := make_guess(gameID, guess)
 
-		if err != nil {
+		if err != nil || lastGuess == "" {
 			return
 		}
 
+		output := ""
 		// Print out the corrections
-		fmt.Println("Corrections:")
 		for _, correction := range lastGuess {
 			switch string(correction) {
 			case "G":
-				fmt.Println("🟩")
+				output += "🟩"
 			case "Y":
-				fmt.Println("🟧")
+				output += "🟧"
 			default:
-				fmt.Println("⬛")
+				output += "⬛"
 			}
 		}
 
-		// Print out the current state of the game
-		fmt.Println("Current state:", currentGame.State)
-
-		// Print out the current guesses of the game
-		fmt.Println("Current guesses:")
-		for _, guess := range currentGame.Guesses {
-			fmt.Println(guess)
-		}
+		fmt.Println(output)
 	}
 
 }
@@ -105,7 +102,7 @@ func ping_play_game() error {
 }
 
 func initialize_new_game() (*Game, error) {
-	res, err := http.Post("http://play:5001/newGame", "application/json", nil)
+	res, err := http.Post("http://play-game:5001/newGame", "application/json", nil)
 
 	// If play-game is down, return an error
 	if err != nil {
@@ -136,7 +133,21 @@ func initialize_new_game() (*Game, error) {
 }
 
 func make_guess(gameID string, guess string) (string, error) {
-	res, err := http.Post("http://play:5001/makeGuess", "application/json", strings.NewReader(guess))
+	// Make a guess of type Guess
+	guessStruct := Guess{
+		Id:    gameID,
+		Guess: guess,
+	}
+	// Convert guessStruct to JSON
+	jsonData, err := json.Marshal(guessStruct)
+	if err != nil {
+		fmt.Println("Failed to marshal guess:", err)
+		return "", err
+	}
+
+	// Use strings.NewReader to convert the JSON string to an io.Reader
+	res, err := http.Post("http://play-game:5001/makeGuess", "application/json", strings.NewReader(string(jsonData)))
+
 	if err != nil {
 		fmt.Println("Failed to create a new game")
 		return "", err
@@ -154,7 +165,7 @@ func make_guess(gameID string, guess string) (string, error) {
 		return "", err
 	}
 
-	// Format the json response data from bodybytes, have it conform to Game type. Make it filled.
+	// Format the json response data from body bytes, have it conform to Game type. Make it filled.
 	err = json.Unmarshal(bodyBytes, &currentGame)
 	if err != nil {
 		fmt.Println("error: Failed to unmarshal response body from play-game")
@@ -176,61 +187,3 @@ func make_guess(gameID string, guess string) (string, error) {
 
 	return lastGuessCorrections, nil
 }
-
-// func main() {
-// 	var words []string = []string{"happy", "crane", "sugar", "towel", "gator", "apple"}
-// 	randomIdx := rand.Intn(len(words))
-
-// 	randomWord := words[randomIdx]
-
-// 	fmt.Printf("here is my randowm word  %s \n", randomWord)
-
-// 	scanner := bufio.NewScanner(os.Stdin)
-
-// 	var combinedInput string
-// 	maxAttempts := 6
-
-// 	for attempts := 0; attempts < maxAttempts; attempts++ {
-// 		for {
-// 			fmt.Printf("Please enter a word that has %d letters: ", len(randomWord))
-// 			scanner.Scan()
-// 			input := scanner.Text()
-
-// 			// Remove all spaces
-// 			combinedInput = strings.ReplaceAll(input, " ", "")
-
-// 			if len(combinedInput) == len(randomWord) {
-// 				break
-// 			} else {
-// 				fmt.Println("Your word doesn't match the required length. Try again.")
-// 			}
-// 		}
-// 		score := 0
-
-// 		output := ""
-
-// 		for i := 0; i < len(randomWord); i++ {
-// 			if combinedInput[i] == randomWord[i] {
-// 				output += "🟩"
-// 				score += 2
-
-// 			} else if strings.Contains(randomWord, string(combinedInput[i])) {
-// 				output += "🟧"
-// 				score += 1
-// 			} else {
-// 				output += "⬛"
-// 			}
-// 		}
-
-// 		fmt.Println("Result:", output)
-// 		fmt.Println("Score:", score)
-
-// 		if combinedInput == randomWord {
-// 			fmt.Println("congratulations! you guessed the word correctly!")
-// 			break
-// 		} else {
-// 			fmt.Println("game has ended, better luck next time")
-
-//			}
-//		}
-//	}
