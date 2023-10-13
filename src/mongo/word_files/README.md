@@ -13,4 +13,4 @@ Word file names are structured as so:
 
 All words in the list must be separated by only a new line character, and must be lower case.
 
-**IMPORTANT**: The file named *remove_words.txt* contains explicit and/or derogatory words that may offend users. Any words extracted from community created word lists using the `populate_words.py` program will be run through a regular expression filter to ensure that these words do not enter the database.
+**IMPORTANT**: The file named *remove_words.txt* contains **explicit** and/or **derogatory** words that may offend users. Any words extracted from community created word lists using the `populate_words.py` program will be run through a regular expression filter to ensure that these words do not enter the database.
