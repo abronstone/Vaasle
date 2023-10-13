@@ -49,9 +49,6 @@ CMD [ "./playGame-executable" ]
 # CLI
 FROM golang:1.21.1 as cli
 
-WORKDIR /src/structs
-COPY /structs/* ./
-
 WORKDIR /src/cli
 
 COPY ./cli/go.mod ./

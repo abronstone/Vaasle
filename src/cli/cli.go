@@ -8,8 +8,24 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"vaas/structs"
 )
+
+type Guess struct {
+	Id    string `json:"id"`
+	Guess string `json:"guess"`
+}
+
+type Game struct {
+	Metadata GameMetadata `json:"metadata" bson:"metadata"`
+	Guesses  [][2]string  `json:"guesses" bson:"guesses"`
+	State    string       `json:"state" bson:"state"`
+}
+
+type GameMetadata struct {
+	GameID     string `json:"gameID" bson:"gameid"`
+	WordLength int    `json:"wordLength" bson:"wordlength"`
+	MaxGuesses int    `json:"maxGuesses" bson:"maxguesses"`
+}
 
 func main() {
 	err := ping_play_game()
@@ -18,11 +34,11 @@ func main() {
 		return
 	}
 
-	var currentGame structs.Game = initialize_new_game()
+	currentGame, err := initialize_new_game()
 
-	fmt.Println("New game created with ID:", currentGame.ID)
+	fmt.Println("New game created with ID:", currentGame.Metadata.GameID)
 
-	gameID := currentGame.ID
+	gameID := currentGame.Metadata.GameID
 
 	// Make guesses until the game is won or lost (make_guess returns nil)
 	for {
@@ -32,22 +48,22 @@ func main() {
 		guess := scanner.Text()
 		var cleanedUpGuess = strings.ReplaceAll(guess, " ", "")
 
-		if len(cleanedUpGuess) != len(currentGame.Metadata.WordLength) {
+		if len(cleanedUpGuess) != currentGame.Metadata.WordLength {
 			fmt.Println("Your word doesn't match the required length. Try again.")
 			continue
 		}
 
 		// Make a guess and get the corrections
-		var lastGuess structs.Guess = make_guess(gameID, guess)
+		lastGuess, err := make_guess(gameID, guess)
 
-		if lastGuess == nil {
+		if err != nil {
 			return
 		}
 
 		// Print out the corrections
 		fmt.Println("Corrections:")
-		for _, correction := range lastGuess.Corrections {
-			switch correction {
+		for _, correction := range lastGuess {
+			switch string(correction) {
 			case "G":
 				fmt.Println("🟩")
 			case "Y":
@@ -88,84 +104,77 @@ func ping_play_game() error {
 	return nil
 }
 
-func initialize_new_game() (*structs.Game, error) {
+func initialize_new_game() (*Game, error) {
 	res, err := http.Post("http://play:5001/newGame", "application/json", nil)
 
 	// If play-game is down, return an error
 	if err != nil {
 		fmt.Println("Failed to create a new game")
-		return
+		return nil, err
 	}
 
 	defer res.Body.Close()
 
 	// Create a newGame variable and unmarshal the response body into it
-	newGame := structs.Game{}
+	newGame := Game{}
 
 	bodyBytes, err := io.ReadAll(res.Body)
 
 	if err != nil {
 		fmt.Println("error: Failed read response body from play-game")
-		return
+		return nil, err
 	}
 
 	// format the json response data from bodybytes, have it conform to Game type. Make it filled.
 	err = json.Unmarshal(bodyBytes, &newGame)
 	if err != nil {
 		fmt.Println("error: Failed to unmarshal response body from engine")
-		return
+		return nil, err
 	}
 
 	return &newGame, nil
 }
 
-func make_guess(gameID string, guess string) (*structs.Guess, error) {
-	// Create a new guess struct
-	newGuess := structs.Guess{
-		GameID: gameID,
-		Guess:  guess,
-	}
-
-	res, err := http.Post("http://play:5001/makeGuess", "application/json", newGuess)
-	// If play-game is down, return an error
+func make_guess(gameID string, guess string) (string, error) {
+	res, err := http.Post("http://play:5001/makeGuess", "application/json", strings.NewReader(guess))
 	if err != nil {
 		fmt.Println("Failed to create a new game")
-		return
+		return "", err
 	}
 
 	defer res.Body.Close()
 
 	// Create a newGame variable and unmarshal the response body into it
-	currentGame := structs.Game{}
+	currentGame := Game{}
 
 	bodyBytes, err := io.ReadAll(res.Body)
 
 	if err != nil {
 		fmt.Println("error: Failed read response body from play-game")
-		return
+		return "", err
 	}
 
 	// Format the json response data from bodybytes, have it conform to Game type. Make it filled.
 	err = json.Unmarshal(bodyBytes, &currentGame)
 	if err != nil {
 		fmt.Println("error: Failed to unmarshal response body from play-game")
-		return
+		return "", err
 	}
 
 	// Check if the game is won or lost
 	if currentGame.State == "won" {
 		fmt.Print("Congratulations! You won the game!")
-		return nil
+		return "", err
 	}
 	if currentGame.State == "lost" {
 		fmt.Print("Unlucky! You suck at the game delete wordle and your mother hates you!")
-		return nil
+		return "", err
 	}
 
 	// Get the corrections for hinting of the last guess made
-	var lastGuess structs.Guess = currentGame.Guesses[len(currentGame.Guesses)-1][1]
+	var lastGuessCorrections string = currentGame.Guesses[len(currentGame.Guesses)-1][1]
 
-	return lastGuess, nil
+	return lastGuessCorrections, nil
 }
 
 // func main() {
