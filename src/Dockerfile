@@ -29,6 +29,7 @@ COPY ./mongo/*.go ./
 RUN go build -o mongo-executable
 CMD [ "./mongo-executable" ]
 
+
 # Play-Game
 FROM golang:1.21.1 as play-game
 
@@ -44,3 +45,16 @@ COPY ./play-game/*.go ./
 RUN go build -o playGame-executable
 
 CMD [ "./playGame-executable" ]
+
+# CLI
+FROM golang:1.21.1 as cli
+
+WORKDIR /src/cli
+
+COPY ./cli/go.mod ./
+RUN go mod download
+
+COPY ./cli/*.go ./
+RUN go build -o cli-executable
+
+CMD [ "./cli-executable" ]
