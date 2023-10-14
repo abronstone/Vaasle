@@ -174,11 +174,11 @@ func make_guess(gameID string, guess string) (string, error) {
 
 	// Check if the game is won or lost
 	if currentGame.State == "won" {
-		fmt.Print("Congratulations! You won the game!")
+		fmt.Println("Congratulations! You won the game!")
 		return "", err
 	}
 	if currentGame.State == "lost" {
-		fmt.Print("Unlucky! You suck at the game delete wordle and your mother hates you!")
+		fmt.Println("Unlucky! Try again!")
 		return "", err
 	}
 
