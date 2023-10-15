@@ -21,6 +21,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 	"vaas/structs"
 
 	"github.com/gin-gonic/gin"
@@ -114,7 +115,7 @@ func newGame(c *gin.Context) {
 	gameID := metadata.GameID
 	wordLength := metadata.WordLength
 	maxGuesses := metadata.MaxGuesses
-	gameMetadata := structs.GameMetadata{GameID: gameID, WordLength: wordLength, MaxGuesses: maxGuesses}
+	gameMetadata := structs.GameMetadata{GameID: gameID, WordLength: wordLength, MaxGuesses: maxGuesses, DateCreated: time.Now()}
 
 	// Get collections
 	database := client.Database("VaasDatabase")

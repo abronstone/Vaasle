@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"time"
 	"vaas/structs"
 
 	"github.com/gin-gonic/gin"
@@ -15,8 +16,9 @@ func newGameMetadata(c *gin.Context) *structs.GameMetadata {
 	defaultMaxGuesses := 6
 
 	metadata := structs.GameMetadata{
-		WordLength: defaultWordLength,
-		MaxGuesses: defaultMaxGuesses,
+		WordLength:  defaultWordLength,
+		MaxGuesses:  defaultMaxGuesses,
+		DateCreated: time.Now(),
 	}
 
 	// Use default values if we fail to parse the POST request body.
