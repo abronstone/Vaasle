@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"bytes"
 )
 
 type Guess struct {
@@ -53,7 +54,7 @@ func main() {
 		var cleanedUpGuess = strings.ReplaceAll(guess, " ", "")
 
 		if len(cleanedUpGuess) != currentGame.Metadata.WordLength {
-			fmt.Println("Your word doesn't match the required length. Try again.")
+			fmt.Println("Your word doesn't match the required length of", currentGame.Metadata.WordLength, "Try again.")
 			continue
 		}
 
@@ -102,7 +103,28 @@ func ping_play_game() error {
 }
 
 func initialize_new_game() (*Game, error) {
-	res, err := http.Post("http://play-game:5001/newGame", "application/json", nil)
+	// Word length can only be 5 or 6 b/c those are the only sized words we have 
+	// in the DB at the moment
+	wordLength := 6
+	maxGuesses := 6
+
+	resPayload := GameMetadata{
+		WordLength: wordLength,
+		MaxGuesses: maxGuesses,
+	}
+
+	// Convert the payload to JSON
+	payloadBytes, err := json.Marshal(resPayload)
+	if err != nil {
+		fmt.Println("Failed to build a request body to create a new game")
+		return nil, err
+	}
+
+	// Create a buffer with the JSON data
+	bodyBuffer := bytes.NewBuffer(payloadBytes)
+
+	// Make request to play-game to create a new game with a request body
+	res, err := http.Post("http://play-game:5001/newGame", "application/json", bodyBuffer)
 
 	// If play-game is down, return an error
 	if err != nil {
@@ -171,6 +193,8 @@ func make_guess(gameID string, guess string) (string, error) {
 		fmt.Println("error: Failed to unmarshal response body from play-game")
 		return "", err
 	}
+
+	fmt.Println("currentGame:", currentGame)
 
 	// Check if the game is won or lost
 	if currentGame.State == "won" {
