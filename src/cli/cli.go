@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 	"bytes"
+	"strconv"
 )
 
 type Guess struct {
@@ -30,12 +31,38 @@ type GameMetadata struct {
 
 func main() {
 	err := ping_play_game()
-
+	
 	if err != nil {
+		fmt.Println("Failed to ping play-game")
 		return
 	}
+	
+	var wordLength int 
+	var maxGuesses int
+	
+	// Allow user to choose word length and max guesses, within certain bounds
+	scanner := bufio.NewScanner(os.Stdin)
+	for wordLength < 5 || wordLength > 6 {
+		fmt.Println("Please enter a word length of 5 or 6:")
+		scanner.Scan()
+		var err error
+		wordLength, err = strconv.Atoi(scanner.Text())
+		if err != nil {
+			fmt.Println("Invalid input. Please enter a valid number.")
+		}
+	}
 
-	currentGame, err := initialize_new_game()
+	for maxGuesses < 1 || maxGuesses > 10 {
+		fmt.Println("Please enter a max number of guesses between 1 and 10:")
+		scanner.Scan()
+		var err error
+		maxGuesses, err = strconv.Atoi(scanner.Text())
+		if err != nil {
+			fmt.Println("Invalid input. Please enter a valid number.")
+		}
+	}
+	
+	currentGame, err := initialize_new_game(wordLength, maxGuesses)
 
 	if currentGame == nil {
 		return
@@ -48,7 +75,6 @@ func main() {
 	// Make guesses until the game is won or lost (make_guess returns nil)
 	for {
 		fmt.Println("Guess a word:")
-		scanner := bufio.NewScanner(os.Stdin)
 		scanner.Scan()
 		guess := scanner.Text()
 		var cleanedUpGuess = strings.ReplaceAll(guess, " ", "")
@@ -102,12 +128,10 @@ func ping_play_game() error {
 	return nil
 }
 
-func initialize_new_game() (*Game, error) {
+func initialize_new_game(wordLength int, maxGuesses int) (*Game, error) {
 	// Word length can only be 5 or 6 b/c those are the only sized words we have 
 	// in the DB at the moment
-	wordLength := 6
-	maxGuesses := 6
-
+	
 	resPayload := GameMetadata{
 		WordLength: wordLength,
 		MaxGuesses: maxGuesses,
@@ -193,8 +217,6 @@ func make_guess(gameID string, guess string) (string, error) {
 		fmt.Println("error: Failed to unmarshal response body from play-game")
 		return "", err
 	}
-
-	fmt.Println("currentGame:", currentGame)
 
 	// Check if the game is won or lost
 	if currentGame.State == "won" {
