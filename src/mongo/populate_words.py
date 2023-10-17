@@ -1,7 +1,8 @@
 from pymongo import MongoClient
 import re
 
-files = {"en5.txt":5,"en6.txt":6}
+files = {"en5.txt":5,"en6.txt":6, "sp5.txt":5}
+
 
 # Returns a Collection callable from Mongo Client
 def get_database():
