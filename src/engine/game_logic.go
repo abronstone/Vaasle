@@ -34,7 +34,7 @@ func getGame(id string) (*structs.Game, error) {
 // Submits a guess to a game.
 // Updates the game's Guesses and State fields.
 func makeGuess(g *structs.Game, guess string) error {
-	if len(guess) != g.Metadata.WordLength {
+		if len(guess) != g.Metadata.WordLength {
 		return fmt.Errorf(`guess "%s" is not of length %d`, guess, g.Metadata.WordLength)
 	}
 	if g.State != "ongoing" {
