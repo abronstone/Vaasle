@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"bytes"
+	"strconv"
 )
 
 type Guess struct {
@@ -29,12 +31,38 @@ type GameMetadata struct {
 
 func main() {
 	err := ping_play_game()
-
+	
 	if err != nil {
+		fmt.Println("Failed to ping play-game")
 		return
 	}
+	
+	var wordLength int 
+	var maxGuesses int
+	
+	// Allow user to choose word length and max guesses, within certain bounds
+	scanner := bufio.NewScanner(os.Stdin)
+	for wordLength < 5 || wordLength > 6 {
+		fmt.Println("Please enter a word length of 5 or 6:")
+		scanner.Scan()
+		var err error
+		wordLength, err = strconv.Atoi(scanner.Text())
+		if err != nil {
+			fmt.Println("Invalid input. Please enter a valid number.")
+		}
+	}
 
-	currentGame, err := initialize_new_game()
+	for maxGuesses < 1 || maxGuesses > 10 {
+		fmt.Println("Please enter a max number of guesses between 1 and 10:")
+		scanner.Scan()
+		var err error
+		maxGuesses, err = strconv.Atoi(scanner.Text())
+		if err != nil {
+			fmt.Println("Invalid input. Please enter a valid number.")
+		}
+	}
+	
+	currentGame, err := initialize_new_game(wordLength, maxGuesses)
 
 	if currentGame == nil {
 		return
@@ -47,13 +75,12 @@ func main() {
 	// Make guesses until the game is won or lost (make_guess returns nil)
 	for {
 		fmt.Println("Guess a word:")
-		scanner := bufio.NewScanner(os.Stdin)
 		scanner.Scan()
 		guess := scanner.Text()
 		var cleanedUpGuess = strings.ReplaceAll(guess, " ", "")
 
 		if len(cleanedUpGuess) != currentGame.Metadata.WordLength {
-			fmt.Println("Your word doesn't match the required length. Try again.")
+			fmt.Println("Your word doesn't match the required length of", currentGame.Metadata.WordLength, "Try again.")
 			continue
 		}
 
@@ -101,8 +128,27 @@ func ping_play_game() error {
 	return nil
 }
 
-func initialize_new_game() (*Game, error) {
-	res, err := http.Post("http://play-game:5001/newGame", "application/json", nil)
+func initialize_new_game(wordLength int, maxGuesses int) (*Game, error) {
+	// Word length can only be 5 or 6 b/c those are the only sized words we have 
+	// in the DB at the moment
+	
+	resPayload := GameMetadata{
+		WordLength: wordLength,
+		MaxGuesses: maxGuesses,
+	}
+
+	// Convert the payload to JSON
+	payloadBytes, err := json.Marshal(resPayload)
+	if err != nil {
+		fmt.Println("Failed to build a request body to create a new game")
+		return nil, err
+	}
+
+	// Create a buffer with the JSON data
+	bodyBuffer := bytes.NewBuffer(payloadBytes)
+
+	// Make request to play-game to create a new game with a request body
+	res, err := http.Post("http://play-game:5001/newGame", "application/json", bodyBuffer)
 
 	// If play-game is down, return an error
 	if err != nil {

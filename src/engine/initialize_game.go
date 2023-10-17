@@ -14,10 +14,7 @@ func newGameMetadata(c *gin.Context) *structs.GameMetadata {
 	defaultWordLength := 5
 	defaultMaxGuesses := 6
 
-	metadata := structs.GameMetadata{
-		WordLength: defaultWordLength,
-		MaxGuesses: defaultMaxGuesses,
-	}
+	metadata := structs.GameMetadata{}
 
 	// Use default values if we fail to parse the POST request body.
 	if err := c.ShouldBindJSON(&metadata); err != nil {

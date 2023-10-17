@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"vaas/structs"
-
 	"github.com/gin-gonic/gin"
 )
 
