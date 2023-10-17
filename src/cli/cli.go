@@ -2,14 +2,14 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
-	"strings"
-	"bytes"
 	"strconv"
+	"strings"
 )
 
 type Guess struct {
@@ -31,15 +31,15 @@ type GameMetadata struct {
 
 func main() {
 	err := ping_play_game()
-	
+
 	if err != nil {
 		fmt.Println("Failed to ping play-game")
 		return
 	}
-	
-	var wordLength int 
+
+	var wordLength int
 	var maxGuesses int
-	
+
 	// Allow user to choose word length and max guesses, within certain bounds
 	scanner := bufio.NewScanner(os.Stdin)
 	for wordLength < 5 || wordLength > 6 {
@@ -61,7 +61,7 @@ func main() {
 			fmt.Println("Invalid input. Please enter a valid number.")
 		}
 	}
-	
+
 	currentGame, err := initialize_new_game(wordLength, maxGuesses)
 
 	if currentGame == nil {
@@ -129,9 +129,9 @@ func ping_play_game() error {
 }
 
 func initialize_new_game(wordLength int, maxGuesses int) (*Game, error) {
-	// Word length can only be 5 or 6 b/c those are the only sized words we have 
+	// Word length can only be 5 or 6 b/c those are the only sized words we have
 	// in the DB at the moment
-	
+
 	resPayload := GameMetadata{
 		WordLength: wordLength,
 		MaxGuesses: maxGuesses,

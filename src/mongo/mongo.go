@@ -18,7 +18,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"vaas/structs"
@@ -52,14 +51,12 @@ func getDatabase() *mongo.Client {
 	// Connect to MongoDB
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		log.Fatal(err)
 		return nil
 	}
 
 	// Check the connection
 	err = client.Ping(context.TODO(), nil)
 	if err != nil {
-		log.Fatal(err)
 		return nil
 	}
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
@@ -80,6 +77,11 @@ func insertWord(c *gin.Context) {
 
 	// Get database
 	database := client.Database("VaasDatabase")
+
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to connect to database"})
+	// 	return
+	// }
 
 	// Get correct collection
 	word_parameter := c.Param("word")
@@ -131,11 +133,14 @@ func newGame(c *gin.Context) {
 		bson.D{{"$sample", bson.D{{"size", 1}}}},
 	})
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve a word from mongo: " + err.Error()})
+		return
 	}
+
 	if cursor.Next(context.TODO()) {
 		if err := cursor.Decode(&randomWord); err != nil {
-			log.Fatal(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to decode word from mongo: " + err.Error()})
+			return
 		}
 	}
 	defer cursor.Close(context.Background())
@@ -176,7 +181,8 @@ func updateGameState(c *gin.Context) {
 
 	_, err := gameCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update game in mongo: " + err.Error()})
+		return
 	}
 
 	// Return confirmation message
@@ -208,11 +214,13 @@ func getGame(c *gin.Context) {
 	cursor, err := gameCollection.Aggregate(context.TODO(), matchStage)
 	defer cursor.Close(context.Background())
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve game from mongo: " + err.Error()})
+		return
 	}
 	if cursor.Next(context.TODO()) {
 		if err := cursor.Decode(&game); err != nil {
-			log.Fatal(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to decode game from mongo: " + err.Error()})
+			return
 		}
 	}
 
@@ -231,7 +239,8 @@ func getWords(c *gin.Context) {
 	// Get word length parameter
 	wordLength, err := strconv.Atoi(c.Param("length"))
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusBadRequest, gin.H{"please enter a valid word length, error: ": err.Error()})
+		return
 	}
 
 	// Get database and words collection
@@ -241,7 +250,8 @@ func getWords(c *gin.Context) {
 	// Run "find" query on words collection
 	cursor, err := word_collection.Find(context.TODO(), bson.M{"length": wordLength})
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve words from mongo: " + err.Error()})
+		return
 	}
 
 	defer cursor.Close(context.Background())
@@ -251,7 +261,8 @@ func getWords(c *gin.Context) {
 	for cursor.Next(context.TODO()) {
 		var word Word
 		if err := cursor.Decode(&word); err != nil {
-			log.Fatal(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to decode word from mongo: " + err.Error()})
+			return
 		}
 		words = append(words, word)
 	}
@@ -271,11 +282,13 @@ func initializeDB(c *gin.Context) {
 	// deleteMany function without a filter deletes all documents in a collection
 	_, err := db.Collection("games").DeleteMany(context.Background(), bson.M{})
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to clear games collection: " + err.Error()})
+		return
 	}
 	_, err = db.Collection("words").DeleteMany(context.Background(), bson.M{})
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to clear words collection: " + err.Error()})
+		return
 	}
 	c.JSON(http.StatusOK, map[string]string{"message": "RESET DATABASE"})
 }
