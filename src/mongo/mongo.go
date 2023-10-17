@@ -18,7 +18,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 	"vaas/structs"
@@ -38,7 +37,7 @@ type Word struct {
 	Language string `bson:"language"`
 }
 
-func getDatabase() *mongo.Client, error {
+func getDatabase() *mongo.Client {
 	/*
 		Returns a MongoDB Client instance
 	*/
@@ -52,17 +51,17 @@ func getDatabase() *mongo.Client, error {
 	// Connect to MongoDB
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		return nil, err
+		return nil
 	}
 
 	// Check the connection
 	err = client.Ping(context.TODO(), nil)
 	if err != nil {
-		return nil, err
+		return nil
 	}
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
 
-	return client, nil
+	return client
 }
 
 // Initialize global Mongo client
@@ -77,12 +76,12 @@ func insertWord(c *gin.Context) {
 	*/
 
 	// Get database
-	database, err := client.Database("VaasDatabase")
+	database := client.Database("VaasDatabase")
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to connect to database"})
-		return
-	}
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to connect to database"})
+	// 	return
+	// }
 
 	// Get correct collection
 	word_parameter := c.Param("word")
