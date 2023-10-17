@@ -182,6 +182,7 @@ func updateGameState(c *gin.Context) {
 	_, err := gameCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update game in mongo: " + err.Error()})
+		return
 	}
 
 	// Return confirmation message
