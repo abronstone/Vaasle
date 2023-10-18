@@ -1,31 +1,28 @@
-import { useState } from "react";
-import { gatewayApi } from "./util/apiCalls";
-import "./App.css";
+import { useEffect, useState } fro"react";
+import Wordle from "./components/Wordle";
+// import "./index.css";
 
-function App() {
-  const [gatewayApiData, setGatewayApiData] = useState("No response");
+interface Solution {
+  id: number;
+  word: string;
+}
 
-  const handleEngineButtonClick = async () => {
-    try {
-      const data = await gatewayApi();
-      setGatewayApiData(data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+function App(): JSX.Element {
+  const [solution, setSolution] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("http://localhost:3001/solutions")
+      .then((res) => res.json())
+      .then((json: Array<Solution>) => {
+        // random int between 0 & 14
+        const randomSolution = json[Math.floor(Math.random() * json.length)];
+        // get the word property of the solution object
+        setSolution(randomSolution.word);
+      });
+  }, [setSolution]);
 
   return (
-    <>
-      <h1 className="mb-3">Welcome to Wordle! (Thin Thread)</h1>
-      <button
-        className="bg-slate-500 mt-3 mb-3"
-        onClick={handleEngineButtonClick}
-      >
-        Click to call the gateway container
-      </button>
-      <h3 className="mb-1">Data from the gateway container:</h3>
-      <p>{gatewayApiData}</p>
-    </>
+    <div className="App">{solution && <Wordle solution={solution} />}</div>
   );
 }
 
