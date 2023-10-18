@@ -71,7 +71,7 @@ func api_getGameExposed(c *gin.Context) {
 	}
 }
 
-// Gets all games that are being managed by the engine.
+// Gets all games that are being managed by the engine, only used for debugging.
 func api_getAllGamesExposed(c *gin.Context) {
 	c.JSON(http.StatusOK, games.games)
 }
