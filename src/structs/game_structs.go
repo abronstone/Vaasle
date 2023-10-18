@@ -17,7 +17,7 @@ type Game struct {
 	Metadata GameMetadata `json:"metadata" bson:"metadata"`
 	Guesses  [][2]string  `json:"guesses" bson:"guesses"`
 	State    string       `json:"state" bson:"state"`
-	Word     string       `json:"-" bson:"word"`
+	Word     `json:"-" bson:"word"`
 }
 
 // A Wordle game with an exportable public Word.
@@ -38,6 +38,14 @@ type Guess struct {
 // A simple message.
 type Message struct {
 	Message string `json:"message"`
+}
+
+type User struct {
+	UserId       string   `json:"userid"`
+	UserName     string   `json:"username"`
+	Games        []string `json:"games"`
+	NumGames     int      `json:"numgames"`
+	TotalGuesses int      `json:"totalguesses"`
 }
 
 // Convert a GameExposed to a Game (remove the ability to export Word to JSON).

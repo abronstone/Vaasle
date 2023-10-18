@@ -322,5 +322,7 @@ func main() {
 	router.GET("/get-game/:id", getGame)
 	router.PUT("/update-game/", updateGameState)
 
+	router.PUT("/new-user/", newUser)
+
 	router.Run("0.0.0.0:8000")
 }
