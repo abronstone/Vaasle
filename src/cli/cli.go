@@ -21,6 +21,7 @@ type Game struct {
 	Metadata GameMetadata `json:"metadata" bson:"metadata"`
 	Guesses  [][2]string  `json:"guesses" bson:"guesses"`
 	State    string       `json:"state" bson:"state"`
+	Word     string       `json:"word" bson:"word"`
 }
 
 type GameMetadata struct {
@@ -85,9 +86,9 @@ func main() {
 		}
 
 		// Make a guess and get the corrections
-		lastGuess, err := make_guess(gameID, guess)
+		lastGuess, status, err := make_guess(gameID, guess)
 
-		if err != nil || lastGuess == "" {
+		if err != nil {
 			return
 		}
 
@@ -105,6 +106,10 @@ func main() {
 		}
 
 		fmt.Println(output)
+
+		if status == "won" || status == "lost" {
+			return
+		}
 	}
 
 }
@@ -178,7 +183,7 @@ func initialize_new_game(wordLength int, maxGuesses int) (*Game, error) {
 	return &newGame, nil
 }
 
-func make_guess(gameID string, guess string) (string, error) {
+func make_guess(gameID string, guess string) (string, string, error) {
 	// Make a guess of type Guess
 	guessStruct := Guess{
 		Id:    gameID,
@@ -188,7 +193,7 @@ func make_guess(gameID string, guess string) (string, error) {
 	jsonData, err := json.Marshal(guessStruct)
 	if err != nil {
 		fmt.Println("Failed to marshal guess:", err)
-		return "", err
+		return "", "error", err
 	}
 
 	// Use strings.NewReader to convert the JSON string to an io.Reader
@@ -196,7 +201,7 @@ func make_guess(gameID string, guess string) (string, error) {
 
 	if err != nil {
 		fmt.Println("Failed to create a new game")
-		return "", err
+		return "", "error", err
 	}
 
 	defer res.Body.Close()
@@ -208,28 +213,29 @@ func make_guess(gameID string, guess string) (string, error) {
 
 	if err != nil {
 		fmt.Println("error: Failed read response body from play-game")
-		return "", err
+		return "", "error", err
 	}
 
 	// Format the json response data from body bytes, have it conform to Game type. Make it filled.
 	err = json.Unmarshal(bodyBytes, &currentGame)
 	if err != nil {
 		fmt.Println("error: Failed to unmarshal response body from play-game")
-		return "", err
-	}
-
-	// Check if the game is won or lost
-	if currentGame.State == "won" {
-		fmt.Println("Congratulations! You won the game!")
-		return "", err
-	}
-	if currentGame.State == "lost" {
-		fmt.Println("Unlucky! Try again!")
-		return "", err
+		return "", "error", err
 	}
 
 	// Get the corrections for hinting of the last guess made
 	var lastGuessCorrections string = currentGame.Guesses[len(currentGame.Guesses)-1][1]
 
-	return lastGuessCorrections, nil
+	// Check if the game is won or lost
+	if currentGame.State == "won" {
+		fmt.Println("Congratulations! You won the game!")
+		return lastGuessCorrections, "won", nil
+	}
+	if currentGame.State == "lost" {
+		fmt.Println("Unlucky! Try again!")
+		fmt.Println("The word was:", currentGame.Word)
+		return lastGuessCorrections, "lost", nil
+	}
+
+	return lastGuessCorrections, "ongoing", nil
 }
