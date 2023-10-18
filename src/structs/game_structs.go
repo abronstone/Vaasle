@@ -1,10 +1,15 @@
 package structs
 
+import (
+	"time"
+)
+
 // The metadata of a Wordle game.
 type GameMetadata struct {
-	GameID     string `json:"gameID" bson:"gameid"`
-	WordLength int    `json:"wordLength" bson:"wordlength"`
-	MaxGuesses int    `json:"maxGuesses" bson:"maxguesses"`
+	GameID      string    `json:"gameID" bson:"gameid"`
+	DateCreated time.Time `json:"dateCreated" bson:"datecreated"`
+	WordLength  int       `json:"wordLength" bson:"wordlength"`
+	MaxGuesses  int       `json:"maxGuesses" bson:"maxguesses"`
 }
 
 // A Wordle game.

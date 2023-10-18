@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"time"
 	"vaas/structs"
 
 	"github.com/gin-gonic/gin"
@@ -23,6 +24,7 @@ func newGameMetadata(c *gin.Context) *structs.GameMetadata {
 	}
 
 	metadata.GameID = uuid.NewString()
+	metadata.DateCreated = time.Now()
 	return &metadata
 }
 
