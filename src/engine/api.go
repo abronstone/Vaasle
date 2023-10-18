@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"vaas/structs"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,7 +20,9 @@ func main() {
 	router.POST("/makeGuess", api_makeGuess)
 	router.GET("/pingPlayGame", api_pingPlayGame)
 
+	// Endpoints for debugging
 	router.GET("/getGameExposed/:id", api_getGameExposed)
+	router.GET("/getAllGamesExposed", api_getAllGamesExposed)
 
 	router.Run("0.0.0.0:5001")
 }
@@ -66,6 +69,11 @@ func api_getGameExposed(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, game.ConvertToGameExposed())
 	}
+}
+
+// Gets all games that are being managed by the engine.
+func api_getAllGamesExposed(c *gin.Context) {
+	c.JSON(http.StatusOK, games.games)
 }
 
 // Returns the game struct with the specified ID as a JSON object.
