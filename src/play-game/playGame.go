@@ -49,9 +49,28 @@ func api_pingEngine(c *gin.Context) {
 
 // Calls the appropriate endpoint in the engine to make a new game
 // and returns the game's public state as JSON.
+// Takes in an CustomMetaData and in the request body 
+// and returns a game struct.
 func api_newGame(c *gin.Context) {
+	newGameCustomMetadata := structs.GameMetadata{}
+
+	// Bind the incoming JSON body to the newGameCustomMetadata struct
+	if err := c.ShouldBindJSON(&newGameCustomMetadata); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request format, expected {wordLength: int, maxGuesses: int}"})
+		return
+	}
+
+	bodyBytes, err := json.Marshal(newGameCustomMetadata)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal the request body: " + err.Error()})
+		return
+	}
+
+	bodyBuffer := bytes.NewBuffer(bodyBytes)
+	
 	// Call the engine's newGame endpoint
-	res, err := http.Post("http://engine:5001/newGame", "application/json", nil)
+	res, err := http.Post("http://engine:5001/newGame", "application/json", bodyBuffer)
 
 	// If the engine is down, return an error
 	if err != nil {
@@ -63,14 +82,14 @@ func api_newGame(c *gin.Context) {
 
 	// Create a newGame variable and unmarshal the response body into it
 	newGame := structs.Game{}
-	bodyBytes, err := io.ReadAll(res.Body)
+	responseBodyBytes, err := io.ReadAll(res.Body)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed read response body from engine: " + err.Error()})
 		return
 	}
 
-	err = json.Unmarshal(bodyBytes, &newGame)
+	err = json.Unmarshal(responseBodyBytes, &newGame)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal response body from engine: " + err.Error()})
 		return

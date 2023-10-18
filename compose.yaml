@@ -37,7 +37,7 @@ services:
   cli:
     container_name: cli
     build:
-      context: ./src/cli
+      context: ./src
       target: cli
     stdin_open: true
     tty: true
