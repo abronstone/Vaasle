@@ -24,7 +24,7 @@ func newGameMetadata(c *gin.Context) *structs.GameMetadata {
 	}
 
 	metadata.GameID = uuid.NewString()
-	metadata.DateCreated: time.Now()
+	metadata.DateCreated = time.Now()
 	return &metadata
 }
 
