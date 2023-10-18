@@ -6,19 +6,10 @@ import (
 	"vaas/structs"
 )
 
-// Globally scoped map containing all Wordle game instances.
-// Key (string) is a UUID string, and value is the ID's associated game struct.
-var games map[string]*structs.Game = make(map[string]*structs.Game, 0)
-
-// Registers a game into the global games map.
-func registerGame(game *structs.Game) {
-	games[game.Metadata.GameID] = game
-}
-
 // Gets the game with the specified ID.
 // Queries the Mongo API if not already present in the engine's cache.
 func getGame(id string) (*structs.Game, error) {
-	if game, ok := games[id]; ok {
+	if game, ok := games.load(id); ok {
 		return game, nil
 	}
 
@@ -34,7 +25,7 @@ func getGame(id string) (*structs.Game, error) {
 // Submits a guess to a game.
 // Updates the game's Guesses and State fields.
 func makeGuess(g *structs.Game, guess string) error {
-		if len(guess) != g.Metadata.WordLength {
+	if len(guess) != g.Metadata.WordLength {
 		return fmt.Errorf(`guess "%s" is not of length %d`, guess, g.Metadata.WordLength)
 	}
 	if g.State != "ongoing" {
