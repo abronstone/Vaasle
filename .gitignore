@@ -28,3 +28,7 @@ Temporary Items
 
 # Mongo Ignore
 src/mongo/data/
+
+__pycache__/
+*.py[cod]
+*$py.class
