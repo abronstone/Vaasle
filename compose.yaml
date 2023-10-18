@@ -44,11 +44,3 @@ services:
     depends_on:
       - engine
       - play-game
-
-  stats:
-    container_name: stats
-    build: 
-      context: ./src
-      target: stats
-    ports:
-      - "8000:5000"

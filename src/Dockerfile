@@ -58,16 +58,3 @@ COPY ./cli/*.go ./
 RUN go build -o cli-executable
 
 CMD [ "./cli-executable" ]
-
-# Statistics
-FROM golang:1.21.1 as stats
-
-WORKDIR /src/stats
-
-COPY ./stats/go.mod ./
-RUN go mod download
-
-COPY ./stats/*.go ./
-RUN go build -o stats-executable
-
-CMD [ "./stats-executable" ]

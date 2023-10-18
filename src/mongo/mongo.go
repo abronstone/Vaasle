@@ -26,15 +26,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-/*
-Word structure schema
-*/
-type Word struct {
-	Word     string `bson:"word"`
-	Length   int    `bson:"length"`
-	Language string `bson:"language"`
-}
-
 func getDatabase() *mongo.Client {
 	/*
 		Returns a MongoDB Client instance
@@ -115,7 +106,8 @@ func main() {
 	router.GET("/get-game/:id", getGame)
 	router.PUT("/update-game/", updateGameState)
 
-	router.PUT("/new-user/", newUser)
+	router.PUT("/new-user/:id/:username", addUser)
+	router.GET("/get-user/:username", getUser)
 
 	router.Run("0.0.0.0:8000")
 }

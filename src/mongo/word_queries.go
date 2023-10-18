@@ -9,6 +9,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+/*
+Word structure schema
+*/
+type Word struct {
+	Word     string `bson:"word"`
+	Length   int    `bson:"length"`
+	Language string `bson:"language"`
+}
+
 func getWords(c *gin.Context) {
 	/*
 		Gets all of the words of a certain length from Mongo
@@ -62,11 +71,6 @@ func insertWord(c *gin.Context) {
 
 	// Get database
 	database := client.Database("VaasDatabase")
-
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to connect to database"})
-	// 	return
-	// }
 
 	// Get correct collection
 	word_parameter := c.Param("word")

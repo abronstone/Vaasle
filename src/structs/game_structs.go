@@ -8,6 +8,7 @@ import (
 type GameMetadata struct {
 	GameID      string    `json:"gameID" bson:"gameid"`
 	DateCreated time.Time `json:"dateCreated" bson:"datecreated"`
+	UserID      string    `json:"userid" bson:"userid"`
 	WordLength  int       `json:"wordLength" bson:"wordlength"`
 	MaxGuesses  int       `json:"maxGuesses" bson:"maxguesses"`
 }
@@ -17,7 +18,7 @@ type Game struct {
 	Metadata GameMetadata `json:"metadata" bson:"metadata"`
 	Guesses  [][2]string  `json:"guesses" bson:"guesses"`
 	State    string       `json:"state" bson:"state"`
-	Word     `json:"-" bson:"word"`
+	Word     string       `json:"-" bson:"word"`
 }
 
 // A Wordle game with an exportable public Word.
@@ -41,11 +42,11 @@ type Message struct {
 }
 
 type User struct {
-	UserId       string   `json:"userid"`
-	UserName     string   `json:"username"`
-	Games        []string `json:"games"`
-	NumGames     int      `json:"numgames"`
-	TotalGuesses int      `json:"totalguesses"`
+	UserID       string   `json:"userid" bson:"userid"`
+	UserName     string   `json:"username" bson:"username"`
+	Games        []string `json:"games" bson:"games"`
+	NumGames     int      `json:"numgames" bson:"numgames"`
+	TotalGuesses int      `json:"totalguesses" bson:"totalguesses"`
 }
 
 // Convert a GameExposed to a Game (remove the ability to export Word to JSON).
