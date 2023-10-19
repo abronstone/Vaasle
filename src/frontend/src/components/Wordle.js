@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import useWordle from '../hooks/useWordle'
+import useWordle from './gameLogic/useWordle'
 import handleKeyup from './gameLogic/handleKeyUp'
 
 // components

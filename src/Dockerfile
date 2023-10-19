@@ -58,3 +58,19 @@ COPY ./cli/*.go ./
 RUN go build -o cli-executable
 
 CMD [ "./cli-executable" ]
+
+# Front End
+
+FROM node:16 AS frontend
+
+WORKDIR /src/frontend
+
+COPY package.json ./
+
+RUN npm install
+
+COPY . ./
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start"]
