@@ -49,15 +49,17 @@ func api_newGame(c *gin.Context) {
 	}
 
 	registerGame(newGame)
-	c.JSON(http.StatusOK, newGame)
+	c.JSON(http.StatusOK, newGame.ObfuscateWord())
 }
 
 // Returns the game struct with the specified ID as a JSON object.
 func api_getGame(c *gin.Context) {
 	if game, err := getGame(c.Param("id")); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "could not find game"})
+	} else if game.State == "ongoing" {
+		c.JSON(http.StatusOK, game.ObfuscateWord())
 	} else {
-		c.JSON(http.StatusOK, game)
+		c.JSON(http.StatusOK, game) // No obfuscation if game is complete.
 	}
 }
 
@@ -67,7 +69,7 @@ func api_getGameExposed(c *gin.Context) {
 	if game, err := getGame(c.Param("id")); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "could not find game"})
 	} else {
-		c.JSON(http.StatusOK, game.ConvertToGameExposed())
+		c.JSON(http.StatusOK, game)
 	}
 }
 
@@ -98,7 +100,12 @@ func api_makeGuess(c *gin.Context) {
 		log.Println(err.Error()) // not a fatal error, we can just log it
 	}
 
-	c.JSON(http.StatusOK, game)
+	if game.State == "ongoing" {
+		c.JSON(http.StatusOK, game.ObfuscateWord())
+	} else {
+		c.JSON(http.StatusOK, game) // No obfuscation if game is complete.
+	}
+
 }
 
 // Pings the play-game endpoint and forwards its response.

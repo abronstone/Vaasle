@@ -148,7 +148,7 @@ func newGame(c *gin.Context) {
 
 	// Create new game structure and insert into database
 	guesses := [][2]string{}
-	game := structs.GameExposed{Word: randomWord["word"].(string), Metadata: gameMetadata, Guesses: guesses, State: "ongoing"}
+	game := structs.Game{Word: randomWord["word"].(string), Metadata: gameMetadata, Guesses: guesses, State: "ongoing"}
 	gameCollection.InsertOne(context.TODO(), game)
 
 	// Return initialized game state
@@ -210,7 +210,7 @@ func getGame(c *gin.Context) {
 	matchStage := bson.A{
 		bson.D{{"$match", bson.D{{"metadata.gameid", gameID}}}},
 	}
-	var game structs.GameExposed
+	var game structs.Game
 	// Run aggregation
 	cursor, err := gameCollection.Aggregate(context.TODO(), matchStage)
 	defer cursor.Close(context.Background())
