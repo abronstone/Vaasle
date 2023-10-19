@@ -43,13 +43,12 @@ func mongo_submitNewGame(metadata structs.GameMetadata) (string, error) {
 		return "", err
 	}
 
-	gameExposed := structs.GameExposed{}
-	err = json.Unmarshal(bodyBytes, &gameExposed)
+	game := structs.Game{}
+	err = json.Unmarshal(bodyBytes, &game)
 	if err != nil {
 		return "", err
 	}
 
-	game := gameExposed.ConvertToGame()
 	if len(game.Word) == 0 {
 		return "", errors.New("could not retrieve word from database")
 	}
@@ -74,13 +73,13 @@ func mongo_getGame(id string) (*structs.Game, error) {
 		return nil, err
 	}
 
-	gameExposed := structs.GameExposed{}
-	err = json.Unmarshal(bodyBytes, &gameExposed)
+	game := &structs.Game{}
+	err = json.Unmarshal(bodyBytes, game)
 	if err != nil {
 		return nil, err
 	}
 
-	return gameExposed.ConvertToGame(), nil
+	return game, nil
 }
 
 // Updates the Mongo API (mongo.go) with the new state of the given game.
