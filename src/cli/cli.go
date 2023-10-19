@@ -27,6 +27,7 @@ type GameMetadata struct {
 	GameID     string `json:"gameID" bson:"gameid"`
 	WordLength int    `json:"wordLength" bson:"wordlength"`
 	MaxGuesses int    `json:"maxGuesses" bson:"maxguesses"`
+	UserName   string `json:"username" bson:"username"`
 }
 
 func main() {
@@ -39,6 +40,7 @@ func main() {
 
 	var wordLength int
 	var maxGuesses int
+	var userName string
 
 	// Allow user to choose word length and max guesses, within certain bounds
 	scanner := bufio.NewScanner(os.Stdin)
@@ -62,7 +64,16 @@ func main() {
 		}
 	}
 
-	currentGame, err := initialize_new_game(wordLength, maxGuesses)
+	for len(userName) < 5 {
+		fmt.Println("Please enter a username more than 5 characters:")
+		scanner.Scan()
+		userName = scanner.Text()
+		// if err != nil {
+		// 	fmt.Println("Please enter a valid username")
+		// }
+	}
+
+	currentGame, err := initialize_new_game(wordLength, maxGuesses, userName)
 
 	if currentGame == nil {
 		return
@@ -128,13 +139,14 @@ func ping_play_game() error {
 	return nil
 }
 
-func initialize_new_game(wordLength int, maxGuesses int) (*Game, error) {
+func initialize_new_game(wordLength int, maxGuesses int, userName string) (*Game, error) {
 	// Word length can only be 5 or 6 b/c those are the only sized words we have
 	// in the DB at the moment
 
 	resPayload := GameMetadata{
 		WordLength: wordLength,
 		MaxGuesses: maxGuesses,
+		UserName:   userName,
 	}
 
 	// Convert the payload to JSON
