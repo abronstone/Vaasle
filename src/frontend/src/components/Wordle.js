@@ -1,31 +1,3 @@
-// import React, { useEffect } from 'react'
-// import useWordle from '../hooks/useWordle'
-
-// // components
-// import Grid from './Grid'
-
-// export default function Wordle({ solution }) {
-//   const { currentGuess, guesses, turn, isCorrect, handleKeyup } = useWordle(solution)
-  
-//   useEffect(() => {
-//     window.addEventListener('keyup', handleKeyup)
-
-//     return () => window.removeEventListener('keyup', handleKeyup)
-//   }, [handleKeyup])
-
-//   useEffect(() => {
-//     console.log(guesses, turn, isCorrect)
-//   }, [guesses, turn, isCorrect])
-
-//   return (
-//     <div>
-//       <div>solution - {solution}</div>
-//       <div>Current Guess - {currentGuess}</div>
-//       <Grid guesses={guesses} currentGuess={currentGuess} turn={turn} />
-//     </div>
-//   )
-// }
-
 import React, { useEffect, useState } from 'react'
 import useWordle from '../hooks/useWordle'
 
@@ -37,7 +9,7 @@ import Modal from './Modal'
 export default function Wordle({ solution }) {
   const { currentGuess, guesses, turn, isCorrect, handleKeyup, usedKeys } = useWordle(solution)
   const[showModal, setShowModal] = useState(false)
-  // attach keyup listening to event objectr
+  // attach keyup listening to event object
   useEffect(() => {
     window.addEventListener('keyup', handleKeyup)
 
@@ -59,7 +31,7 @@ export default function Wordle({ solution }) {
 
   return (
     <div>
-      <div>solution - {solution}</div>
+      {/* <div>solution - {solution}</div> */}
       <div>Current Guess - {currentGuess}</div>
       <Grid guesses={guesses} currentGuess={currentGuess} turn={turn} />
       <Keypad usedKeys = {usedKeys}/>
