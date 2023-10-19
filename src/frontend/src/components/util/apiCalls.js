@@ -1,8 +1,6 @@
 import axios from "axios";
 
-export const newGameApi = async () => {
-  const maxGuesses = 6; 
-  const wordLength = 5;
+export const newGameApi = async (maxGuesses, wordLength) => {
   try {
     const res = await axios.post("http://play-game:5001/newGame", {
       headers: {

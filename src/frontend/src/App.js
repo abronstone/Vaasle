@@ -1,25 +1,20 @@
-import { useEffect, useState } from 'react'
 import Wordle from './components/Wordle'
+import { useCallback } from 'react'
+import { newGameApi } from './components/util/apiCalls'
 
 function App() {
-  const [solution, setSolution] = useState(null)
-  
-  useEffect(() => {
-    fetch('http://localhost:3001/solutions')
-      .then(res => res.json())
-      .then(json => {
-        // random int between 0 & 14
-        const randomSolution = json[Math.floor(Math.random()*json.length)]
-        // get the word property of the solution object
-        setSolution(randomSolution.word)
-        // get a random idx of a word and update the state
-      })
-  }, [setSolution])
+  const gameState = useCallback(async () => {
+    // TODO allow user to change in future versions
+    const maxGuesses = 5
+    const wordLength = 5
 
+    const gameState = await newGameApi(maxGuesses, wordLength)
+    return gameState
+  }, [])
   return (
     <div className="App">
       <h1>Wordle (vaas.ai)</h1>
-      {solution && <Wordle solution={solution}/> }
+      <Wordle gameState={gameState} /> 
     </div>
   )
 }
