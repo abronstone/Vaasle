@@ -18,7 +18,7 @@ func main() {
 	router.POST("/newGame", api_newGame)
 	router.GET("/getGame/:id", api_getGame)
 	router.POST("/makeGuess", api_makeGuess)
-	router.GET("/pingPlayGame", api_pingPlayGame)
+	router.GET("/pingGateway", api_pingGateway)
 
 	// Endpoints for debugging
 	router.GET("/getGameExposed/:id", api_getGameExposed)
@@ -108,18 +108,18 @@ func api_makeGuess(c *gin.Context) {
 
 }
 
-// Pings the play-game endpoint and forwards its response.
-func api_pingPlayGame(c *gin.Context) {
-	res, err := http.Get("http://play-game:5001/")
+// Pings the gateway endpoint and forwards its response.
+func api_pingGateway(c *gin.Context) {
+	res, err := http.Get("http://gateway:5001/")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "ping to play-game failed"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "ping to gateway failed"})
 		return
 	}
 	defer res.Body.Close()
 
 	bodyBytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failure to parse play-game response body: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failure to parse gateway response body: " + err.Error()})
 		return
 	}
 

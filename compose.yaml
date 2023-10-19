@@ -8,11 +8,11 @@ services:
     ports:
       - 5001:5001
 
-  play-game:
-    container_name: play-game
+  gateway:
+    container_name: gateway
     build:
       context: ./src
-      target: play-game
+      target: gateway
     ports:
       - 5002:5001
 
@@ -43,4 +43,4 @@ services:
     tty: true
     depends_on:
       - engine
-      - play-game
+      - gateway

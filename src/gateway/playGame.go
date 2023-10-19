@@ -27,7 +27,7 @@ func main() {
 }
 
 func api_home(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, map[string]string{"message": "Play game is running"})
+	c.IndentedJSON(http.StatusOK, map[string]string{"message": "Gateway is running"})
 }
 
 func api_pingEngine(c *gin.Context) {
@@ -49,7 +49,7 @@ func api_pingEngine(c *gin.Context) {
 
 // Calls the appropriate endpoint in the engine to make a new game
 // and returns the game's public state as JSON.
-// Takes in an CustomMetaData and in the request body 
+// Takes in an CustomMetaData and in the request body
 // and returns a game struct.
 func api_newGame(c *gin.Context) {
 	newGameCustomMetadata := structs.GameMetadata{}
@@ -68,7 +68,7 @@ func api_newGame(c *gin.Context) {
 	}
 
 	bodyBuffer := bytes.NewBuffer(bodyBytes)
-	
+
 	// Call the engine's newGame endpoint
 	res, err := http.Post("http://engine:5001/newGame", "application/json", bodyBuffer)
 

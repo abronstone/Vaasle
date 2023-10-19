@@ -30,21 +30,21 @@ RUN go build -o mongo-executable
 CMD [ "./mongo-executable" ]
 
 
-# Play-Game
-FROM golang:1.21.1 as play-game
+# Gateway
+FROM golang:1.21.1 as gateway
 
 WORKDIR /src/structs
 COPY /structs/* ./
 
-WORKDIR /src/play-game
+WORKDIR /src/gateway
 
-COPY ./play-game/go.mod ./play-game/go.sum ./
+COPY ./gateway/go.mod ./gateway/go.sum ./
 RUN go mod download
 
-COPY ./play-game/*.go ./
-RUN go build -o playGame-executable
+COPY ./gateway/*.go ./
+RUN go build -o gateway-executable
 
-CMD [ "./playGame-executable" ]
+CMD [ "./gateway-executable" ]
 
 # CLI
 FROM golang:1.21.1 as cli
