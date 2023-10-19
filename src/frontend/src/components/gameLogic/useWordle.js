@@ -1,4 +1,6 @@
 const useWordle = (gameState) => {
+  if(!gameState) return {turn: 0, guesses: [], isCorrect: false, usedKeys: []}
+  
   const turn = gameState.guesses.length
 
   const guesses = gameState.guesses.reduce((newArr, guess) => {

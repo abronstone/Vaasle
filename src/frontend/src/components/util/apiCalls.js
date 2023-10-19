@@ -2,7 +2,7 @@ import axios from "axios";
 
 export const newGameApi = async (maxGuesses, wordLength) => {
   try {
-    const res = await axios.post("http://play-game:5001/newGame", {
+    const res = await axios.post("http://localhost:5002/newGame", {
       headers: {
         "Content-Type": "application/json",
       },
@@ -17,6 +17,7 @@ export const newGameApi = async (maxGuesses, wordLength) => {
     }
 
     const data = await res.data;
+    console.log("data: ", data)
     return data;
   } catch (e) {
     throw new Error("Fetch failed!!");
@@ -25,7 +26,7 @@ export const newGameApi = async (maxGuesses, wordLength) => {
 
 export const makeGuessApi = async (gameId, guess) => {
   try {
-    const res = await axios.post("http://play-game:5001/makeGuess", {
+    const res = await axios.post("http://localhost:5002/makeGuess", {
       headers : {
         "Content-Type": "application/json",
       },
