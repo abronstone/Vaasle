@@ -7,27 +7,40 @@ import (
 
 // Globally scoped map containing all Wordle game instances.
 // Key (string) is a UUID string, and value is the ID's associated game struct.
-var games gamesMap
+var games gamesMap = gamesMap{
+	mu:            sync.Mutex{},
+	games:         make(map[string]*structs.Game),
+	circularCache: [10]string{},
+	newest:        0,
+}
 
 // Goroutine-safe map for storing games.
 type gamesMap struct {
-	games sync.Map
+	mu            sync.Mutex
+	games         map[string]*structs.Game
+	circularCache [10]string
+	newest        int
 }
 
 // Get the game associated with the given ID.
 func (g *gamesMap) load(key string) (value *structs.Game, ok bool) {
-	val, ok := g.games.Load(key)
-	if !ok {
-		return nil, false
-	}
+	g.mu.Lock()
+	defer g.mu.Unlock()
 
-	game, ok := val.(*structs.Game)
-	return game, ok
+	val, ok := g.games[key]
+	return val, ok
 }
 
-// Get the game associated with the given ID.
+// Store a game into the games map.
 func (g *gamesMap) store(key string, value *structs.Game) {
-	g.games.Store(key, value)
+	g.mu.Lock()
+	defer g.mu.Unlock()
+
+	delete(g.games, g.circularCache[g.newest])
+	g.circularCache[g.newest] = key
+	g.newest = (g.newest + 1) % len(g.circularCache)
+
+	g.games[key] = value
 }
 
 // Registers a game into the global games map.

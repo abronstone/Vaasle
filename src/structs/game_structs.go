@@ -18,15 +18,6 @@ type Game struct {
 	Metadata GameMetadata `json:"metadata" bson:"metadata"`
 	Guesses  [][2]string  `json:"guesses" bson:"guesses"`
 	State    string       `json:"state" bson:"state"`
-	Word     string       `json:"-" bson:"word"`
-}
-
-// A Wordle game with an exportable public Word.
-// Only for Mongo and Engine communication.
-type GameExposed struct {
-	Metadata GameMetadata `json:"metadata" bson:"metadata"`
-	Guesses  [][2]string  `json:"guesses" bson:"guesses"`
-	State    string       `json:"state" bson:"state"`
 	Word     string       `json:"word" bson:"word"`
 }
 
@@ -48,22 +39,12 @@ type User struct {
 	TotalGuesses int      `json:"totalguesses" bson:"totalguesses"`
 }
 
-// Convert a GameExposed to a Game (remove the ability to export Word to JSON).
-func (g *GameExposed) ConvertToGame() *Game {
+// Obfuscate the word of a Game.
+func (g *Game) ObfuscateWord() *Game {
 	return &Game{
 		Metadata: g.Metadata,
 		Guesses:  g.Guesses,
 		State:    g.State,
-		Word:     g.Word,
-	}
-}
-
-// Convert a Game to a GameExposed (add the ability to export Word to JSON).
-func (g *Game) ConvertToGameExposed() *GameExposed {
-	return &GameExposed{
-		Metadata: g.Metadata,
-		Guesses:  g.Guesses,
-		State:    g.State,
-		Word:     g.Word,
+		Word:     "",
 	}
 }
