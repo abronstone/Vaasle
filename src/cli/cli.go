@@ -65,8 +65,8 @@ func main() {
 		}
 	}
 
-	for len(userName) < 5 {
-		fmt.Println("Please enter a username more than 5 characters:")
+	for len(userName) <= 3 {
+		fmt.Println("Please enter a username 3 characters or longer:")
 		scanner.Scan()
 		userName = scanner.Text()
 		// if err != nil {
