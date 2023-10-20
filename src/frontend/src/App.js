@@ -14,16 +14,15 @@ function App() {
     return gameState;
   }, []);
 
+
   // Added useEffect to call gameState when the component mounts
   useEffect(() => {
-    console.log("useEffect called")
     const fetchData = async () => {
       const data = await gameState();
       setGameData(data);
     };
 
     fetchData();
-    console.log("gameData: ", gameData)
   }, [gameState]);
 
   return (

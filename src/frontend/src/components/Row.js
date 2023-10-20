@@ -1,14 +1,16 @@
     import React from 'react'
-    // guess from Grids.js, either previous formatted guess or a undefined guess.
-
-    export default function Row({ guess, currentGuess }) {
+    import formatLetters from './gameLogic/formatLetters'
+    // guess froxm Grids.js, either previous formatted guess or a undefined guess.
+    export default function Row({ guesses, currentGuess }) {
+    // if there is a guess, then we need to format it
+    
 
     // take the guess and cycle thru the letter objects if it exists
-    if (guess) {
+    if (guesses) {
     return (
         <div className="row past">
-    {/* map thru prior guesses and go to each character */}
-        {guess.map((l, i) => (
+    {/* map thru prior guesseses and go to each character */}
+        {guesses.map((l, i) => (
             <div key={i} className={l.color}>{l.key}</div>
         ))}
         </div>

@@ -5,7 +5,7 @@ import { makeGuessApi } from "../util/apiCalls"
 
   // TODO: Maybe pass in the currentGame state as instead of breaking it up
   // could override this in function
-const handleKeyup = (key, turn, isCorrect, currentGuess, guesses, addNewGuess, setCurrentGuess, gameId) => {
+const handleKeyup = (key, turn, isCorrect, currentGuess, guesses, setCurrentGuess, gameId) => {
     if (key === 'Enter') {
       // only add guess if turn is less than 5
       if (turn > 5 && !isCorrect) {
@@ -29,7 +29,9 @@ const handleKeyup = (key, turn, isCorrect, currentGuess, guesses, addNewGuess, s
         return gameState
       }
 
-      const newGameState  = getNewGameState()
+      const newGameState  = getNewGameState().then((res) => {
+        return res
+      })
 
       const abbreviatedColorToFullColorMap = new Map([
         ["G", "green"],
@@ -51,7 +53,7 @@ const handleKeyup = (key, turn, isCorrect, currentGuess, guesses, addNewGuess, s
         return { key: key, color: lastGuessDictionary[key] }
       })
     
-      addNewGuess(formatted)
+      // addNewGuess(formatted)
     }
     if (key === 'Backspace') {
       setCurrentGuess(prev => prev.slice(0, -1))

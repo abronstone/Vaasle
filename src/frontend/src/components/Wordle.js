@@ -14,27 +14,31 @@ export default function Wordle({gameState}) {
   
   // attach keyup listening to event object
   useEffect(() => {
+    if (!gameState) {
+      return; // Exit if gameState is null
+    }
+    
     const keyUpEventListener = (e) => {
-      handleKeyup(e.key, turn, isCorrect, currentGuess, guesses, setCurrentGuess, gameState.metadata.id)
+      if (gameState && gameState.metadata) {  // Additional null checks
+        handleKeyup(e.key, turn, isCorrect, currentGuess, guesses, setCurrentGuess, gameState.metadata.gameID);
+      }
+    };
+  
+    window.addEventListener('keyup', keyUpEventListener);
+  
+    const handleGameEnd = () => {
+      console.log(isCorrect ? "you won the game!" : "unlucky, you ran out of guesses");
+      setTimeout(() => setShowModal(true), 2000);
+      window.removeEventListener('keyup', keyUpEventListener);
+    };
+  
+    if (isCorrect || (turn > 5 && !isCorrect)) {
+      handleGameEnd();
     }
-
-    window.addEventListener('keyup', keyUpEventListener)
-
-    if (isCorrect){
-      console.log("you won the game!")
-      setTimeout(() => setShowModal(true),2000)
-      window.removeEventListener('keyup', keyUpEventListener)
-    }
-
-    if (turn > 5 && !isCorrect) {
-      console.log("unlucky, you ran out of guesses")
-      setTimeout(() => setShowModal(true),2000)
-      window.removeEventListener('keyup', keyUpEventListener)
-    }
-
-    return () => window.removeEventListener('keyup', keyUpEventListener)
-  }, [handleKeyup, isCorrect, turn])
-
+  
+    return () => window.removeEventListener('keyup', keyUpEventListener);
+  }, [handleKeyup, isCorrect, turn, gameState]);
+  
 
   return (
     <div>
