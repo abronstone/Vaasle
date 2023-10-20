@@ -1,4 +1,4 @@
-module vaas/play-game
+module vaas/gateway
 
 go 1.21
 

@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { playGameApi } from "./util/apiCalls";
+import { gatewayApi } from "./util/apiCalls";
 import "./App.css";
 
 function App() {
-  const [playGameApiData, setPlayGameApiData] = useState("No response");
+  const [gatewayApiData, setGatewayApiData] = useState("No response");
 
   const handleEngineButtonClick = async () => {
     try {
-      const data = await playGameApi();
-      setPlayGameApiData(data);
+      const data = await gatewayApi();
+      setGatewayApiData(data);
     } catch (error) {
       console.log(error);
     }
@@ -21,10 +21,10 @@ function App() {
         className="bg-slate-500 mt-3 mb-3"
         onClick={handleEngineButtonClick}
       >
-        Click to call the play-game container
+        Click to call the gateway container
       </button>
-      <h3 className="mb-1">Data from the play-game container:</h3>
-      <p>{playGameApiData}</p>
+      <h3 className="mb-1">Data from the gateway container:</h3>
+      <p>{gatewayApiData}</p>
     </>
   );
 }
