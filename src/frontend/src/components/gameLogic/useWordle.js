@@ -1,5 +1,6 @@
 const useWordle = (gameState) => {
-  if(!gameState) return {turn: 0, guesses: [], isCorrect: false, usedKeys: []}
+  console.log("gameState", gameState)
+  if(!gameState || gameState.guesses.length) return {turn: 0, guesses: [], isCorrect: false, usedKeys: []}
   
   const turn = gameState.guesses.length
 
