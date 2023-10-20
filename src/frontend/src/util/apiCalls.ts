@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const playGameApi = async (): Promise<string> => {
+export const gatewayApi = async (): Promise<string> => {
   try {
     const res = await axios.get("http://localhost:5002/");
 

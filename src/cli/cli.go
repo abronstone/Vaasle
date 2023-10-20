@@ -35,7 +35,7 @@ func main() {
 	err := ping_play_game()
 
 	if err != nil {
-		fmt.Println("Failed to ping play-game")
+		fmt.Println("Failed to ping gateway")
 		return
 	}
 
@@ -126,19 +126,19 @@ func main() {
 }
 
 func ping_play_game() error {
-	fmt.Println("Sending GET request to play-game...")
-	res, err := http.Get("http://play-game:5001/")
+	fmt.Println("Sending GET request to gateway...")
+	res, err := http.Get("http://gateway:5001/")
 	if err != nil {
-		fmt.Println("The GET request to play-game threw an error:", err)
+		fmt.Println("The GET request to gateway threw an error:", err)
 		return err
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println("The GET request to play-game threw an error:", err)
+		fmt.Println("The GET request to gateway threw an error:", err)
 		return err
 	} else {
-		fmt.Println("The GET request to play-game returned:", string(body))
+		fmt.Println("The GET request to gateway returned:", string(body))
 	}
 
 	return nil
@@ -164,10 +164,10 @@ func initialize_new_game(wordLength int, maxGuesses int, userName string) (*Game
 	// Create a buffer with the JSON data
 	bodyBuffer := bytes.NewBuffer(payloadBytes)
 
-	// Make request to play-game to create a new game with a request body
-	res, err := http.Post("http://play-game:5001/newGame", "application/json", bodyBuffer)
+	// Make request to gateway to create a new game with a request body
+	res, err := http.Post("http://gateway:5001/newGame", "application/json", bodyBuffer)
 
-	// If play-game is down, return an error
+	// If gateway is down, return an error
 	if err != nil {
 		fmt.Println("Failed to create a new game")
 		return nil, err
@@ -181,7 +181,7 @@ func initialize_new_game(wordLength int, maxGuesses int, userName string) (*Game
 	bodyBytes, err := io.ReadAll(res.Body)
 
 	if err != nil {
-		fmt.Println("error: Failed read response body from play-game")
+		fmt.Println("error: Failed read response body from gateway")
 		return nil, err
 	}
 
@@ -209,7 +209,7 @@ func make_guess(gameID string, guess string) (string, string, error) {
 	}
 
 	// Use strings.NewReader to convert the JSON string to an io.Reader
-	res, err := http.Post("http://play-game:5001/makeGuess", "application/json", strings.NewReader(string(jsonData)))
+	res, err := http.Post("http://gateway:5001/makeGuess", "application/json", strings.NewReader(string(jsonData)))
 
 	if err != nil {
 		fmt.Println("Failed to create a new game")
@@ -224,14 +224,14 @@ func make_guess(gameID string, guess string) (string, string, error) {
 	bodyBytes, err := io.ReadAll(res.Body)
 
 	if err != nil {
-		fmt.Println("error: Failed read response body from play-game")
+		fmt.Println("error: Failed read response body from gateway")
 		return "", "error", err
 	}
 
 	// Format the json response data from body bytes, have it conform to Game type. Make it filled.
 	err = json.Unmarshal(bodyBytes, &currentGame)
 	if err != nil {
-		fmt.Println("error: Failed to unmarshal response body from play-game")
+		fmt.Println("error: Failed to unmarshal response body from gateway")
 		return "", "error", err
 	}
 
