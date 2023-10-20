@@ -29,7 +29,8 @@ func newGame(c *gin.Context) {
 	wordLength := metadata.WordLength
 	maxGuesses := metadata.MaxGuesses
 	dateCreated := metadata.DateCreated
-	gameMetadata := structs.GameMetadata{GameID: gameID, WordLength: wordLength, MaxGuesses: maxGuesses, DateCreated: dateCreated}
+	userName := metadata.UserName
+	gameMetadata := structs.GameMetadata{GameID: gameID, WordLength: wordLength, MaxGuesses: maxGuesses, DateCreated: dateCreated, UserName: userName}
 
 	// Get collections
 	database := client.Database("VaasDatabase")

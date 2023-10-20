@@ -8,6 +8,7 @@ import (
 type GameMetadata struct {
 	GameID      string    `json:"gameID" bson:"gameid"`
 	DateCreated time.Time `json:"dateCreated" bson:"datecreated"`
+	UserName    string    `json:"username" bson:"username"`
 	WordLength  int       `json:"wordLength" bson:"wordlength"`
 	MaxGuesses  int       `json:"maxGuesses" bson:"maxguesses"`
 }
@@ -29,6 +30,13 @@ type Guess struct {
 // A simple message.
 type Message struct {
 	Message string `json:"message"`
+}
+
+type User struct {
+	UserName     string   `json:"username" bson:"username"`
+	Games        []string `json:"games" bson:"games"`
+	NumGames     int      `json:"numgames" bson:"numgames"`
+	TotalGuesses int      `json:"totalguesses" bson:"totalguesses"`
 }
 
 // Obfuscate the word of a Game.
