@@ -4,22 +4,22 @@ import { useCallback, useEffect, useState } from 'react';  // Added useEffect an
 import { newGameApi } from './components/util/apiCalls';
 
 function App() {
-  const [gameData, setGameData] = useState(null);  
+  const [gameState, setGameState] = useState(null);  
 
-  const gameState = useCallback(async () => {
+  const initialGameState = useCallback(async () => {
     const maxGuesses = 5;
     const wordLength = 5;
 
     const gameState = await newGameApi(maxGuesses, wordLength);
-    return gameState;
+    setGameState(gameState);
   }, []);
 
 
   // Added useEffect to call gameState when the component mounts
   useEffect(() => {
     const fetchData = async () => {
-      const data = await gameState();
-      setGameData(data);
+      const data = await initialGameState();
+      setGameState(data);
     };
 
     fetchData();
@@ -29,7 +29,7 @@ function App() {
     <>
       <div className="App">
         <h1>Wordle (vaas.ai)</h1>
-        <Wordle gameState={gameData} />
+        <Wordle gameState={gameState} setGameState={setGameState} />
       </div>
     </>
   );

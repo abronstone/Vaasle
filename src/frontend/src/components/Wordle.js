@@ -7,11 +7,11 @@ import Grid from './Grid'
 import Keypad from './Keypad'
 import Modal from './Modal'
 
-export default function Wordle({gameState}) {
+export default function Wordle({gameState , setGameState}) {
   const [currentGuess, setCurrentGuess] = useState('')
   const { guesses, turn, isCorrect, usedKeys } = useWordle(gameState)
-  const[showModal, setShowModal] = useState(false)
-  
+  const[showModal, setShowModal] = useState(false)  
+
   // attach keyup listening to event object
   useEffect(() => {
     if (!gameState) {
@@ -19,11 +19,13 @@ export default function Wordle({gameState}) {
     }
     
     const keyUpEventListener = (e) => {
-      if (gameState && gameState.metadata) {  // Additional null checks
-        handleKeyup(e.key, turn, isCorrect, currentGuess, guesses, setCurrentGuess, gameState.metadata.gameID);
-      }
+      console.log("gameState before handleKeyup", gameState)
+      console.log("currentGuess before handleKeyup", currentGuess)      
+      handleKeyup(e.key, turn, isCorrect, currentGuess, guesses, setCurrentGuess, gameState.metadata.gameID, setGameState);
+      console.log("gameState after handleKeyup", gameState)
+      console.log("currentGuess after handleKeyup", currentGuess)
     };
-  
+
     window.addEventListener('keyup', keyUpEventListener);
   
     const handleGameEnd = () => {
@@ -37,9 +39,9 @@ export default function Wordle({gameState}) {
     }
   
     return () => window.removeEventListener('keyup', keyUpEventListener);
-  }, [handleKeyup, isCorrect, turn, gameState]);
+  }, [handleKeyup, turn, gameState, currentGuess, guesses, isCorrect]);
   
-
+  // 
   return (
     <div>
       {/* <div>solution - {solution}</div> */}
