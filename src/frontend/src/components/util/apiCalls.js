@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 export const newGameApi = async (maxGuesses, wordLength) => {
   try {
@@ -7,12 +7,12 @@ export const newGameApi = async (maxGuesses, wordLength) => {
       "http://localhost:5002/newGame",
       {
         maxGuesses,
-        wordLength
+        wordLength,
       },
       {
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       }
     );
 
@@ -38,13 +38,13 @@ export const makeGuessApi = async (gameId, guess) => {
       {
         // This is the request body
         id: gameId,
-        guess
+        guess: guess,
       },
       {
         // These are the request headers
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       }
     );
 
@@ -53,7 +53,7 @@ export const makeGuessApi = async (gameId, guess) => {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
 
-    // Since axios automatically parses the JSON response, 
+    // Since axios automatically parses the JSON response,
     // you can directly get the data without using await
     const data = res.data;
 

@@ -1,52 +1,56 @@
-    import React from 'react'
-    import formatLetters from './gameLogic/formatLetters'
-    // guess froxm Grids.js, either previous formatted guess or a undefined guess.
-    export default function Row({ guesses, currentGuess }) {
-    // if there is a guess, then we need to format it
-    
+import React from "react";
 
-    // take the guess and cycle thru the letter objects if it exists
-    if (guesses) {
+export default function Row({ guesses, currentGuess }) {
+  console.log("guesses inside row", guesses);
+  // Convert the 'guesses' object to an array of objects.
+  const guessesArray = guesses
+    ? Object.keys(guesses).map((key) => {
+        return { color: guesses[key], key: key };
+      })
+    : null;
+
+  console.log("guessesArray", guessesArray);
+
+  if (guessesArray) {
     return (
-        <div className="row past">
-    {/* map thru prior guesseses and go to each character */}
-        {guesses.map((l, i) => (
-            <div key={i} className={l.color}>{l.key}</div>
-        ))}
-        </div>
-    )
-    }
-
-    // need to accomodate 
-    // 5 - letters
-    if (currentGuess) {
-        // splits each letter into an array
-        let letters = currentGuess.split('')
-        return (
-            // mapping thru letters of current guess
-            <div className="row current">
-                {letters.map((letter, i) => (
-                    <div key={i} className='filled'>{letter}</div>
-                ))}
-
-                {/* putting out the empty squares as we type based off the letter len */}
-                {[...Array(5-letters.length)].map((_,i) => (
-                    <div key={i}></div>
-                ))}
+      <div className="row past">
+        {guessesArray.map((l, i) => {
+          console.log("l.key", l.key);
+          console.log("l.color", l.color);
+          return (
+            <div key={i} className={l.color}>
+              {l.key}
             </div>
-            
-        )
-    }
+          );
+        })}
+      </div>
+    );
+  }
 
+  if (currentGuess) {
+    let letters = currentGuess.split("");
     return (
-    // make 5 dics per row for each square
-    <div className="row">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
-    )
+      <div className="row current">
+        {letters.map((letter, i) => (
+          <div key={i} className="filled">
+            {letter}
+          </div>
+        ))}
 
-    }
+        {[...Array(5 - letters.length)].map((_, i) => (
+          <div key={i}></div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="row">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  );
+}

@@ -1,37 +1,31 @@
-import React from 'react';
-import Wordle from './components/Wordle';
-import { useCallback, useEffect, useState } from 'react';  // Added useEffect and useState
-import { newGameApi } from './components/util/apiCalls';
+import React, { useState, useEffect, useCallback } from "react";
+import Wordle from "./components/Wordle";
+import { newGameApi } from "./components/util/apiCalls";
 
 function App() {
-  const [gameState, setGameState] = useState(null);  
+  const [gameState, setGameState] = useState(null);
 
   const initialGameState = useCallback(async () => {
-    const maxGuesses = 5;
-    const wordLength = 5;
-
-    const gameState = await newGameApi(maxGuesses, wordLength);
-    setGameState(gameState);
+    try {
+      const maxGuesses = 5;
+      const wordLength = 5;
+      const initialData = await newGameApi(maxGuesses, wordLength);
+      setGameState(initialData);
+    } catch (error) {
+      console.error("Failed to initialize game state:", error);
+    }
   }, []);
 
-
-  // Added useEffect to call gameState when the component mounts
+  // Use useEffect to call initialGameState when the component mounts
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await initialGameState();
-      setGameState(data);
-    };
-
-    fetchData();
-  }, [gameState]);
+    initialGameState();
+  }, [initialGameState]);
 
   return (
-    <>
-      <div className="App">
-        <h1>Wordle (vaas.ai)</h1>
-        <Wordle gameState={gameState} setGameState={setGameState} />
-      </div>
-    </>
+    <div className="App">
+      <h1>Wordle (vaas.ai)</h1>
+      <Wordle gameState={gameState} setGameState={setGameState} />
+    </div>
   );
 }
 
