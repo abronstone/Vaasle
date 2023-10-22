@@ -7,9 +7,9 @@ export default function Grid({ guesses, currentGuess, turn }) {
     <div>
       {/* Render as many rows as there are turns, where the last row is always filled with currentGuess */}
       <p>Turn {turn}</p>
-      {[...Array(turn)].map((_, i) => {
+      {guesses.map((guess, i) => {
         return (
-          <Row key={i} guesses={guesses[i]} />
+          <Row key={i} guesses={guess} />
         )
       })}
       <Row guesses={guesses[turn]} currentGuess={currentGuess} />
