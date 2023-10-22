@@ -11,10 +11,11 @@ export default function Wordle({ gameState, setGameState }) {
     guesses: [],
     turn: 0,
     usedKeys: new Map(),
-    isCorrect: false,
-    showModal: false,
+    status: "ongoing", // "ongoing", "won", or "lost"
   });
+  const [showModal, setShowModal] = useState(false);
 
+  // TODO: break this up into smaller functions
   // Each time a key is pressed, the handleKeyup function is called
   const handleKeyup = async (e) => {
     const key = e.key;
@@ -51,7 +52,7 @@ export default function Wordle({ gameState, setGameState }) {
         );
 
         // Update various state variables based on the newGameState
-        setGameState(newGameState); 
+        setGameState(newGameState);
 
         // Create an array of mappings of letters to colors for the most recent guess.
         const mostRecentGuessArr = [];
@@ -78,14 +79,14 @@ export default function Wordle({ gameState, setGameState }) {
 
         // Make a map of all the unique used letter color pairs from guesses
         const newUsedKeys = usedKeys;
-        
+
         // Loop through the mostRecentGuessArr to add to the map
         mostRecentGuessArr.forEach(({ letter, color }) => {
           // If the letter is not already in the map, add it.
           if (usedKeys.has(letter) === false) {
-            newUsedKeys.set(letter, color); 
+            newUsedKeys.set(letter, color);
           }
-          if(usedKeys.has(letter) === true && color === "green"){
+          if (usedKeys.has(letter) === true && color === "green") {
             newUsedKeys.set(letter, color);
           }
         });
@@ -96,14 +97,14 @@ export default function Wordle({ gameState, setGameState }) {
           currentGuess: "",
           turn: turn + 1,
           guesses: [...guesses, mostRecentGuessArr],
-          isCorrect: gameState.state === "won",
+          status: newGameState.metadata.state,
           usedKeys: newUsedKeys,
         });
       } catch (error) {
         console.error("Failed to update game state:", error);
       }
 
-    } 
+    }
     if (key === "Backspace") {
       setState({ ...state, currentGuess: state.currentGuess.slice(0, -1) });
       return;
@@ -120,19 +121,15 @@ export default function Wordle({ gameState, setGameState }) {
     window.addEventListener("keyup", handleKeyup);
 
     const handleGameEnd = () => {
-      console.log(
-        state.isCorrect
-          ? "you won the game!"
-          : "unlucky, you ran out of guesses"
-      );
-      setTimeout(() => setGameState({ ...state, showModal: true }), 2000);
+      setTimeout(() => {
+      console.log("setTimeOut entered");
+      console.log("showModal before: ", showModal)
+      setShowModal(true)}, 2000);
+      console.log("showModal after: ", showModal)
       window.removeEventListener("keyup", handleKeyup);
     };
 
-    if (
-      setGameState.isCorrect ||
-      (setGameState.turn > 5 && !setGameState.isCorrect)
-    ) {
+    if (state.status === "won" || state.status === "lost") {
       handleGameEnd();
     }
 
@@ -149,8 +146,8 @@ export default function Wordle({ gameState, setGameState }) {
         turn={state.turn}
       />
       <Keypad usedKeys={state.usedKeys} />
-      {state.showModal && (
-        <Modal isCorrect={state.isCorrect} turn={state.turn} />
+      {showModal && (
+        <Modal isCorrect={state.status === "won" ?? "false"} turn={state.turn} />
       )}
     </div>
   );
