@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Row({ guesses, currentGuess }) {
+export default function Row({ guesses, currentGuess }) {  
   if (guesses) {
     return (
       <div className="row past">

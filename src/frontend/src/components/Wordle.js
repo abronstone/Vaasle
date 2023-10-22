@@ -35,7 +35,7 @@ export default function Wordle({ gameState, setGameState }) {
     // If the enter key is pressed, the current guess is submitted and the FE's state is updated
     if (key === "Enter") {
       // Make previous state variables easy to work with
-      const { turn, isCorrect, currentGuess, guesses, usedKeys } = state;
+      const { turn, currentGuess, guesses, usedKeys } = state;
       // TODO: handle this on backend
       // do not allow duplicate words
       // if (guesses.includes(currentGuess)) {
