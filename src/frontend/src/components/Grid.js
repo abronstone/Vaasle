@@ -3,18 +3,15 @@ import React from "react";
 import Row from "./Row";
 
 export default function Grid({ guesses, currentGuess, turn }) {
-  console.log("grid rendered");
-  console.log("guesses inside grid", guesses);
-
   return (
     <div>
-     {/* Render as many rows as there are turns, where the last row is always filled with currentGuess */}
-     <p>Turn {turn}</p>
+      {/* Render as many rows as there are turns, where the last row is always filled with currentGuess */}
+      <p>Turn {turn}</p>
       {[...Array(turn)].map((_, i) => {
-        console.log("i:", i);
         return (
-        <Row key={i} guesses={guesses} />
-      )})}
+          <Row key={i} guesses={guesses[i]} />
+        )
+      })}
       <Row guesses={guesses[turn]} currentGuess={currentGuess} />
     </div>
   );

@@ -10,17 +10,20 @@ import Modal from "./Modal";
 export default function Wordle({ gameState, setGameState }) {
   const [state, setState] = useState({
     currentGuess: "",
-    guesses: {},
+    guesses: [],
     turn: 0,
     usedKeys: {},
     isCorrect: false,
     showModal: false,
   });
 
+  // Each time a key is pressed, the handleKeyup function is called
   const handleKeyup = async (e) => {
     const key = e.key;
+
+    // If the enter key is pressed, the current guess is submitted and the FE's state is updated
     if (key === "Enter") {
-      // Previous state variables
+      // Make previous state variables easy to work with
       const { turn, isCorrect, currentGuess, guesses } = state;
 
       // only add guess if turn is less than 5
@@ -41,6 +44,7 @@ export default function Wordle({ gameState, setGameState }) {
       try {
         // When a guess is submitted, the API called to get a new game state
         // and all necessary state is updated
+
         // When a guess is submitted, call API to get a new game state
         const newGameState = await makeGuessApi(
           gameState.metadata.gameID,
@@ -50,37 +54,30 @@ export default function Wordle({ gameState, setGameState }) {
         // Update various state variables based on the newGameState
         setGameState(newGameState); // Set this first before using it
 
-        setState({ ...state, guesses: {} });
-        // Create an object to hold the final mappings of letters to colors.
-        const finalGuessesMap = {};
+        // Create an array of mappings of letters to colors for the most recent guess.
+        const mostRecentGuessArr = [];
 
-        // Loop through the array of guesses from the new game state.
-        newGameState.guesses.forEach((guess) => {
-          // Deconstruct the guess into the word and its color codes.
-          const [word, colorCodes] = guess;
+        // Deconstruct the guess into the word and its color codes (eg. "GGYXG").
+        if (newGameState.guesses.length > 0) {
+          const [word, colorCodes] = newGameState.guesses[turn];
 
           // Loop through each letter of the word.
           Array.from(word).forEach((letter, index) => {
             const colorCode = colorCodes[index];
 
-            // Determine the color based on the color code.
+            // Determine the color needed for FE based on the color code.
             const color =
               colorCode === "G"
                 ? "green"
                 : colorCode === "Y"
-                ? "yellow"
-                : "grey";
+                  ? "yellow"
+                  : "grey";
 
             // Update the mapping of the letter to the color.
-            finalGuessesMap[letter] = color;
+            mostRecentGuessArr.push({ letter, color });
+
           });
-        });
-
-        // Update the state.
-
-        // Logging the newly updated guesses for debug purpose.
-        console.log("guesses:", finalGuessesMap);
-        // Logging the newly updated guesses for debug purpose.
+        }
 
         // make a map of all the unique used letter color pairs from guesses
         const usedKeysMap = new Map();
@@ -94,7 +91,7 @@ export default function Wordle({ gameState, setGameState }) {
           ...state,
           currentGuess: "",
           turn: turn + 1,
-          guesses: finalGuessesMap,
+          guesses: [...guesses, mostRecentGuessArr],
           isCorrect: gameState.state === "won",
           usedKeys: Object.fromEntries(usedKeysMap),
         });
