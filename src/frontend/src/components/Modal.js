@@ -12,7 +12,7 @@
         )}
         {!isCorrect && (
         <div>
-            <h1>Nevermind</h1>
+            <h1>You lost</h1>
             {/* <p className="solution">{solution}</p> */}
             <p>Better luck next time :)</p>
         </div>

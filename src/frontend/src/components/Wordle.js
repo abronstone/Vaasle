@@ -15,6 +15,18 @@ export default function Wordle({ gameState, setGameState }) {
   });
   const [showModal, setShowModal] = useState(false);
 
+  const handleGameEnd = () => {
+    console.log("showModal before: ", showModal)
+
+    // setTimeout(() => {
+    // console.log("setTimeOut entered");
+    // console.log("showModal before: ", showModal)
+    // setShowModal(true)}, 2000);
+    setShowModal(true);
+    console.log("showModal after: ", showModal)
+    window.removeEventListener("keyup", handleKeyup);
+  };
+
   // TODO: break this up into smaller functions
   // Each time a key is pressed, the handleKeyup function is called
   const handleKeyup = async (e) => {
@@ -24,12 +36,6 @@ export default function Wordle({ gameState, setGameState }) {
     if (key === "Enter") {
       // Make previous state variables easy to work with
       const { turn, isCorrect, currentGuess, guesses, usedKeys } = state;
-
-      // only add guess if turn is less than 5
-      if (turn > 5 && !isCorrect) {
-        console.log("you used all your guesses!");
-        return;
-      }
       // TODO: handle this on backend
       // do not allow duplicate words
       // if (guesses.includes(currentGuess)) {
@@ -100,6 +106,10 @@ export default function Wordle({ gameState, setGameState }) {
           status: newGameState.metadata.state,
           usedKeys: newUsedKeys,
         });
+
+        if (newGameState.state === "won" || newGameState.state === "lost") {
+          handleGameEnd();
+        }
       } catch (error) {
         console.error("Failed to update game state:", error);
       }
@@ -119,19 +129,6 @@ export default function Wordle({ gameState, setGameState }) {
   // attach keyup listening to event object
   useEffect(() => {
     window.addEventListener("keyup", handleKeyup);
-
-    const handleGameEnd = () => {
-      setTimeout(() => {
-      console.log("setTimeOut entered");
-      console.log("showModal before: ", showModal)
-      setShowModal(true)}, 2000);
-      console.log("showModal after: ", showModal)
-      window.removeEventListener("keyup", handleKeyup);
-    };
-
-    if (state.status === "won" || state.status === "lost") {
-      handleGameEnd();
-    }
 
     return () => window.removeEventListener("keyup", handleKeyup);
   }, [state]);
