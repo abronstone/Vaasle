@@ -1,26 +1,14 @@
-    import React, { useEffect, useState } from 'react'
-    // ! do we have keyboard on front end or in database
-
-    export default function Keypad({usedKeys}) {
-    const [letters, setLetters] = useState(null)
-    useEffect(() => {
-        fetch('http://localhost:3001/letters')
-        .then(res => res.json())
-        .then(json => {
-            setLetters(json)
-        })
-    },[])
+import React from 'react'
+export default function Keypad({ usedKeys }) {
+    const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
     return (
-    <div className='keypad'>
-        {/* letters are from the db file */}
-        {/* wait till we have letters then map thru them */}
-        {letters && letters.map((l) => {
-            const color = usedKeys[l.key]
-            return (
-                // l.key => letter of keyboard
-                <div key={l.key} className={color} >{l.key}</div>
-            )
-        })}
-    </div>
+        <div className='keypad'>
+            {letters && letters.map((letter) => {
+                const color = usedKeys.has(letter) ? usedKeys.get(letter) : 'unused'
+                return (
+                    <div key={letter} className={color} >{letter}</div>
+                )
+            })}
+        </div>
     )
-    }
+}

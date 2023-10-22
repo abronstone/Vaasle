@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import useWordle from './gameLogic/useWordle'
-// import handleKeyup from './gameLogic/handleKeyUp'
 import { makeGuessApi } from "./util/apiCalls";
 // components
 import Grid from "./Grid";
@@ -12,7 +10,7 @@ export default function Wordle({ gameState, setGameState }) {
     currentGuess: "",
     guesses: [],
     turn: 0,
-    usedKeys: {},
+    usedKeys: new Map(),
     isCorrect: false,
     showModal: false,
   });
@@ -24,13 +22,14 @@ export default function Wordle({ gameState, setGameState }) {
     // If the enter key is pressed, the current guess is submitted and the FE's state is updated
     if (key === "Enter") {
       // Make previous state variables easy to work with
-      const { turn, isCorrect, currentGuess, guesses } = state;
+      const { turn, isCorrect, currentGuess, guesses, usedKeys } = state;
 
       // only add guess if turn is less than 5
       if (turn > 5 && !isCorrect) {
         console.log("you used all your guesses!");
         return;
       }
+      // TODO: handle this on backend
       // do not allow duplicate words
       // if (guesses.includes(currentGuess)) {
       //   console.log('you already tried that word.');
@@ -52,7 +51,7 @@ export default function Wordle({ gameState, setGameState }) {
         );
 
         // Update various state variables based on the newGameState
-        setGameState(newGameState); // Set this first before using it
+        setGameState(newGameState); 
 
         // Create an array of mappings of letters to colors for the most recent guess.
         const mostRecentGuessArr = [];
@@ -61,7 +60,6 @@ export default function Wordle({ gameState, setGameState }) {
         if (newGameState.guesses.length > 0) {
           const [word, colorCodes] = newGameState.guesses[turn];
 
-          // Loop through each letter of the word.
           Array.from(word).forEach((letter, index) => {
             const colorCode = colorCodes[index];
 
@@ -75,15 +73,21 @@ export default function Wordle({ gameState, setGameState }) {
 
             // Update the mapping of the letter to the color.
             mostRecentGuessArr.push({ letter, color });
-
           });
         }
 
-        // make a map of all the unique used letter color pairs from guesses
-        const usedKeysMap = new Map();
-
-        Object.keys(guesses).forEach((key) => {
-          usedKeysMap.set(key, guesses[key]);
+        // Make a map of all the unique used letter color pairs from guesses
+        const newUsedKeys = usedKeys;
+        
+        // Loop through the mostRecentGuessArr to add to the map
+        mostRecentGuessArr.forEach(({ letter, color }) => {
+          // If the letter is not already in the map, add it.
+          if (usedKeys.has(letter) === false) {
+            newUsedKeys.set(letter, color); 
+          }
+          if(usedKeys.has(letter) === true && color === "green"){
+            newUsedKeys.set(letter, color);
+          }
         });
 
         // Update state
@@ -93,12 +97,13 @@ export default function Wordle({ gameState, setGameState }) {
           turn: turn + 1,
           guesses: [...guesses, mostRecentGuessArr],
           isCorrect: gameState.state === "won",
-          usedKeys: Object.fromEntries(usedKeysMap),
+          usedKeys: newUsedKeys,
         });
       } catch (error) {
         console.error("Failed to update game state:", error);
       }
-    } // This is where the problematic curly brace was located
+
+    } 
     if (key === "Backspace") {
       setState({ ...state, currentGuess: state.currentGuess.slice(0, -1) });
       return;

@@ -87,6 +87,10 @@ h1 {
   line-height: 50px;
 }
 
+.keypad > div.unused{
+  background: #eee;
+  color: #fff;
+}
 .keypad > div.green {
   background: #5ac85a;
   color: #fff;
