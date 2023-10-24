@@ -2,7 +2,7 @@ import React from "react";
 // components
 import Row from "./Row";
 
-export default function Grid({ guesses, currentGuess, turn }) {
+export default function Grid({ guesses, currentGuess, turn, status }) {
   return (
     <div>
       {/* Render as many rows as there are turns, where the last row is always filled with currentGuess */}
@@ -12,7 +12,10 @@ export default function Grid({ guesses, currentGuess, turn }) {
           <Row key={i} guesses={guess} />
         )
       })}
-      <Row currentGuess={currentGuess} />
+      {/* Render the current guess row if the game is not over */}
+      {(status !== "won" || status !== "lost") && 
+        <Row currentGuess={currentGuess} />
+      }
     </div>
   );
 }
