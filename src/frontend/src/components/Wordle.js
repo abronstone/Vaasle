@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { makeGuessApi } from "./util/apiCalls";
+
 // components
 import Grid from "./Grid";
 import Keypad from "./Keypad";
@@ -13,35 +14,41 @@ export default function Wordle({ gameState, setGameState }) {
     usedKeys: new Map(),
     status: "ongoing", // "ongoing", "won", or "lost"
   });
+
+  // These state variables are only used at the end of the game, 
+  // so they are not part of the main state object
   const [showModal, setShowModal] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [solution, setSolution] = useState(null);
 
   const handleGameEnd = () => {
-    console.log("showModal before: ", showModal)
-
-    // setTimeout(() => {
-    // console.log("setTimeOut entered");
-    // console.log("showModal before: ", showModal)
-    // setShowModal(true)}, 2000);
     setShowModal(true);
-    console.log("showModal after: ", showModal)
+
     window.removeEventListener("keyup", handleKeyup);
   };
 
   // TODO: break this up into smaller functions
   // Each time a key is pressed, the handleKeyup function is called
   const handleKeyup = async (e) => {
+    // If the game is over, do not allow any more guesses
+    if (showModal) {
+      return;
+    }
+
     const key = e.key;
 
     // If the enter key is pressed, the current guess is submitted and the FE's state is updated
     if (key === "Enter") {
       // Make previous state variables easy to work with
       const { turn, currentGuess, guesses, usedKeys } = state;
+
       // TODO: handle this on backend
       // do not allow duplicate words
       // if (guesses.includes(currentGuess)) {
       //   console.log('you already tried that word.');
       //   return;
       // }
+
       // check word is 5 chars
       if (currentGuess.length !== 5) {
         console.log("word must be 5 chars.");
@@ -59,6 +66,18 @@ export default function Wordle({ gameState, setGameState }) {
 
         // Update various state variables based on the newGameState
         setGameState(newGameState);
+
+        // If the game is over, show the modal and stop listening for keyup events
+        if (newGameState.state === "won" || newGameState.state === "lost") {
+          if (newGameState.word) {
+            setSolution(newGameState.word);
+          }
+          setIsCorrect(newGameState.state === "won" ? true : false);
+          setState({ ...state, status: newGameState.state });
+
+          handleGameEnd();
+          return;
+        }
 
         // Create an array of mappings of letters to colors for the most recent guess.
         const mostRecentGuessArr = [];
@@ -97,19 +116,15 @@ export default function Wordle({ gameState, setGameState }) {
           }
         });
 
-        // Update state
         setState({
           ...state,
           currentGuess: "",
           turn: turn + 1,
           guesses: [...guesses, mostRecentGuessArr],
-          status: newGameState.metadata.state,
+          status: newGameState.state,
           usedKeys: newUsedKeys,
         });
 
-        if (newGameState.state === "won" || newGameState.state === "lost") {
-          handleGameEnd();
-        }
       } catch (error) {
         console.error("Failed to update game state:", error);
       }
@@ -131,9 +146,8 @@ export default function Wordle({ gameState, setGameState }) {
     window.addEventListener("keyup", handleKeyup);
 
     return () => window.removeEventListener("keyup", handleKeyup);
-  }, [state]);
+  }, [state, showModal]);
 
-  //
   return (
     <div>
       <div>Current Guess - {state.currentGuess}</div>
@@ -141,10 +155,15 @@ export default function Wordle({ gameState, setGameState }) {
         guesses={state.guesses}
         currentGuess={state.currentGuess}
         turn={state.turn}
+        status={state.status}
       />
       <Keypad usedKeys={state.usedKeys} />
       {showModal && (
-        <Modal isCorrect={state.status === "won" ?? "false"} turn={state.turn} />
+        <Modal
+          isCorrect={isCorrect}
+          turn={state.turn}
+          solution={solution}
+        />
       )}
     </div>
   );
