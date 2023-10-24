@@ -52,3 +52,10 @@ services:
       target: auth
     ports:
       - "80:8000"
+  stats:
+    container_name: stats
+    build:
+      context: ./src
+      target: stats
+    ports:
+      - 5003:5001
