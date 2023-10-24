@@ -14,6 +14,7 @@ export default function Wordle({ gameState, setGameState }) {
     status: "ongoing", // "ongoing", "won", or "lost"
   });
   const [showModal, setShowModal] = useState(false);
+  const [solution, setSolution] = useState(null); 
 
   const handleGameEnd = () => {
     setShowModal(true);
@@ -107,8 +108,13 @@ export default function Wordle({ gameState, setGameState }) {
         });
 
         if (newGameState.state === "won" || newGameState.state === "lost") {
+          if(newGameState.word) {
+            setSolution(newGameState.word);
+          }
+
           handleGameEnd();
         }
+
       } catch (error) {
         console.error("Failed to update game state:", error);
       }
@@ -143,7 +149,7 @@ export default function Wordle({ gameState, setGameState }) {
       />
       <Keypad usedKeys={state.usedKeys} />
       {showModal && (
-        <Modal isCorrect={state.status === "won" ?? "false"} turn={state.turn} />
+        <Modal isCorrect={state.status === "won" ?? "false"} turn={state.turn} solution={solution} />
       )}
     </div>
   );
