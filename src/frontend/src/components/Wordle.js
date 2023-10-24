@@ -16,20 +16,19 @@ export default function Wordle({ gameState, setGameState }) {
   const [showModal, setShowModal] = useState(false);
 
   const handleGameEnd = () => {
-    console.log("showModal before: ", showModal)
-
-    // setTimeout(() => {
-    // console.log("setTimeOut entered");
-    // console.log("showModal before: ", showModal)
-    // setShowModal(true)}, 2000);
     setShowModal(true);
-    console.log("showModal after: ", showModal)
+
     window.removeEventListener("keyup", handleKeyup);
   };
 
   // TODO: break this up into smaller functions
   // Each time a key is pressed, the handleKeyup function is called
   const handleKeyup = async (e) => {
+    // If the game is over, do not allow any more guesses
+    if (showModal) {
+      return;
+    }
+    
     const key = e.key;
 
     // If the enter key is pressed, the current guess is submitted and the FE's state is updated
@@ -131,7 +130,7 @@ export default function Wordle({ gameState, setGameState }) {
     window.addEventListener("keyup", handleKeyup);
 
     return () => window.removeEventListener("keyup", handleKeyup);
-  }, [state]);
+  }, [state, showModal]);
 
   //
   return (
