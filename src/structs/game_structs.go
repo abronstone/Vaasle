@@ -34,9 +34,11 @@ type Message struct {
 
 type User struct {
 	UserName     string   `json:"username" bson:"username"`
+	Password     string   `json:"password" bson:"password"`
 	Games        []string `json:"games" bson:"games"`
 	NumGames     int      `json:"numgames" bson:"numgames"`
 	TotalGuesses int      `json:"totalguesses" bson:"totalguesses"`
+	Playing      bool     `json:"playing" bson:"playing"`
 }
 
 // Obfuscate the word of a Game.

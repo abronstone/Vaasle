@@ -73,3 +73,18 @@ COPY ./frontend ./
 EXPOSE 3000
 
 CMD ["npm", "run", "start"]
+# AUTH
+FROM golang:1.21.1 as auth
+
+WORKDIR /src/structs
+COPY /structs/* ./
+
+WORKDIR /src/auth
+
+COPY ./auth/go.mod ./auth/go.sum ./
+RUN go mod download
+
+COPY ./auth/*.go ./
+RUN go build -o auth-executable
+
+CMD [ "./auth-executable" ]
