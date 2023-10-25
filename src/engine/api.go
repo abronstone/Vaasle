@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 	"vaas/structs"
 
@@ -95,7 +94,7 @@ func api_makeGuess(c *gin.Context) {
 
 	err = mongo_updateGame(game)
 	if err != nil {
-		log.Println(err.Error()) // not a fatal error, we can just log it
+		c.JSON(http.StatusInternalServerError, gin.H{"error updating the game: ": err.Error()})
 	}
 
 	err = mongo_updateUser(game.Metadata.UserName, game.GetUserUpdateAfterGuess())

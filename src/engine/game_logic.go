@@ -34,8 +34,8 @@ func makeGuess(g *structs.Game, guess string) error {
 
 	// Check to see if a guess has already been made.
 	guessesContainsCurrentGuess := false
-	for _, guess := range g.Guesses {
-		if guess[0] == guess {
+	for _, existingGuess := range g.Guesses {
+		if existingGuess[0] == guess {
 			guessesContainsCurrentGuess = true
 			break
 		}
