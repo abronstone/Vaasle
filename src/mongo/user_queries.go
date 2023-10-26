@@ -26,7 +26,6 @@ func newUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println("USER: " + user.UserName)
 
 	database := client.Database("VaasDatabase")
 	userCollection := database.Collection("users")
