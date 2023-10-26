@@ -125,3 +125,40 @@ func mongo_updateGame(game *structs.Game) error {
 
 	return nil
 }
+
+// Asks the Mongo API (mongo.go) to make changes to the state of the given user.
+func mongo_updateUser(username string, userUpdate *structs.UserUpdate) error {
+	// 1. Send request
+	endpoint := "http://mongo:8000/update-game/" + username
+
+	bodyBytes, err := json.Marshal(userUpdate)
+	if err != nil {
+		return err
+	}
+
+	bodyBuffer := bytes.NewBuffer(bodyBytes)
+
+	res, err := http.Post(endpoint, "application/json", bodyBuffer)
+	if err != nil {
+		return nil
+	}
+	defer res.Body.Close()
+
+	// 2. Parse response body
+	bodyBytes, err = io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
+	result := &structs.Message{}
+	err = json.Unmarshal(bodyBytes, result)
+	if err != nil {
+		return err
+	}
+
+	if result.Message != "user updated successfully" {
+		return errors.New("failed to send user updates to Mongo API")
+	}
+
+	return nil
+}

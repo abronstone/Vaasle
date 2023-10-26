@@ -28,7 +28,7 @@ func makeGuess(g *structs.Game, guess string) error {
 	if len(guess) != g.Metadata.WordLength {
 		return fmt.Errorf(`guess "%s" is not of length %d`, guess, g.Metadata.WordLength)
 	}
-	if g.State != "ongoing" {
+	if !g.IsOngoing() {
 		return fmt.Errorf(`game has already finished with state "%s"`, g.State)
 	}
 

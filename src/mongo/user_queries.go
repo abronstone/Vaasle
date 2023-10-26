@@ -80,3 +80,12 @@ func getUser(c *gin.Context) {
 	// Return the user
 	c.JSON(http.StatusOK, user)
 }
+
+func updateUser(c *gin.Context) {
+	/*
+		Updates an existing user from the 'users' collection in the database
+
+		@param: username via api path parameter
+		@return: JSON confirmation message
+	*/
+}
