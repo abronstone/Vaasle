@@ -70,7 +70,7 @@ export default function Wordle({ gameState, setGameState }) {
         setGameState(newGameState);
 
         if(newGameState == null || newGameState.guesses == null) {
-          setError("Your guess must be 5 characters long and a valid english word.");
+          setError("Your guess must be 5 characters long and a valid english word. No duplicates are allowed.");
           return;
         }
 
@@ -136,7 +136,7 @@ export default function Wordle({ gameState, setGameState }) {
 
       } catch (error) {
         console.log(error);
-        setError("Your guess must be 5 characters long and a valid english word.");
+        setError("Your guess must be 5 characters long and a valid english word. No duplicates are allowed.");
         return; 
       }
 
