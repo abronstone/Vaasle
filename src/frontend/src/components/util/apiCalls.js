@@ -52,8 +52,6 @@ export const makeGuessApi = async (gameId, guess) => {
 
     const data = res.data;
 
-    console.log("data from api call", data)
-
     return data;
   } catch (e) {
     console.error("Fetch failed!!", e);

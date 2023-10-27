@@ -123,15 +123,16 @@ export default function Wordle({ gameState, setGameState }) {
           }
         });
 
-        setState({
-          ...state,
-          turn: turn + 1,
-          guesses: [...guesses, mostRecentGuessArr],
+        setState((prevState) => ({
+          ...prevState,
+          turn: prevState.turn + 1,
+          guesses: [...prevState.guesses, mostRecentGuessArr],
           status: newGameState.state,
           usedKeys: newUsedKeys,
-        });
+          currentGuess: ""
+        }));
+
         setError(null);
-        setState({ ...state, currentGuess: "" });
 
       } catch (error) {
         console.log(error);

@@ -121,6 +121,11 @@ func api_getGame(c *gin.Context) {
 
 	defer res.Body.Close()
 
+	if res.StatusCode != 200 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get game from engine: " + err.Error()})
+		return
+	}
+
 	// Create a currentGame variable and unmarshal the response body into it
 	currentGame := structs.Game{}
 	bodyBytes, err := io.ReadAll(res.Body)
@@ -133,6 +138,11 @@ func api_getGame(c *gin.Context) {
 	err = json.Unmarshal(bodyBytes, &currentGame)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal response body from engine" + err.Error()})
+		return
+	}
+
+	if currentGame.Metadata.GameID == "" {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get game from engine: " + err.Error()})
 		return
 	}
 
@@ -164,9 +174,15 @@ func api_makeGuess(c *gin.Context) {
 	// Call the engine's makeGuess endpoint
 	res, err := http.Post("http://engine:5001/makeGuess", "application/json", bodyBuffer)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to make guess with engine: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to make guess, please enter a valid 5 letter english word: " + err.Error()})
 		return
 	}
+
+	if res.StatusCode != 200 {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to make guess, please enter a valid 5 letter english word"})
+		return
+	}
+
 	defer res.Body.Close()
 
 	// Create a currentGame variable and unmarshal the response body into it
@@ -179,6 +195,11 @@ func api_makeGuess(c *gin.Context) {
 
 	if err := json.Unmarshal(bodyBytes, &currentGame); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to unmarshal response body from engine: " + err.Error()})
+		return
+	}
+
+	if currentGame.Metadata.GameID == "" {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get game from engine: " + err.Error()})
 		return
 	}
 
