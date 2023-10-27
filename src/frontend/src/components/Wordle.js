@@ -53,7 +53,7 @@ export default function Wordle({ gameState, setGameState }) {
 
       // check word is 5 chars
       if (currentGuess.length !== 5) {
-        setError("Word must be 5 characters long.");
+        setError("Your guess must be 5 characters long.");
         return;
       }
       try {
@@ -70,7 +70,7 @@ export default function Wordle({ gameState, setGameState }) {
         setGameState(newGameState);
 
         if(newGameState == null || newGameState.guesses == null) {
-          setError("Your guess must be 5 characters long and a valid english word. No duplicates are allowed.");
+          setError("Your guess must be a valid english word. No duplicates are allowed.");
           return;
         }
 
@@ -136,7 +136,7 @@ export default function Wordle({ gameState, setGameState }) {
 
       } catch (error) {
         console.log(error);
-        setError("Your guess must be 5 characters long and a valid english word. No duplicates are allowed.");
+        setError("Your guess must be a valid english word. No duplicates are allowed.");
         return; 
       }
 
@@ -155,7 +155,6 @@ export default function Wordle({ gameState, setGameState }) {
   // attach keyup listening to event object
   useEffect(() => {
     window.addEventListener("keyup", handleKeyup);
-    console.log("currentGuess is", state.currentGuess)
 
     return () => window.removeEventListener("keyup", handleKeyup);
   }, [state, showModal]);

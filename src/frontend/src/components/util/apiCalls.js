@@ -31,7 +31,6 @@ export const newGameApi = async (maxGuesses, wordLength) => {
 
 export const makeGuessApi = async (gameId, guess) => {
   try {
-    console.log("guess is", guess)
     // Make the POST request
     const res = await axios.post(
       "http://localhost:5002/makeGuess",

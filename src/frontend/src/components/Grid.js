@@ -3,7 +3,6 @@ import React from "react";
 import Row from "./Row";
 
 export default function Grid({ guesses, currentGuess, turn, status }) {
-  console.log("guesses in grid", guesses)
   return (
     <div>
       {/* Render as many rows as there are turns, where the last row is always filled with currentGuess */}
