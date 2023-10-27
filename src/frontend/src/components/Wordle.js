@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { makeGuessApi } from "./util/apiCalls";
+import LoginButton from "./LoginButton";
+import LogoutButton from "./LogoutButton";
+import Profile from "./Profile";
+import { useAuth0 } from "@auth0/auth0-react";
 
 // components
 import Grid from "./Grid";
@@ -7,6 +11,8 @@ import Keypad from "./Keypad";
 import Modal from "./Modal";
 
 export default function Wordle({ gameState, setGameState }) {
+  const { isAuthenticated } = useAuth0()
+
   const [state, setState] = useState({
     currentGuess: "",
     guesses: [],
@@ -165,6 +171,15 @@ export default function Wordle({ gameState, setGameState }) {
           solution={solution}
         />
       )}
+      <div>Auth0 Stuff</div>
+      <div>
+        {!isAuthenticated && <LoginButton />}
+        {isAuthenticated && (
+          <>
+            <LogoutButton />
+            <Profile />
+          </>)}
+      </div>
     </div>
   );
 }
