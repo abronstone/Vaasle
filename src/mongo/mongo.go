@@ -101,6 +101,7 @@ func main() {
 
 	router.GET("/get-words/:length", getWords)
 	router.GET("/insert-word/:word", insertWord)
+	router.GET("/check-if-valid-word/:word", checkIfValidWord)
 
 	router.PUT("/new-game/", newGame)
 	router.GET("/get-game/:id", getGame)

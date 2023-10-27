@@ -12,7 +12,6 @@ import Modal from "./Modal";
 
 export default function Wordle({ gameState, setGameState }) {
   const { isAuthenticated, user } = useAuth0()
-  const [error, setError] = useState(null);
   const [createdUserSuccessful, setCreatedUserSuccessful] = useState(false)
   const [loginSuccessful, setLoginSuccessful] = useState(false)
 
@@ -29,6 +28,7 @@ export default function Wordle({ gameState, setGameState }) {
   const [showModal, setShowModal] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [solution, setSolution] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleGameEnd = () => {
     setShowModal(true);
@@ -53,7 +53,7 @@ export default function Wordle({ gameState, setGameState }) {
 
       // check word is 5 chars
       if (currentGuess.length !== 5) {
-        console.log("word must be 5 chars.");
+        setError("Word must be 5 characters long.");
         return;
       }
       try {
@@ -68,6 +68,11 @@ export default function Wordle({ gameState, setGameState }) {
 
         // Update various state variables based on the newGameState
         setGameState(newGameState);
+
+        if(newGameState == null || newGameState.guesses == null) {
+          setError("Your guess must be 5 characters long and a valid english word.");
+          return;
+        }
 
         // If the game is over, show the modal and stop listening for keyup events
         if (newGameState.state === "won" || newGameState.state === "lost") {
@@ -120,15 +125,18 @@ export default function Wordle({ gameState, setGameState }) {
 
         setState({
           ...state,
-          currentGuess: "",
           turn: turn + 1,
           guesses: [...guesses, mostRecentGuessArr],
           status: newGameState.state,
           usedKeys: newUsedKeys,
         });
+        setError(null);
+        setState({ ...state, currentGuess: "" });
 
       } catch (error) {
-        console.error("Failed to update game state:", error);
+        console.log(error);
+        setError("Your guess must be 5 characters long and a valid english word.");
+        return; 
       }
 
     }
@@ -146,6 +154,7 @@ export default function Wordle({ gameState, setGameState }) {
   // attach keyup listening to event object
   useEffect(() => {
     window.addEventListener("keyup", handleKeyup);
+    console.log("currentGuess is", state.currentGuess)
 
     return () => window.removeEventListener("keyup", handleKeyup);
   }, [state, showModal]);

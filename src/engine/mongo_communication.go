@@ -162,3 +162,46 @@ func mongo_updateUser(username string, userUpdate *structs.UserUpdate) error {
 
 	return nil
 }
+
+func mongo_verifyWord(word string) (bool, error) {
+	// 1. Prepare request headers and body
+	wordJson, err := json.Marshal(word)
+	if err != nil {
+		return false, err
+	}
+
+	endpoint := "http://mongo:8000/check-if-valid-word/" + word + "/"
+	byteBuffer := bytes.NewBuffer(wordJson)
+
+	req, err := http.NewRequest(http.MethodGet, endpoint, byteBuffer)
+	if err != nil {
+		return false, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// 2. Send request
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		return false, err
+	}
+	defer res.Body.Close()
+
+	// 3. Parse response body
+	bodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return false, err
+	}
+
+	result := structs.Message{}
+	err = json.Unmarshal(bodyBytes, &result)
+	if err != nil {
+		return false, err
+	}
+
+	if result.Message != "The word exists in the word collection" {
+		return false, nil
+	}
+
+	return true, nil
+}

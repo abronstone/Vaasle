@@ -32,6 +32,13 @@ func makeGuess(g *structs.Game, guess string) error {
 		return fmt.Errorf(`game has already finished with state "%s"`, g.State)
 	}
 
+	// Check to see if the guess is a valid word by calling mongo
+	isValidWord, err := mongo_verifyWord(guess)
+
+	if isValidWord != true || err != nil {
+		return fmt.Errorf(`guess "%s" is not a valid word`, guess)
+	}
+
 	// Check to see if a guess has already been made.
 	guessesContainsCurrentGuess := false
 	for _, existingGuess := range g.Guesses {

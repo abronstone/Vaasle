@@ -89,24 +89,12 @@ func updateGameState(c *gin.Context) {
 
 	database := client.Database("VaasDatabase")
 
-	// Check to make sure new guess exists in the words collection
-	wordCollection := database.Collection("words")
-	newGuess := newGuesses[len(newGuesses)-1][0]
-
-	var foundWord bson.M
-	err := wordCollection.FindOne(context.TODO(), bson.D{{"word", newGuess}}).Decode(&foundWord)
-	if err != nil {
-		// Word not found
-		c.JSON(http.StatusBadRequest, gin.H{"error": "The new guess doesn't exist in the word collection"})
-		return
-	}
-
 	// Update document in database
 	gameCollection := database.Collection("games")
 	filter := bson.D{{"metadata.gameid", gameID}}
 	update := bson.D{{"$set", bson.D{{"state", newState}, {"guesses", newGuesses}}}}
 
-	_, err = gameCollection.UpdateOne(context.TODO(), filter, update)
+	_, err := gameCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update game in mongo: " + err.Error()})
 		return
