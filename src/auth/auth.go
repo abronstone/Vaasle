@@ -17,8 +17,8 @@ func main() {
 	*/
 	router := gin.Default()
 	router.GET("/", home)
-	router.PUT("/create-user/:username/:password", createUser)
-	router.PUT("/login/:username/:password", logIn)
+	router.PUT("/create-user/:username/", createUser)
+	router.PUT("/login/:username/", logIn)
 
 	router.Run("0.0.0.0:80")
 }
@@ -31,14 +31,13 @@ func createUser(c *gin.Context) {
 	/*
 		Validates if the username exists in the database by querying the Mongo service. If it does not, a new user is created and sent to the Mongo service. If the user exists, it is not sent to Mongo.
 
-		@param: username and hashed password (both strings)
+		@param: username (string)
 		@return:
 			- http status 200 if the credentials pass validation and user is created successfully
 			- http status 401 if the credentials do not pass validation
 			- http status 500 if some other problem occurred
 	*/
 	username := c.Param("username")
-	password := c.Param("password")
 
 	existingUserEndpoint := "http://localhost:8000/get-user/" + username
 
@@ -56,7 +55,6 @@ func createUser(c *gin.Context) {
 		// Create new user
 		new_user := structs.User{
 			UserName:     username,
-			Password:     password,
 			Games:        []string{},
 			NumGames:     0,
 			TotalGuesses: 0,
@@ -85,23 +83,22 @@ func createUser(c *gin.Context) {
 		// Return status code 200 if new user was inserted successfully
 		c.JSON(http.StatusOK, structs.Message{Message: "Account created successfully"})
 	} else {
-		// Return status code 401 if user was already found in database
-		c.JSON(http.StatusUnauthorized, structs.Message{Message: "Error: Account already exists"})
+		// Return status code 400 if user was already found in database
+		c.JSON(http.StatusBadRequest, structs.Message{Message: "Error: Account already exists"})
 	}
 }
 
 func logIn(c *gin.Context) {
 	/*
-		Validates if the username exists in the database by querying the Mongo service. If it does, then validates that the password matches. If the user does not exist or the password does not match, a 401 error is thrown.
+		Validates if the username exists in the database by querying the Mongo service. If the user does not exist a 401 error is thrown.
 
-		@param: username and hashed password (both strings)
+		@param: username (string)
 		@return:
 			- http status 200 if the credentials are authenticated via validation
 			- http status 401 if the credentials are not authenticated via validation
 			- http status 500 if some other problem occurred
 	*/
 	username := c.Param("username")
-	password := c.Param("password")
 
 	// Call the mongo service to retrieve the user if it exists
 	existingUserEndpoint := "http://localhost:8000/get-user/" + username
@@ -120,10 +117,8 @@ func logIn(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err)
 	}
 
-	// If the user does not exist OR the password doesn't match the existing user's, respond with status code 401. Otherwise, respond with status code 200
-	if res.StatusCode == http.StatusNotFound || password != user.Password {
+	// If the user does not exist respond with status code 401. Otherwise, respond with status code 200
+	if res.StatusCode == http.StatusNotFound {
 		c.JSON(http.StatusUnauthorized, structs.Message{Message: "Login unsuccessful"})
-	} else if password == user.Password {
-		c.JSON(http.StatusOK, structs.Message{Message: "Login successful"})
 	}
 }
