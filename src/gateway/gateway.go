@@ -23,6 +23,7 @@ func main() {
 	router.GET("/getGame/:id", api_getGame)
 	router.POST("/makeGuess", api_makeGuess)
 	router.PUT("/createUser/:username", api_newUser)
+	router.PUT("/login/:username", api_login)
 
 	router.Run("0.0.0.0:5001")
 }
@@ -97,48 +98,6 @@ func api_newGame(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, newGame)
-}
-
-func api_newUser(c *gin.Context) {
-	// Corrected typo in getting parameter from context
-	var userName string = c.Param("username")
-
-	// Create a new HTTP client
-	client := &http.Client{}
-
-	// Create a new request
-	req, err := http.NewRequest(http.MethodPut, "http://auth:80/create-user/"+userName, nil)
-
-	// Handle request creation error
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create a new request: " + err.Error()})
-		return
-	}
-
-	// Execute the request
-	res, err := client.Do(req)
-
-	// Handle execution error
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to execute the request: " + err.Error()})
-		return
-	}
-
-	// Close the response body
-	defer res.Body.Close()
-
-	// Check for status codes
-	if res.StatusCode == http.StatusBadRequest {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User already exists"})
-		return
-	}
-
-	if res.StatusCode != http.StatusOK {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating user"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "User created successfully"})
 }
 
 // Calls the appropriate endpoint in the engine to retrieve an existing game
@@ -220,4 +179,86 @@ func api_makeGuess(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, currentGame)
+}
+
+func api_newUser(c *gin.Context) {
+	var userName string = c.Param("username")
+
+	// Create a new HTTP client
+	client := &http.Client{}
+
+	// Create a new request
+	req, err := http.NewRequest(http.MethodPut, "http://auth:80/create-user/"+userName, nil)
+
+	// Handle request creation error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create a new request: " + err.Error()})
+		return
+	}
+
+	// Execute the request
+	res, err := client.Do(req)
+
+	// Handle execution error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to execute user creation request: " + err.Error()})
+		return
+	}
+
+	// Close the response body
+	defer res.Body.Close()
+
+	// Check for status codes
+	if res.StatusCode == http.StatusBadRequest {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User already exists"})
+		return
+	}
+
+	if res.StatusCode != http.StatusOK {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "User created successfully"})
+}
+
+func api_login(c *gin.Context) {
+	var userName string = c.Param("username")
+
+	// Create a new HTTP client
+	client := &http.Client{}
+
+	// Create a new request
+	req, err := http.NewRequest(http.MethodPut, "http://auth:80/login/"+userName, nil)
+
+	// Handle request creation error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create a new request: " + err.Error()})
+		return
+	}
+
+	// Execute the request
+	res, err := client.Do(req)
+
+	// Handle execution error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to execute login request: " + err.Error()})
+		return
+	}
+
+	// Close the response body
+	defer res.Body.Close()
+
+	// Check for status codes
+	if res.StatusCode == http.StatusUnauthorized {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Incorrect username"})
+		return
+	}
+
+	if res.StatusCode != http.StatusOK {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error logging in"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 }
