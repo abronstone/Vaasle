@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -17,8 +18,8 @@ func main() {
 	*/
 	router := gin.Default()
 	router.GET("/", home)
-	router.PUT("/create-user/:username/", createUser)
-	router.PUT("/login/:username/", logIn)
+	router.PUT("/create-user/:username", createUser)
+	router.PUT("/login/:username", logIn)
 
 	router.Run("0.0.0.0:80")
 }
@@ -39,18 +40,24 @@ func createUser(c *gin.Context) {
 	*/
 	username := c.Param("username")
 
-	existingUserEndpoint := "http://localhost:8000/get-user/" + username
+	existingUserEndpoint := "http://mongo:8000/get-user/" + username
 
 	// Call the mongo service to retrieve the user if it exists
 	res, err := http.Get(existingUserEndpoint)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		fmt.Println("No call to exsiting user endpoint" + err.Error())
+		return
 	}
-	defer res.Body.Close()
+
+	if res != nil {
+		// Only close the body if res is not nil
+		defer res.Body.Close()
+	}
 
 	// If mongo returns status code 404, call the mongo service to insert a new user and return status code 200. Otherwise, a user was found by mongo, so return status code 401.
 	if res.StatusCode == http.StatusNotFound {
-		newUserEndpoint := "http://localhost:8000/new-user/" + username
+		newUserEndpoint := "http://mongo:8000/new-user/" + username
 
 		// Create new user
 		new_user := structs.User{
@@ -62,6 +69,7 @@ func createUser(c *gin.Context) {
 		}
 		userJson, err := json.Marshal(new_user)
 		if err != nil {
+			fmt.Println("Error marshaling new user to json" + err.Error())
 			c.JSON(http.StatusInternalServerError, err)
 		}
 
@@ -69,6 +77,7 @@ func createUser(c *gin.Context) {
 		byteBuffer := bytes.NewBuffer(userJson)
 		request, err := http.NewRequest(http.MethodPut, newUserEndpoint, byteBuffer)
 		if err != nil {
+			fmt.Println("Error making mongo request" + err.Error())
 			c.JSON(http.StatusInternalServerError, err)
 		}
 		request.Header.Set("Content-Type", "application/json")
@@ -77,6 +86,7 @@ func createUser(c *gin.Context) {
 		client := &http.Client{}
 		_, err = client.Do(request)
 		if err != nil {
+			fmt.Println("Error from mongo request" + err.Error())
 			c.JSON(http.StatusInternalServerError, err)
 		}
 
@@ -101,9 +111,9 @@ func logIn(c *gin.Context) {
 	username := c.Param("username")
 
 	// Call the mongo service to retrieve the user if it exists
-	existingUserEndpoint := "http://localhost:8000/get-user/" + username
+	existingUserEndpoint := "http://mongo:8000/get-user/" + username
 	res, err := http.Get(existingUserEndpoint)
-	if err != nil {
+	if err != nil || res == nil {
 		c.JSON(http.StatusInternalServerError, err)
 	}
 	defer res.Body.Close()
