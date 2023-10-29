@@ -251,7 +251,7 @@ func api_login(c *gin.Context) {
 
 	// Check for status codes
 	if res.StatusCode == http.StatusUnauthorized {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Incorrect username"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User does not exist"})
 		return
 	}
 

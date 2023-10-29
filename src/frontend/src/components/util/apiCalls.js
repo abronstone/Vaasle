@@ -54,6 +54,54 @@ export const makeGuessApi = async (gameId, guess) => {
     return data;
   } catch (e) {
     console.error("Fetch failed!!", e);
-    throw new Error("Fetch failed!!");
+    throw new Error("Fetch failed!!", e);
+  }
+};
+
+/* 
+
+@param {string} userName
+@return {boolean} true if the user was created, false otherwise
+
+Calls gateway to create a user with the given userName
+*/
+
+export const createUserApi = async (userName) => {
+  console.log("Creating user with username: ", userName);
+  try {
+    const res = await axios.put("http://localhost:5002/createUser/" + userName);
+    if (res.status !== 200) {
+      console.log("Create user failed");
+      return false;
+    }
+    console.log("Create user succeeded");
+    return true;
+  } catch (error) {
+    console.log("Create user failed with error: ", error.message);
+    return false;
+  }
+};
+
+/*
+
+@param {string} userName
+@return {boolean} true if you can login, false otherwise
+
+Calls gateway to (login) validate that the user exists in the database
+
+*/
+export const loginApi = async (userName) => {
+  console.log("loginApi called");
+  try {
+    const res = await axios.put("http://localhost:5002/login/" + userName);
+    if (res.status !== 200) {
+      console.log("Login returned false");
+      return false;
+    }
+    console.log("Login returned true");
+    return true;
+  } catch (error) {
+    console.log("Login failed with error: ", error.message);
+    return false;
   }
 };
