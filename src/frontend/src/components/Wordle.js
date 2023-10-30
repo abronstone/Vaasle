@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { makeGuessApi } from "./util/apiCalls";
+import { makeGuessApi, createUserApi, loginApi } from "./util/apiCalls";
+import LoginButton from "./LoginButton";
+import LogoutButton from "./LogoutButton";
+import Profile from "./Profile";
+import { useAuth0 } from "@auth0/auth0-react";
 
 // components
 import Grid from "./Grid";
@@ -7,6 +11,11 @@ import Keypad from "./Keypad";
 import Modal from "./Modal";
 
 export default function Wordle({ gameState, setGameState }) {
+  const { isAuthenticated, user } = useAuth0()
+  const [error, setError] = useState(null);
+  const [createdUserSuccessful, setCreatedUserSuccessful] = useState(false)
+  const [loginSuccessful, setLoginSuccessful] = useState(false)
+
   const [state, setState] = useState({
     currentGuess: "",
     guesses: [],
@@ -41,13 +50,6 @@ export default function Wordle({ gameState, setGameState }) {
     if (key === "Enter") {
       // Make previous state variables easy to work with
       const { turn, currentGuess, guesses, usedKeys } = state;
-
-      // TODO: handle this on backend
-      // do not allow duplicate words
-      // if (guesses.includes(currentGuess)) {
-      //   console.log('you already tried that word.');
-      //   return;
-      // }
 
       // check word is 5 chars
       if (currentGuess.length !== 5) {
@@ -148,23 +150,56 @@ export default function Wordle({ gameState, setGameState }) {
     return () => window.removeEventListener("keyup", handleKeyup);
   }, [state, showModal]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (isAuthenticated) {
+
+        const login = await loginApi(user.sub);
+        setLoginSuccessful(login);
+
+        if (loginSuccessful === false) {
+          console.log("Creating user with username: ", user.sub)
+          const createUser = await createUserApi(user.sub);
+          setCreatedUserSuccessful(createUser);
+        }
+
+        setError(null);
+      } else {
+        setError("You must be logged in to play.")
+      }
+    };
+
+    fetchData();
+  }, [isAuthenticated]);  // Changed dependency to isAuthenticated
+
   return (
-    <div>
-      <div>Current Guess - {state.currentGuess}</div>
-      <Grid
-        guesses={state.guesses}
-        currentGuess={state.currentGuess}
-        turn={state.turn}
-        status={state.status}
-      />
-      <Keypad usedKeys={state.usedKeys} />
-      {showModal && (
-        <Modal
-          isCorrect={isCorrect}
-          turn={state.turn}
-          solution={solution}
-        />
+    <>
+      {error != null && <div className="error">{error}</div>}
+        {!isAuthenticated && <LoginButton />}
+        {isAuthenticated && (
+          <LogoutButton />
+        )}
+
+      {error == null && (
+        <>
+          <div>Current Guess - {state.currentGuess}</div>
+          <Grid
+            guesses={state.guesses}
+            currentGuess={state.currentGuess}
+            turn={state.turn}
+            status={state.status}
+          />
+          <Keypad usedKeys={state.usedKeys} />
+          {showModal && (
+            <Modal
+              isCorrect={isCorrect}
+              turn={state.turn}
+              solution={solution}
+            />
+          )}
+
+        </>
       )}
-    </div>
+    </>
   );
 }

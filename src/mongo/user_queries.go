@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func addUser(c *gin.Context) {
+func newUser(c *gin.Context) {
 	/*
 		Adds a new user to the 'users' collection in the database
 
@@ -19,28 +19,28 @@ func addUser(c *gin.Context) {
 		@return: confirmation message
 	*/
 	// Creates a new user with the specified username
-	userName := c.Param("username")
-	user := structs.User{UserName: userName, Games: []string{}, NumGames: 0, TotalGuesses: 0}
+
+	var user structs.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	database := client.Database("VaasDatabase")
 	userCollection := database.Collection("users")
 
-	// Checks to see if the user already exists
-	var existingUser structs.User
-	criteria := map[string]interface{}{
-		"username": userName,
+	// Execute the query
+	cursor, err := userCollection.Find(context.TODO(), bson.M{"username": user.UserName})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	err := userCollection.FindOne(ctx, criteria).Decode(&existingUser)
-
+	defer cursor.Close(context.TODO())
 	// If no documents were found, insert the new user into the collection and return a corresponding confirmation message. Otherwise, return a stale message
-	if err == mongo.ErrNoDocuments {
+	if !cursor.Next(context.TODO()) {
 		userCollection.InsertOne(context.TODO(), user)
-
-		c.JSON(http.StatusOK, map[string]string{"message": "User " + userName + " created"})
+		c.JSON(http.StatusOK, structs.Message{Message: "User inserted into database"})
 	} else {
-		c.JSON(http.StatusOK, map[string]string{"message": "User " + userName + " already exists"})
+		c.JSON(http.StatusNotFound, structs.Message{Message: "User already exists!"})
 	}
 }
 
@@ -58,27 +58,20 @@ func getUser(c *gin.Context) {
 	userCollection := database.Collection("users")
 
 	// Aggregate matching pipeline query
-	matchStage := bson.A{
-		bson.D{{"$match", bson.D{{"username", userName}}}},
+	var existingUser structs.User
+	criteria := map[string]interface{}{
+		"username": userName,
 	}
-	cursor, err := userCollection.Aggregate(context.TODO(), matchStage)
-	defer cursor.Close(context.Background())
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve user from mongo: " + err.Error()})
-		return
-	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err := userCollection.FindOne(ctx, criteria).Decode(&existingUser)
 
-	// Decode the user from the Mongo cursor
-	var user structs.User
-	if cursor.Next(context.TODO()) {
-		if err := cursor.Decode(&user); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to decode user from mongo: " + err.Error()})
-			return
-		}
+	// If no documents were found, insert the new user into the collection and return a corresponding confirmation message. Otherwise, return a stale message
+	if err == mongo.ErrNoDocuments {
+		c.JSON(http.StatusNotFound, structs.Message{Message: "No documents found"})
+	} else {
+		c.JSON(http.StatusOK, existingUser)
 	}
-
-	// Return the user
-	c.JSON(http.StatusOK, user)
 }
 
 func updateUser(c *gin.Context) {

@@ -106,7 +106,7 @@ func main() {
 	router.GET("/get-game/:id", getGame)
 	router.PUT("/update-game/", updateGameState)
 
-	router.PUT("/new-user/:username", addUser)
+	router.PUT("/new-user/:username", newUser)
 	router.GET("/get-user/:username", getUser)
 	router.POST("/update-user/:username", updateUser)
 

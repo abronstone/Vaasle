@@ -25,7 +25,7 @@ func getWords(c *gin.Context) {
 	// Get word length parameter
 	wordLength, err := strconv.Atoi(c.Param("length"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"please enter a valid word length, error: ": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"Word length parameter conversion error ": err.Error()})
 		return
 	}
 

@@ -38,6 +38,7 @@ type User struct {
 	Games        []string `json:"games" bson:"games"`
 	NumGames     int      `json:"numgames" bson:"numgames"`
 	TotalGuesses int      `json:"totalguesses" bson:"totalguesses"`
+	Playing      bool     `json:"playing" bson:"playing"`
 }
 
 // An update to make for a given user.

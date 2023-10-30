@@ -47,7 +47,7 @@ func newGame(c *gin.Context) {
 		bson.D{{"$sample", bson.D{{"size", 1}}}},
 	})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve a word from mongo: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "aggregation error: " + err.Error()})
 		return
 	}
 
@@ -136,8 +136,10 @@ func getGame(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to decode game from mongo: " + err.Error()})
 			return
 		}
+		// Return game
+		c.JSON(http.StatusOK, game)
+	} else {
+		// Throw 404 error if no game was found
+		c.JSON(http.StatusNotFound, nil)
 	}
-
-	// Return game
-	c.JSON(http.StatusOK, game)
 }

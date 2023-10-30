@@ -44,3 +44,11 @@ services:
     depends_on:
       - engine
       - gateway
+
+  auth:
+    container_name: auth
+    build:
+      context: ./src
+      target: auth
+    ports:
+      - "80:8000"
