@@ -60,6 +60,10 @@ func api_newGame(c *gin.Context) {
 		return
 	}
 
+	if newGameCustomMetadata.UserName == "" {
+		newGameCustomMetadata.UserName = "default"
+	}
+
 	bodyBytes, err := json.Marshal(newGameCustomMetadata)
 
 	if err != nil {

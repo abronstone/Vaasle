@@ -108,6 +108,7 @@ func main() {
 
 	router.PUT("/new-user/:username", addUser)
 	router.GET("/get-user/:username", getUser)
+	router.POST("/update-user/:username", updateUser)
 
 	router.Run("0.0.0.0:8000")
 }

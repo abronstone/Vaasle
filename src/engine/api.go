@@ -56,10 +56,8 @@ func api_newGame(c *gin.Context) {
 func api_getGame(c *gin.Context) {
 	if game, err := getGame(c.Param("id")); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "could not find game"})
-	} else if game.State == "ongoing" {
-		c.JSON(http.StatusOK, game.ObfuscateWord())
 	} else {
-		c.JSON(http.StatusOK, game) // No obfuscation if game is complete.
+		c.JSON(http.StatusOK, game.GetShareable())
 	}
 }
 
@@ -100,12 +98,13 @@ func api_makeGuess(c *gin.Context) {
 		log.Println(err.Error()) // not a fatal error, we can just log it
 	}
 
-	if game.State == "ongoing" {
-		c.JSON(http.StatusOK, game.ObfuscateWord())
-	} else {
-		c.JSON(http.StatusOK, game) // No obfuscation if game is complete.
+	err = mongo_updateUser(game.Metadata.UserName, game.GetUserUpdateAfterGuess())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
+	c.JSON(http.StatusOK, game.GetShareable())
 }
 
 // Pings the gateway endpoint and forwards its response.
@@ -123,9 +122,7 @@ func api_pingGateway(c *gin.Context) {
 		return
 	}
 
-	result := struct {
-		Message string `json:"message"`
-	}{}
+	result := structs.Message{}
 	json.Unmarshal(bodyBytes, &result)
 	c.JSON(http.StatusOK, &result)
 }

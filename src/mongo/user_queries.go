@@ -80,3 +80,44 @@ func getUser(c *gin.Context) {
 	// Return the user
 	c.JSON(http.StatusOK, user)
 }
+
+func updateUser(c *gin.Context) {
+	/*
+		Updates an existing user from the 'users' collection in the database
+
+		@param: username via api path parameter
+		@return: JSON confirmation message
+	*/
+	username := c.Param("username")
+
+	// Gets the HTTP header and body
+	userUpdateData := &structs.UserUpdate{}
+	if err := c.ShouldBindJSON(userUpdateData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Update document in database
+	database := client.Database("VaasDatabase")
+	gameCollection := database.Collection("users")
+	filter := bson.D{
+		{Key: "username", Value: username},
+	}
+	update := bson.D{
+		{Key: "$inc", Value: bson.D{
+			{Key: "numgames", Value: userUpdateData.ChangeInNumGames},
+			{Key: "totalguesses", Value: userUpdateData.ChangeInTotalGuesses},
+		}},
+	}
+
+	_, err := gameCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update game in mongo: " + err.Error()})
+		return
+	}
+
+	// Return confirmation message
+	c.JSON(http.StatusOK, &structs.Message{
+		Message: "user updated successfully",
+	})
+}
