@@ -28,6 +28,8 @@ Temporary Items
 
 # Mongo Ignore
 src/mongo/data/
+src/mongo/secrets.env
+src/mongo/word_files/remove_words.txt
 
 __pycache__/
 *.py[cod]

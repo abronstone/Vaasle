@@ -21,7 +21,7 @@ WORKDIR /src/structs
 COPY /structs/* ./
 
 WORKDIR /src/mongo
-COPY ./mongo/go.mod mongo/go.sum ./
+COPY ./mongo/go.mod mongo/go.sum mongo/secrets.env ./
 
 RUN go mod download
 COPY ./mongo/*.go ./
