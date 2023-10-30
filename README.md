@@ -2,6 +2,8 @@
 Carleton College CS348: Final Project. Team Vaas
 
 ## Running the CLI
+Before running the application locally, ask for a `secrets.env` file from application owners, and insert it into `src/mongo`.
+
 To start the containers and run the CLI, run the following command from the root directory of the project (Unix):
 ```
 ./start.sh
