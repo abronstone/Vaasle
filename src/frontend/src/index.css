@@ -177,3 +177,8 @@ h1 {
     border-color: #333;
   }
 }
+
+.auth0button {
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
