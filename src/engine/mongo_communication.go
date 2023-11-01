@@ -105,6 +105,10 @@ func mongo_updateGame(game *structs.Game) error {
 	if err != nil {
 		return err
 	}
+	if res.StatusCode != http.StatusOK {
+		return errors.New("failed to send game updates to Mongo API")
+	}
+
 	defer res.Body.Close()
 
 	// 3. Parse response body
@@ -119,9 +123,9 @@ func mongo_updateGame(game *structs.Game) error {
 		return err
 	}
 
-	if result.Message != "game updated successfully" {
-		return errors.New("failed to send game updates to Mongo API")
-	}
+	// if result.Message != "game updated successfully" {
+	// 	return errors.New("failed to send game updates to Mongo API")
+	// }
 
 	return nil
 }

@@ -97,7 +97,7 @@ func checkIfValidWord(c *gin.Context) {
 	err := wordCollection.FindOne(context.TODO(), bson.D{{"word", wordToCheck}}).Decode(&foundWord)
 	if err != nil {
 		// Word not found
-		c.JSON(http.StatusBadRequest, gin.H{"error": "The word doesn't exist in the word collection"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "The word doesn't exist in the word collection"})
 		return
 	}
 
