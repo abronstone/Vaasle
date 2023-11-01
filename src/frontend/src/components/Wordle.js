@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { makeGuessApi, createUserApi, loginApi } from "./util/apiCalls";
 import LoginButton from "./LoginButton";
 import LogoutButton from "./LogoutButton";
-import Profile from "./Profile";
 import { useAuth0 } from "@auth0/auth0-react";
 
 // components
@@ -179,7 +178,7 @@ export default function Wordle({ gameState, setGameState }) {
     };
 
     fetchData();
-  }, [isAuthenticated]);  // Changed dependency to isAuthenticated
+  }, [isAuthenticated]); 
 
   return (
     <>
@@ -189,7 +188,7 @@ export default function Wordle({ gameState, setGameState }) {
           <LogoutButton />
         )}
 
-      {error == null && (
+      {isAuthenticated && (
         <>
           <div>Current Guess - {state.currentGuess}</div>
           <Grid
