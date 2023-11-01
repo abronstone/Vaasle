@@ -85,3 +85,21 @@ func insertWord(c *gin.Context) {
 	// Return confirmation message
 	c.JSON(http.StatusOK, map[string]string{"message": "Word inserted successfully"})
 }
+
+func checkIfValidWord(c *gin.Context) {
+	database := client.Database("VaasDatabase")
+
+	// Check to make sure new guess exists in the words collection
+	wordCollection := database.Collection("words")
+	wordToCheck := c.Param("word")
+
+	var foundWord bson.M
+	err := wordCollection.FindOne(context.TODO(), bson.D{{"word", wordToCheck}}).Decode(&foundWord)
+	if err != nil {
+		// Word not found
+		c.JSON(http.StatusNotFound, gin.H{"error": "The word doesn't exist in the word collection"})
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]string{"message": "The word exists in the word collection"})
+}

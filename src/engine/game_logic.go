@@ -32,6 +32,27 @@ func makeGuess(g *structs.Game, guess string) error {
 		return fmt.Errorf(`game has already finished with state "%s"`, g.State)
 	}
 
+	// Check to see if the guess is a valid word by calling mongo
+	isValidWord, err := mongo_verifyWord(guess)
+
+	if isValidWord != true || err != nil {
+		return fmt.Errorf(`guess "%s" is not a valid word`, guess)
+	}
+
+	// Check to see if a guess has already been made.
+	guessesContainsCurrentGuess := false
+	for _, existingGuess := range g.Guesses {
+		if existingGuess[0] == guess {
+			guessesContainsCurrentGuess = true
+			break
+		}
+	}
+
+	if g.Guesses != nil && len(g.Guesses) > 0 && guessesContainsCurrentGuess {
+		return fmt.Errorf(`guess "%s" has already been made`, guess)
+	}
+
+	// TODO Add a check to see if the guess is a valid word (requires a call to Mongo)
 	g.Guesses = append(g.Guesses, [2]string{guess, getCorrections(guess, g.Word)})
 	updateGameState(g)
 

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { makeGuessApi, createUserApi, loginApi } from "./util/apiCalls";
 import LoginButton from "./LoginButton";
 import LogoutButton from "./LogoutButton";
-import Profile from "./Profile";
 import { useAuth0 } from "@auth0/auth0-react";
 
 // components
@@ -12,7 +11,6 @@ import Modal from "./Modal";
 
 export default function Wordle({ gameState, setGameState }) {
   const { isAuthenticated, user } = useAuth0()
-  const [error, setError] = useState(null);
   const [createdUserSuccessful, setCreatedUserSuccessful] = useState(false)
   const [loginSuccessful, setLoginSuccessful] = useState(false)
 
@@ -29,6 +27,7 @@ export default function Wordle({ gameState, setGameState }) {
   const [showModal, setShowModal] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [solution, setSolution] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleGameEnd = () => {
     setShowModal(true);
@@ -53,7 +52,7 @@ export default function Wordle({ gameState, setGameState }) {
 
       // check word is 5 chars
       if (currentGuess.length !== 5) {
-        console.log("word must be 5 chars.");
+        setError("Your guess must be 5 characters long.");
         return;
       }
       try {
@@ -68,6 +67,11 @@ export default function Wordle({ gameState, setGameState }) {
 
         // Update various state variables based on the newGameState
         setGameState(newGameState);
+
+        if(newGameState == null || newGameState.guesses == null) {
+          setError("Your guess must be a valid english word. No duplicates are allowed.");
+          return;
+        }
 
         // If the game is over, show the modal and stop listening for keyup events
         if (newGameState.state === "won" || newGameState.state === "lost") {
@@ -118,17 +122,21 @@ export default function Wordle({ gameState, setGameState }) {
           }
         });
 
-        setState({
-          ...state,
-          currentGuess: "",
-          turn: turn + 1,
-          guesses: [...guesses, mostRecentGuessArr],
+        setState((prevState) => ({
+          ...prevState,
+          turn: prevState.turn + 1,
+          guesses: [...prevState.guesses, mostRecentGuessArr],
           status: newGameState.state,
           usedKeys: newUsedKeys,
-        });
+          currentGuess: ""
+        }));
+
+        setError(null);
 
       } catch (error) {
-        console.error("Failed to update game state:", error);
+        console.log(error);
+        setError("Your guess must be a valid english word. No duplicates are allowed.");
+        return; 
       }
 
     }
@@ -170,7 +178,7 @@ export default function Wordle({ gameState, setGameState }) {
     };
 
     fetchData();
-  }, [isAuthenticated]);  // Changed dependency to isAuthenticated
+  }, [isAuthenticated]); 
 
   return (
     <>
@@ -180,7 +188,7 @@ export default function Wordle({ gameState, setGameState }) {
           <LogoutButton />
         )}
 
-      {error == null && (
+      {isAuthenticated && (
         <>
           <div>Current Guess - {state.currentGuess}</div>
           <Grid

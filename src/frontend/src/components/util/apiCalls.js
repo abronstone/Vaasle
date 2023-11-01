@@ -25,7 +25,7 @@ export const newGameApi = async (maxGuesses, wordLength) => {
     return data;
   } catch (e) {
     console.error("Fetch failed!!", e);
-    throw new Error("Fetch failed!!");
+    throw new Error("Fetch failed!!", e);
   }
 };
 

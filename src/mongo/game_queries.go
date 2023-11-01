@@ -87,8 +87,9 @@ func updateGameState(c *gin.Context) {
 	newGuesses := gameData.Guesses
 	gameID := gameData.Metadata.GameID
 
-	// Update document in database
 	database := client.Database("VaasDatabase")
+
+	// Update document in database
 	gameCollection := database.Collection("games")
 	filter := bson.D{{"metadata.gameid", gameID}}
 	update := bson.D{{"$set", bson.D{{"state", newState}, {"guesses", newGuesses}}}}
