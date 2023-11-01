@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Wordle from "./components/Wordle";
 import { newGameApi } from "./components/util/apiCalls";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function App() {
+  const { isAuthenticated } = useAuth0();
   const [gameState, setGameState] = useState(null);
 
   const initialGameState = useCallback(async () => {
     try {
+      if(!isAuthenticated) return;
       const maxGuesses = 5;
       const wordLength = 5;
       const initialData = await newGameApi(maxGuesses, wordLength);
