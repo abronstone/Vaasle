@@ -34,6 +34,7 @@ type Message struct {
 
 // A user.
 type User struct {
+	Id           string   `json:"id" bson:"id"`
 	UserName     string   `json:"username" bson:"username"`
 	Games        []string `json:"games" bson:"games"`
 	NumGames     int      `json:"numgames" bson:"numgames"`

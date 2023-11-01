@@ -164,10 +164,12 @@ export default function Wordle({ gameState, setGameState }) {
 
         const login = await loginApi(user.sub);
         setLoginSuccessful(login);
+        console.log("Login successful: ", login)
 
         if (loginSuccessful === false) {
-          console.log("Creating user with username: ", user.sub)
-          const createUser = await createUserApi(user.sub);
+          console.log("Creating user with id and username: ", user.sub, user.name)
+          const createUser = await createUserApi(user.name, user.sub);
+          console.log("Create user successful: ", createUser)
           setCreatedUserSuccessful(createUser);
         }
 

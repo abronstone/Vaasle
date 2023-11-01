@@ -66,10 +66,14 @@ export const makeGuessApi = async (gameId, guess) => {
 Calls gateway to create a user with the given userName
 */
 
-export const createUserApi = async (userName) => {
+export const createUserApi = async (userName, userId) => {
   console.log("Creating user with username: ", userName);
   try {
-    const res = await axios.put("http://localhost:5002/createUser/" + userName);
+    const res = await axios.put("http://localhost:5002/createUser", {
+      userName: userName,
+      id: userId,
+    }, { headers: { "Content-Type": "application/json", } });
+
     if (res.status !== 200) {
       console.log("Create user failed");
       return false;
@@ -77,7 +81,7 @@ export const createUserApi = async (userName) => {
     console.log("Create user succeeded");
     return true;
   } catch (error) {
-    console.log("Create user failed with error: ", error.message);
+    console.log("Create user failed with error: ", error);
     return false;
   }
 };
