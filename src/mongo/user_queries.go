@@ -19,14 +19,8 @@ func newUser(c *gin.Context) {
 		@return: confirmation message
 	*/
 
-	// UserRequestBody holds incoming request body data
-	type UserRequestBody struct {
-		UserName string `json:"userName"`
-		Id       string `json:"id"`
-	}
-
 	// Bind incoming JSON to UserRequestBody struct
-	var requestBody UserRequestBody
+	var requestBody structs.NewUserRequestBody
 	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

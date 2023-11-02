@@ -48,6 +48,11 @@ type UserUpdate struct {
 	ChangeInTotalGuesses int `json:"changeInTotalGuesses"`
 }
 
+type NewUserRequestBody struct {
+	UserName string `json:"userName"`
+	Id       string `json:"id"`
+}
+
 // Obfuscate the word of a Game.
 func (g *Game) ObfuscateWord() *Game {
 	return &Game{
