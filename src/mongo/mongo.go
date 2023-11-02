@@ -18,9 +18,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -31,7 +34,11 @@ func getDatabase() *mongo.Client {
 		Returns a MongoDB Client instance
 	*/
 	// MongoDB connection string
-	CONNECTION_STRING := "mongodb+srv://vaas_admin:adv1software2design3@vaasdatabase.sarpr4r.mongodb.net"
+	err := godotenv.Load("secrets.env")
+	if err != nil {
+		log.Fatal("NO SECRETS FILE FOUND")
+	}
+	CONNECTION_STRING := os.Getenv("MONGO_URI")
 
 	// Set up client options
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
