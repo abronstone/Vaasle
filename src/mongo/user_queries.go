@@ -13,34 +13,52 @@ import (
 
 func newUser(c *gin.Context) {
 	/*
-		Adds a new user to the 'users' collection in the database
+		Adds a new user to the 'users' collection in the database.
+		Expects a JSON payload with userName and id fields.
 
-		@param: username via api path parameter
 		@return: confirmation message
 	*/
-	// Creates a new user with the specified username
 
-	var user structs.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	// UserRequestBody holds incoming request body data
+	type UserRequestBody struct {
+		UserName string `json:"userName"`
+		Id       string `json:"id"`
+	}
+
+	// Bind incoming JSON to UserRequestBody struct
+	var requestBody UserRequestBody
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	// Populate the User struct with received userName and ID
+	var user structs.User
+	user.UserName = requestBody.UserName
+	user.Id = requestBody.Id
+
+	// Connect to MongoDB (replace client with your actual client)
 	database := client.Database("VaasDatabase")
 	userCollection := database.Collection("users")
 
-	// Execute the query
-	cursor, err := userCollection.Find(context.TODO(), bson.M{"username": user.UserName})
+	// Check if the user already exists
+	cursor, err := userCollection.Find(context.TODO(), bson.M{"id": user.Id})
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	defer cursor.Close(context.TODO())
-	// If no documents were found, insert the new user into the collection and return a corresponding confirmation message. Otherwise, return a stale message
+
+	// If no existing user is found, insert new user
 	if !cursor.Next(context.TODO()) {
-		userCollection.InsertOne(context.TODO(), user)
+		_, err := userCollection.InsertOne(context.TODO(), user)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 		c.JSON(http.StatusOK, structs.Message{Message: "User inserted into database"})
 	} else {
-		c.JSON(http.StatusNotFound, structs.Message{Message: "User already exists!"})
+		c.JSON(http.StatusConflict, structs.Message{Message: "User already exists!"})
 	}
 }
 
@@ -48,10 +66,10 @@ func getUser(c *gin.Context) {
 	/*
 		Gets an existing user from the 'users' collection in the database
 
-		@param: username via api path parameter
+		@param: user id via api path parameter
 		@return: user structure
 	*/
-	userName := c.Param("username")
+	userId := c.Param("id")
 
 	// Gets the 'users' collection from the database
 	database := client.Database("VaasDatabase")
@@ -60,7 +78,7 @@ func getUser(c *gin.Context) {
 	// Aggregate matching pipeline query
 	var existingUser structs.User
 	criteria := map[string]interface{}{
-		"username": userName,
+		"id": userId,
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -81,7 +99,7 @@ func updateUser(c *gin.Context) {
 		@param: username via api path parameter
 		@return: JSON confirmation message
 	*/
-	username := c.Param("username")
+	userId := c.Param("userId")
 
 	// Gets the HTTP header and body
 	userUpdateData := &structs.UserUpdate{}
@@ -94,7 +112,7 @@ func updateUser(c *gin.Context) {
 	database := client.Database("VaasDatabase")
 	gameCollection := database.Collection("users")
 	filter := bson.D{
-		{Key: "username", Value: username},
+		{Key: "id", Value: userId},
 	}
 	update := bson.D{
 		{Key: "$inc", Value: bson.D{

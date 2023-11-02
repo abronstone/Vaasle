@@ -8,7 +8,7 @@ import (
 type GameMetadata struct {
 	GameID      string    `json:"gameID" bson:"gameid"`
 	DateCreated time.Time `json:"dateCreated" bson:"datecreated"`
-	UserName    string    `json:"username" bson:"username"`
+	UserId      string    `json:"userId" bson:"userId"`
 	WordLength  int       `json:"wordLength" bson:"wordlength"`
 	MaxGuesses  int       `json:"maxGuesses" bson:"maxguesses"`
 }
@@ -34,6 +34,7 @@ type Message struct {
 
 // A user.
 type User struct {
+	Id           string   `json:"id" bson:"id"`
 	UserName     string   `json:"username" bson:"username"`
 	Games        []string `json:"games" bson:"games"`
 	NumGames     int      `json:"numgames" bson:"numgames"`

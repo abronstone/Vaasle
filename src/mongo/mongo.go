@@ -114,9 +114,9 @@ func main() {
 	router.GET("/get-game/:id", getGame)
 	router.PUT("/update-game/", updateGameState)
 
-	router.PUT("/new-user/:username", newUser)
-	router.GET("/get-user/:username", getUser)
-	router.POST("/update-user/:username", updateUser)
+	router.PUT("/new-user", newUser)
+	router.GET("/get-user/:id", getUser)
+	router.POST("/update-user/:userId", updateUser)
 
 	router.Run("0.0.0.0:8000")
 }

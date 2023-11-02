@@ -18,7 +18,7 @@ func main() {
 	*/
 	router := gin.Default()
 	router.GET("/", home)
-	router.PUT("/create-user/:username", createUser)
+	router.PUT("/create-user", createUser)
 	router.PUT("/login/:username", logIn)
 
 	router.Run("0.0.0.0:80")
@@ -29,71 +29,75 @@ func home(c *gin.Context) {
 }
 
 func createUser(c *gin.Context) {
-	/*
-		Validates if the username exists in the database by querying the Mongo service. If it does not, a new user is created and sent to the Mongo service. If the user exists, it is not sent to Mongo.
+	// UserRequestBody holds incoming request body data
+	type UserRequestBody struct {
+		UserName string `json:"userName"`
+		Id       string `json:"id"`
+	}
 
-		@param: username (string)
-		@return:
-			- http status 200 if the credentials pass validation and user is created successfully
-			- http status 401 if the credentials do not pass validation
-			- http status 500 if some other problem occurred
-	*/
-	username := c.Param("username")
-
-	existingUserEndpoint := "http://mongo:8000/get-user/" + username
-
-	// Call the mongo service to retrieve the user if it exists
-	res, err := http.Get(existingUserEndpoint)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		fmt.Println("No call to exsiting user endpoint" + err.Error())
+	// Bind incoming JSON to struct
+	var requestBody UserRequestBody
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
-	if res != nil {
-		// Only close the body if res is not nil
-		defer res.Body.Close()
+	// Use the id from the request body as the user ID
+
+	existingUserEndpoint := "http://mongo:8000/get-user/" + requestBody.Id
+
+	// Check for existing user
+	res, err := http.Get(existingUserEndpoint)
+	if err != nil {
+		fmt.Println("No call to existing user endpoint: " + err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
-	// If mongo returns status code 404, call the mongo service to insert a new user and return status code 200. Otherwise, a user was found by mongo, so return status code 401.
-	if res.StatusCode == http.StatusNotFound {
-		newUserEndpoint := "http://mongo:8000/new-user/" + username
+	// Close the response body
+	defer res.Body.Close()
 
-		// Create new user
-		new_user := structs.User{
-			UserName:     username,
+	if res.StatusCode == http.StatusNotFound {
+		// User not found, create a new one
+		newUserEndpoint := "http://mongo:8000/new-user/"
+
+		newUser := structs.User{
+			Id:           requestBody.Id,
+			UserName:     requestBody.UserName,
 			Games:        []string{},
 			NumGames:     0,
 			TotalGuesses: 0,
 			Playing:      false,
 		}
-		userJson, err := json.Marshal(new_user)
+
+		userJson, err := json.Marshal(newUser)
 		if err != nil {
-			fmt.Println("Error marshaling new user to json" + err.Error())
-			c.JSON(http.StatusInternalServerError, err)
+			fmt.Println("Error marshaling new user to JSON: " + err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
 
-		// Create request
-		byteBuffer := bytes.NewBuffer(userJson)
-		request, err := http.NewRequest(http.MethodPut, newUserEndpoint, byteBuffer)
+		// Create and send request to create new user
+		request, err := http.NewRequest(http.MethodPut, newUserEndpoint, bytes.NewBuffer(userJson))
 		if err != nil {
-			fmt.Println("Error making mongo request" + err.Error())
-			c.JSON(http.StatusInternalServerError, err)
+			fmt.Println("Error making request to Mongo: " + err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
+
 		request.Header.Set("Content-Type", "application/json")
 
-		// Send request
 		client := &http.Client{}
 		_, err = client.Do(request)
 		if err != nil {
-			fmt.Println("Error from mongo request" + err.Error())
-			c.JSON(http.StatusInternalServerError, err)
+			fmt.Println("Error from Mongo request: " + err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
 
-		// Return status code 200 if new user was inserted successfully
 		c.JSON(http.StatusOK, structs.Message{Message: "Account created successfully"})
 	} else {
-		// Return status code 400 if user was already found in database
+		// User already exists
 		c.JSON(http.StatusBadRequest, structs.Message{Message: "Error: Account already exists"})
 	}
 }

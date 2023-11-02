@@ -22,7 +22,7 @@ func main() {
 	router.POST("/newGame", api_newGame)
 	router.GET("/getGame/:id", api_getGame)
 	router.POST("/makeGuess", api_makeGuess)
-	router.PUT("/createUser/:username", api_newUser)
+	router.PUT("/createUser", api_newUser)
 	router.PUT("/login/:username", api_login)
 
 	router.Run("0.0.0.0:5001")
@@ -62,8 +62,8 @@ func api_newGame(c *gin.Context) {
 		return
 	}
 
-	if newGameCustomMetadata.UserName == "" {
-		newGameCustomMetadata.UserName = "default"
+	if newGameCustomMetadata.UserId == "" {
+		newGameCustomMetadata.UserId = "default"
 	}
 
 	bodyBytes, err := json.Marshal(newGameCustomMetadata)
@@ -207,19 +207,42 @@ func api_makeGuess(c *gin.Context) {
 }
 
 func api_newUser(c *gin.Context) {
-	var userName string = c.Param("username")
+	// Define a struct to bind the request body
+
+	type NewUserRequestBody struct {
+		UserName string `json:"userName"`
+		Id       string `json:"id"`
+	}
+
+	var requestBody NewUserRequestBody
+
+	// Bind JSON to struct
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
 
 	// Create a new HTTP client
 	client := &http.Client{}
 
+	// Convert struct to JSON
+	jsonData, err := json.Marshal(requestBody)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error converting data to JSON"})
+		return
+	}
+
 	// Create a new request
-	req, err := http.NewRequest(http.MethodPut, "http://auth:80/create-user/"+userName, nil)
+	req, err := http.NewRequest(http.MethodPut, "http://auth:80/create-user", bytes.NewBuffer(jsonData))
 
 	// Handle request creation error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create a new request: " + err.Error()})
 		return
 	}
+
+	// Set Content-Type header
+	req.Header.Set("Content-Type", "application/json")
 
 	// Execute the request
 	res, err := client.Do(req)

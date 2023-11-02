@@ -123,17 +123,13 @@ func mongo_updateGame(game *structs.Game) error {
 		return err
 	}
 
-	// if result.Message != "game updated successfully" {
-	// 	return errors.New("failed to send game updates to Mongo API")
-	// }
-
 	return nil
 }
 
 // Asks the Mongo API (mongo.go) to make changes to the state of the given user.
-func mongo_updateUser(username string, userUpdate *structs.UserUpdate) error {
+func mongo_updateUser(userId string, userUpdate *structs.UserUpdate) error {
 	// 1. Send request
-	endpoint := "http://mongo:8000/update-user/" + username
+	endpoint := "http://mongo:8000/update-user/" + userId
 
 	bodyBytes, err := json.Marshal(userUpdate)
 	if err != nil {

@@ -1,12 +1,13 @@
 import axios from "axios";
 
-export const newGameApi = async (maxGuesses, wordLength) => {
+export const newGameApi = async (maxGuesses, wordLength, userId) => {
   try {
     const res = await axios.post(
       "http://localhost:5002/newGame",
       {
         maxGuesses,
         wordLength,
+        userId,
       },
       {
         headers: {
@@ -30,6 +31,7 @@ export const newGameApi = async (maxGuesses, wordLength) => {
 };
 
 export const makeGuessApi = async (gameId, guess) => {
+  console.log("makeGuessApi called");
   try {
     // Make the POST request
     const res = await axios.post(
@@ -45,12 +47,13 @@ export const makeGuessApi = async (gameId, guess) => {
       }
     );
 
+    console.log("makeGuessApi response: ", res);
     if (res.status !== 200) {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
 
     const data = res.data;
-
+    
     return data;
   } catch (e) {
     console.error("Fetch failed!!", e);
@@ -66,10 +69,14 @@ export const makeGuessApi = async (gameId, guess) => {
 Calls gateway to create a user with the given userName
 */
 
-export const createUserApi = async (userName) => {
+export const createUserApi = async (userName, userId) => {
   console.log("Creating user with username: ", userName);
   try {
-    const res = await axios.put("http://localhost:5002/createUser/" + userName);
+    const res = await axios.put("http://localhost:5002/createUser", {
+      userName: userName,
+      id: userId,
+    }, { headers: { "Content-Type": "application/json", } });
+
     if (res.status !== 200) {
       console.log("Create user failed");
       return false;
@@ -77,7 +84,7 @@ export const createUserApi = async (userName) => {
     console.log("Create user succeeded");
     return true;
   } catch (error) {
-    console.log("Create user failed with error: ", error.message);
+    console.log("Create user failed with error: ", error);
     return false;
   }
 };
