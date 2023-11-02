@@ -97,7 +97,7 @@ func api_makeGuess(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error updating the game: ": err.Error()})
 	}
 
-	err = mongo_updateUser(game.Metadata.UserName, game.GetUserUpdateAfterGuess())
+	err = mongo_updateUser(game.Metadata.UserId, game.GetUserUpdateAfterGuess())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

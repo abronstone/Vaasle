@@ -62,8 +62,8 @@ func api_newGame(c *gin.Context) {
 		return
 	}
 
-	if newGameCustomMetadata.UserName == "" {
-		newGameCustomMetadata.UserName = "default"
+	if newGameCustomMetadata.UserId == "" {
+		newGameCustomMetadata.UserId = "default"
 	}
 
 	bodyBytes, err := json.Marshal(newGameCustomMetadata)

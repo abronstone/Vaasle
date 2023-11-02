@@ -99,7 +99,7 @@ func updateUser(c *gin.Context) {
 		@param: username via api path parameter
 		@return: JSON confirmation message
 	*/
-	username := c.Param("username")
+	userId := c.Param("userId")
 
 	// Gets the HTTP header and body
 	userUpdateData := &structs.UserUpdate{}
@@ -112,7 +112,7 @@ func updateUser(c *gin.Context) {
 	database := client.Database("VaasDatabase")
 	gameCollection := database.Collection("users")
 	filter := bson.D{
-		{Key: "username", Value: username},
+		{Key: "id", Value: userId},
 	}
 	update := bson.D{
 		{Key: "$inc", Value: bson.D{
