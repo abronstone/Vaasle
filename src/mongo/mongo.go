@@ -77,11 +77,6 @@ func initializeDB(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to clear games collection: " + err.Error()})
 		return
 	}
-	// _, err = db.Collection("words").DeleteMany(context.Background(), bson.M{})
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to clear words collection: " + err.Error()})
-	// 	return
-	// }
 	c.JSON(http.StatusOK, map[string]string{"message": "RESET DATABASE"})
 }
 

@@ -43,7 +43,7 @@ func newGame(c *gin.Context) {
 	// Get a random word
 	var randomWord bson.M
 	cursor, err := wordCollection.Aggregate(context.TODO(), bson.A{
-		bson.D{{"$match", bson.D{{"length", wordLength}}}},
+		bson.D{{"$match", bson.D{{"solution", true}, {"length", wordLength}}}},
 		bson.D{{"$sample", bson.D{{"size", 1}}}},
 	})
 	if err != nil {

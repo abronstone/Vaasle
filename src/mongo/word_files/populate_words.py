@@ -7,8 +7,11 @@ if user_confirmation != "y":
     print("Please run the filter first")
     exit()
 
-file_wordlengths = {"en5.txt":5,"en6.txt":6, "sp5.txt":5}
-file_languages = {"en5.txt":"english","en6.txt":"english","sp5.txt":"spanish"}
+word_files = ["en5.txt","en6.txt"]
+file_wordlengths = {"en5.txt":5,"en5_solutions.txt":5,"en6.txt":6, "en6_solutions.txt":6, "sp5.txt":5}
+file_languages = {"en5.txt":"english","en5_solutions.txt":"english","en6.txt":"english","en6_solutions.txt":"english","sp5.txt":"spanish"}
+
+solution_word_files = ["en5_solutions.txt", "en6_solutions.txt"]
 
 
 # Returns a Collection callable from Mongo Client
@@ -47,8 +50,22 @@ with open("remove_words.txt","r") as cuss_word_file:
     cuss_word_file.close()
 remove_pattern = re.compile('|'.join(re.escape(phrase) for phrase in cuss_words))
 
-# Add all words to a list
-for f in file_wordlengths.keys():
+raw_words = []
+# Add solution words to the list
+for f in solution_word_files:
+    with open(f,"r") as word_file:
+        while True:
+            text = word_file.readline()
+            if not text:
+                break
+            raw_word = text[:-1]
+            new_word = {"word":raw_word,"language":file_languages[f],"length":file_wordlengths[f], "solution":True}
+            words.append(new_word)
+            raw_words.append(raw_word)
+    word_file.close()
+
+# Add all other words to a list
+for f in word_files:
     with open(f,"r") as word_file:
         while True:
             text = word_file.readline()
@@ -56,10 +73,12 @@ for f in file_wordlengths.keys():
                 break
             raw_word = text[:-1]
             if not remove_pattern.search(raw_word):
-                new_word = {"word":raw_word,"language":file_languages[f],"length":file_wordlengths[f]}
-                words.append(new_word)
+                if raw_word not in raw_words:
+                    new_word = {"word":raw_word,"language":file_languages[f],"length":file_wordlengths[f], "solution":False}
+                    words.append(new_word)
+                    raw_words.append(raw_word)
             else:
-                print("CUSS WORD FOUND, please run the filter.py before you run this code!")
+                print("CUSS WORD FOUND, please run the filter.py before you run this code!",raw_word)
                 exit()
     word_file.close()
 
