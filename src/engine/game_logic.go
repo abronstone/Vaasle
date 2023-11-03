@@ -52,7 +52,6 @@ func makeGuess(g *structs.Game, guess string) error {
 		return fmt.Errorf(`guess "%s" has already been made`, guess)
 	}
 
-	// TODO Add a check to see if the guess is a valid word (requires a call to Mongo)
 	g.Guesses = append(g.Guesses, [2]string{guess, getCorrections(guess, g.Word)})
 	updateGameState(g)
 
