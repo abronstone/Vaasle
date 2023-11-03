@@ -30,7 +30,8 @@ func newGame(c *gin.Context) {
 	maxGuesses := metadata.MaxGuesses
 	dateCreated := metadata.DateCreated
 	userId := metadata.UserId
-	gameMetadata := structs.GameMetadata{GameID: gameID, WordLength: wordLength, MaxGuesses: maxGuesses, DateCreated: dateCreated, UserId: userId}
+	enforcedWord := metadata.EnforcedWord
+	gameMetadata := structs.GameMetadata{GameID: gameID, WordLength: wordLength, MaxGuesses: maxGuesses, DateCreated: dateCreated, UserId: userId, EnforcedWord: enforcedWord}
 
 	// Get collections
 	database := client.Database("VaasDatabase")
@@ -41,27 +42,33 @@ func newGame(c *gin.Context) {
 	gameCollection.DeleteOne(context.TODO(), deleteFilter)
 
 	// Get a random word
-	var randomWord bson.M
-	cursor, err := wordCollection.Aggregate(context.TODO(), bson.A{
-		bson.D{{"$match", bson.D{{"solution", true}, {"length", wordLength}}}},
-		bson.D{{"$sample", bson.D{{"size", 1}}}},
-	})
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "aggregation error: " + err.Error()})
-		return
-	}
-
-	if cursor.Next(context.TODO()) {
-		if err := cursor.Decode(&randomWord); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to decode word from mongo: " + err.Error()})
+	var gameWord string
+	if enforcedWord != "" {
+		gameWord = enforcedWord
+	} else {
+		var randomWord bson.M
+		cursor, err := wordCollection.Aggregate(context.TODO(), bson.A{
+			bson.D{{"$match", bson.D{{"solution", true}, {"length", wordLength}}}},
+			bson.D{{"$sample", bson.D{{"size", 1}}}},
+		})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "aggregation error: " + err.Error()})
 			return
 		}
+
+		if cursor.Next(context.TODO()) {
+			if err := cursor.Decode(&randomWord); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to decode word from mongo: " + err.Error()})
+				return
+			}
+		}
+		defer cursor.Close(context.Background())
+		gameWord = randomWord["word"].(string)
 	}
-	defer cursor.Close(context.Background())
 
 	// Create new game structure and insert into database
 	guesses := [][2]string{}
-	game := structs.Game{Word: randomWord["word"].(string), Metadata: gameMetadata, Guesses: guesses, State: "ongoing"}
+	game := structs.Game{Word: gameWord, Metadata: gameMetadata, Guesses: guesses, State: "ongoing"}
 	gameCollection.InsertOne(context.TODO(), game)
 
 	// Return initialized game state
