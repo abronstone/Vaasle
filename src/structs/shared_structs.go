@@ -6,11 +6,12 @@ import (
 
 // The metadata of a Wordle game.
 type GameMetadata struct {
-	GameID      string    `json:"gameID" bson:"gameid"`
-	DateCreated time.Time `json:"dateCreated" bson:"datecreated"`
-	UserId      string    `json:"userId" bson:"userId"`
-	WordLength  int       `json:"wordLength" bson:"wordlength"`
-	MaxGuesses  int       `json:"maxGuesses" bson:"maxguesses"`
+	GameID       string    `json:"gameID" bson:"gameid"`
+	DateCreated  time.Time `json:"dateCreated" bson:"datecreated"`
+	UserId       string    `json:"userId" bson:"userId"`
+	WordLength   int       `json:"wordLength" bson:"wordlength"`
+	MaxGuesses   int       `json:"maxGuesses" bson:"maxguesses"`
+	EnforcedWord string    `json:"enforcedWord" bson:"enforcedword"`
 }
 
 // A Wordle game.
@@ -53,10 +54,22 @@ type NewUserRequestBody struct {
 	Id       string `json:"id"`
 }
 
+// Obfuscate the designated word of a GameMetadata.
+func (g *GameMetadata) ObfuscateWord() *GameMetadata {
+	return &GameMetadata{
+		GameID:       g.GameID,
+		DateCreated:  g.DateCreated,
+		UserId:       g.UserId,
+		WordLength:   g.WordLength,
+		MaxGuesses:   g.MaxGuesses,
+		EnforcedWord: "",
+	}
+}
+
 // Obfuscate the word of a Game.
 func (g *Game) ObfuscateWord() *Game {
 	return &Game{
-		Metadata: g.Metadata,
+		Metadata: *g.Metadata.ObfuscateWord(),
 		Guesses:  g.Guesses,
 		State:    g.State,
 		Word:     "",
