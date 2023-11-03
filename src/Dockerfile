@@ -88,3 +88,19 @@ COPY ./auth/*.go ./
 RUN go build -o auth-executable
 
 CMD [ "./auth-executable" ]
+
+# Stats
+FROM golang:1.21.1 as stats
+
+WORKDIR /src/structs
+COPY /structs/* ./
+
+WORKDIR /src/stats
+
+COPY ./stats/go.mod ./stats/go.sum ./
+RUN go mod download
+
+COPY ./stats/*.go ./
+RUN go build -o stats-executable
+
+CMD [ "./stats-executable" ]
