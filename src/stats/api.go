@@ -14,7 +14,7 @@ func main() {
 	router := gin.Default()
 
 	router.GET("/", api_home)
-	router.GET("/getStats/:username", api_getStats)
+	router.GET("/getStats/:userId", api_getStats)
 	router.GET("/getLeaderboard/:maxNumUsers", api_getLeaderboard)
 
 	router.Run("0.0.0.0:5001")
@@ -27,13 +27,13 @@ func api_home(c *gin.Context) {
 
 // Gets relevant stats for the given user.
 func api_getStats(c *gin.Context) {
-	username := c.Param("username")
+	userId := c.Param("userId")
 
 	// TODO: delete this
-	message := fmt.Sprintf("%s won π games", username)
+	message := fmt.Sprintf("%s won π games", userId)
 	c.JSON(http.StatusOK, structs.Message{Message: message})
 
-	// TODO: query the mongo container to get relevant stats for user: username
+	// TODO: query the mongo container to get relevant stats for user: userId
 	// TODO: aggregate data into presentable statistics for the frontend to display
 }
 
