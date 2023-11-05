@@ -73,21 +73,22 @@ COPY ./frontend ./
 EXPOSE 3000
 
 CMD ["npm", "run", "start"]
-# AUTH
-FROM golang:1.21.1 as auth
+
+# ONLINE
+FROM golang:1.21.1 as online
 
 WORKDIR /src/structs
 COPY /structs/* ./
 
-WORKDIR /src/auth
+WORKDIR /src/online
 
-COPY ./auth/go.mod ./auth/go.sum ./
+COPY ./online/go.mod ./online/go.sum ./
 RUN go mod download
 
-COPY ./auth/*.go ./
-RUN go build -o auth-executable
+COPY ./online/*.go ./
+RUN go build -o online-executable
 
-CMD [ "./auth-executable" ]
+CMD [ "./online-executable" ]
 
 # Stats
 FROM golang:1.21.1 as stats

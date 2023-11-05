@@ -6,27 +6,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
 	"vaas/structs"
 
 	"github.com/gin-gonic/gin"
 )
-
-func main() {
-	/*
-		Defines router endpoints
-	*/
-	router := gin.Default()
-	router.GET("/", home)
-	router.PUT("/create-user", createUser)
-	router.PUT("/login/:username", logIn)
-
-	router.Run("0.0.0.0:80")
-}
-
-func home(c *gin.Context) {
-	c.JSON(http.StatusOK, map[string]string{"message": "User container working properly"})
-}
 
 func createUser(c *gin.Context) {
 	// Bind incoming JSON to struct

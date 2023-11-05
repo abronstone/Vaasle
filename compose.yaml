@@ -45,11 +45,11 @@ services:
       - engine
       - gateway
 
-  auth:
-    container_name: auth
+  online:
+    container_name: online
     build:
       context: ./src
-      target: auth
+      target: online
     ports:
       - "80:8000"
   stats:

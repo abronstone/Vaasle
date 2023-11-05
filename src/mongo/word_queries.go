@@ -13,6 +13,7 @@ type Word struct {
 	Word     string `bson:"word"`
 	Length   int    `bson:"length"`
 	Language string `bson:"language"`
+	Solution bool   `bson:"solution"`
 }
 
 func getWords(c *gin.Context) {
