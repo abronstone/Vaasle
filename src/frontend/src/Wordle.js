@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { makeGuessApi, createUserApi, loginApi } from "./util/apiCalls";
-import LoginButton from "./LoginButton";
-import LogoutButton from "./LogoutButton";
+import { makeGuessApi, createUserApi, loginApi } from "./components/util/apiCalls";
+import LoginButton from "./components/LoginButton";
+import LogoutButton from "./components/LogoutButton";
 import { useAuth0 } from "@auth0/auth0-react";
 
 // components
-import Grid from "./Grid";
-import Keypad from "./Keypad";
-import Modal from "./Modal";
+import Grid from "./components/Grid";
+import Keypad from "./components/Keypad";
+import Modal from "./components/Modal";
 
 export default function Wordle({ gameState, setGameState }) {
   const { isAuthenticated, user } = useAuth0()
