@@ -183,10 +183,8 @@ export default function Wordle({ gameState, setGameState }) {
   return (
     <>
       {error != null && <div className="error">{error}</div>}
-      {isAuthenticated != null && isAuthenticated ? (<LogoutButton />) : (<LoginButton />)}
       {isAuthenticated != null && isAuthenticated && (
         <>
-          <div>Current Guess - {state.currentGuess}</div>
           <Grid
             guesses={state.guesses}
             currentGuess={state.currentGuess}
@@ -203,6 +201,7 @@ export default function Wordle({ gameState, setGameState }) {
           )}
         </>
       )}
+      {isAuthenticated != null && isAuthenticated ? (<LogoutButton />) : (<LoginButton />)}
     </>
   );
 }

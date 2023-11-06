@@ -26,7 +26,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Wordle (vaas.ai)</h1>
+      <h1>Vassle</h1>
       <Wordle gameState={gameState} setGameState={setGameState} />
     </div>
   );
