@@ -11,7 +11,6 @@ import Modal from "./Modal";
 
 export default function Wordle({ gameState, setGameState }) {
   const { isAuthenticated, user } = useAuth0()
-  const [createdUserSuccessful, setCreatedUserSuccessful] = useState(false)
   const [loginSuccessful, setLoginSuccessful] = useState(false)
 
   const [state, setState] = useState({
@@ -48,7 +47,7 @@ export default function Wordle({ gameState, setGameState }) {
     // If the enter key is pressed, the current guess is submitted and the FE's state is updated
     if (key === "Enter") {
       // Make previous state variables easy to work with
-      const { turn, currentGuess, guesses, usedKeys } = state;
+      const { turn, currentGuess, usedKeys } = state;
 
       // check word is 5 chars
       if (currentGuess.length !== 5) {
@@ -160,7 +159,7 @@ export default function Wordle({ gameState, setGameState }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (isAuthenticated) {
+      if (isAuthenticated != null && isAuthenticated) {
 
         const login = await loginApi(user.sub);
         setLoginSuccessful(login);
@@ -170,7 +169,6 @@ export default function Wordle({ gameState, setGameState }) {
           console.log("Creating user with id and username: ", user.sub, user.name)
           const createUser = await createUserApi(user.name, user.sub);
           console.log("Create user successful: ", createUser)
-          setCreatedUserSuccessful(createUser);
         }
 
         setError(null);
@@ -185,12 +183,8 @@ export default function Wordle({ gameState, setGameState }) {
   return (
     <>
       {error != null && <div className="error">{error}</div>}
-        {!isAuthenticated && <LoginButton />}
-        {isAuthenticated && (
-          <LogoutButton />
-        )}
-
-      {isAuthenticated && (
+      {isAuthenticated != null && isAuthenticated ? (<LogoutButton />) : (<LoginButton />)}
+      {isAuthenticated != null && isAuthenticated && (
         <>
           <div>Current Guess - {state.currentGuess}</div>
           <Grid
@@ -207,7 +201,6 @@ export default function Wordle({ gameState, setGameState }) {
               solution={solution}
             />
           )}
-
         </>
       )}
     </>
