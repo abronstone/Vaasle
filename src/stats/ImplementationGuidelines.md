@@ -9,7 +9,7 @@ See `Vaasle Architecture 2.pdf` for some slightly outdated information on our co
 
 ### Setup
 1. Please take the `secrets.env` file and place it in the `src/mongo` folder to connect to the DB 
-2. Please take the `.env` file and place it in the `src/frontend` folder to login to the FE (you run likely won't need to run the FE but it would not hurt  to see what its like cli container is outdated)
+2. Please take the `.env.local` file and place it in the `src/frontend` folder to login to the FE (you run likely won't need to run the FE but it would not hurt  to see what its like cli container is outdated)
 3. Run the following command to start up all containers while cded into the top level directory:
 ```
 docker-compose up --build
