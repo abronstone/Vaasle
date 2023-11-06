@@ -3,6 +3,7 @@ import { makeGuessApi, createUserApi, loginApi } from "./components/util/apiCall
 import LoginButton from "./components/LoginButton";
 import LogoutButton from "./components/LogoutButton";
 import { useAuth0 } from "@auth0/auth0-react";
+import ErrorBadge from "./components/ErrorBadge";
 
 // components
 import Grid from "./components/Grid";
@@ -181,8 +182,8 @@ export default function Wordle({ gameState, setGameState }) {
   }, [isAuthenticated]); 
 
   return (
-    <>
-      {error != null && <div className="error">{error}</div>}
+    <div className="wordle-container">
+      {error != null && <ErrorBadge text={error} />}
       {isAuthenticated != null && isAuthenticated && (
         <>
           <Grid
@@ -202,6 +203,6 @@ export default function Wordle({ gameState, setGameState }) {
         </>
       )}
       {isAuthenticated != null && isAuthenticated ? (<LogoutButton />) : (<LoginButton />)}
-    </>
+    </div>
   );
 }
