@@ -48,7 +48,7 @@ func api_newGame(c *gin.Context) {
 	}
 
 	registerGame(newGame)
-	c.JSON(http.StatusOK, newGame.ObfuscateWord())
+	c.JSON(http.StatusOK, newGame)
 }
 
 // Returns the game struct with the specified ID as a JSON object.
@@ -56,7 +56,7 @@ func api_getGame(c *gin.Context) {
 	if game, err := getGame(c.Param("id")); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "could not find game"})
 	} else {
-		c.JSON(http.StatusOK, game.GetShareable())
+		c.JSON(http.StatusOK, game)
 	}
 }
 
@@ -103,7 +103,7 @@ func api_makeGuess(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, game.GetShareable())
+	c.JSON(http.StatusOK, game)
 }
 
 // Pings the gateway endpoint and forwards its response.
