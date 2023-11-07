@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import Wordle from "./components/Wordle";
+import Wordle from "./Wordle";
 import { newGameApi } from "./components/util/apiCalls";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -26,7 +26,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Wordle (vaas.ai)</h1>
+      <h1>Vassle</h1>
       <Wordle gameState={gameState} setGameState={setGameState} />
     </div>
   );
