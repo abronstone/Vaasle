@@ -35,8 +35,102 @@ export default function Wordle({ gameState, setGameState }) {
     window.removeEventListener("keyup", handleKeyup);
   };
 
-  // TODO: break this up into smaller functions
-  // Each time a key is pressed, the handleKeyup function is called
+  // Function to handle the logic of making a guess and updating the state
+  const makeNewGuess = async () => {
+    // Make previous state variables easy to work with
+    const { turn, currentGuess, usedKeys } = state;
+
+    // check word is 5 chars
+    if (currentGuess.length !== 5) {
+      setError("Your guess must be 5 characters long.");
+      return false;
+    }
+    try {
+      // When a guess is submitted, the API is called to get a new game state
+      // and all necessary state is updated
+
+      // When a guess is submitted, call API to get a new game state
+      const newGameState = await makeGuessApi(
+        gameState.metadata.gameID,
+        currentGuess
+      );
+
+      // Update various state variables based on the newGameState
+      setGameState(newGameState);
+
+      if (newGameState == null || newGameState.guesses == null) {
+        setError("Your guess must be a valid english word. No duplicates are allowed.");
+        return;
+      }
+
+      // If the game is over, show the modal and stop listening for keyup events
+      if (newGameState.state === "won" || newGameState.state === "lost") {
+        if (newGameState.word) {
+          setSolution(newGameState.word);
+        }
+        setIsCorrect(newGameState.state === "won" ? true : false);
+        setState({ ...state, status: newGameState.state });
+
+        handleGameEnd();
+        return;
+      }
+
+      // Create an array of mappings of letters to colors for the most recent guess.
+      const mostRecentGuessArr = [];
+
+      // Deconstruct the guess into the word and its color codes (eg. "GGYXG").
+      if (newGameState.guesses.length > 0) {
+        const [word, colorCodes] = newGameState.guesses[turn];
+
+        Array.from(word).forEach((letter, index) => {
+          const colorCode = colorCodes[index];
+
+          // Determine the color needed for FE based on the color code.
+          const color =
+            colorCode === "G"
+              ? "green"
+              : colorCode === "Y"
+                ? "yellow"
+                : "grey";
+
+          // Update the mapping of the letter to the color.
+          mostRecentGuessArr.push({ letter, color });
+        });
+      }
+
+      // Make a map of all the unique used letter color pairs from guesses
+      const newUsedKeys = usedKeys;
+
+      // Loop through the mostRecentGuessArr to add to the map
+      mostRecentGuessArr.forEach(({ letter, color }) => {
+        // If the letter is not already in the map, add it.
+        if (usedKeys.has(letter) === false) {
+          newUsedKeys.set(letter, color);
+        }
+        if (usedKeys.has(letter) === true && color === "green") {
+          newUsedKeys.set(letter, color);
+        }
+      });
+
+      setState((prevState) => ({
+        ...prevState,
+        turn: prevState.turn + 1,
+        guesses: [...prevState.guesses, mostRecentGuessArr],
+        status: newGameState.state,
+        usedKeys: newUsedKeys,
+        currentGuess: ""
+      }));
+
+      setError(null);
+
+    } catch (error) {
+      setError("Your guess must be a valid english word. No duplicates are allowed.");
+      return;
+    }
+
+  }
+
+  // Each time a key on the keyboard is pressed, the handleKeyup function is called
   const handleKeyup = async (e) => {
     // If the game is over, do not allow any more guesses
     if (showModal) {
@@ -46,99 +140,8 @@ export default function Wordle({ gameState, setGameState }) {
     const key = e.key;
 
     // If the enter key is pressed, the current guess is submitted and the FE's state is updated
-    if (key === "Enter") {
-      // Make previous state variables easy to work with
-      const { turn, currentGuess, usedKeys } = state;
-
-      // check word is 5 chars
-      if (currentGuess.length !== 5) {
-        setError("Your guess must be 5 characters long.");
-        return;
-      }
-      try {
-        // When a guess is submitted, the API called to get a new game state
-        // and all necessary state is updated
-
-        // When a guess is submitted, call API to get a new game state
-        const newGameState = await makeGuessApi(
-          gameState.metadata.gameID,
-          currentGuess
-        );
-
-        // Update various state variables based on the newGameState
-        setGameState(newGameState);
-
-        if(newGameState == null || newGameState.guesses == null) {
-          setError("Your guess must be a valid english word. No duplicates are allowed.");
-          return;
-        }
-
-        // If the game is over, show the modal and stop listening for keyup events
-        if (newGameState.state === "won" || newGameState.state === "lost") {
-          if (newGameState.word) {
-            setSolution(newGameState.word);
-          }
-          setIsCorrect(newGameState.state === "won" ? true : false);
-          setState({ ...state, status: newGameState.state });
-
-          handleGameEnd();
-          return;
-        }
-
-        // Create an array of mappings of letters to colors for the most recent guess.
-        const mostRecentGuessArr = [];
-
-        // Deconstruct the guess into the word and its color codes (eg. "GGYXG").
-        if (newGameState.guesses.length > 0) {
-          const [word, colorCodes] = newGameState.guesses[turn];
-
-          Array.from(word).forEach((letter, index) => {
-            const colorCode = colorCodes[index];
-
-            // Determine the color needed for FE based on the color code.
-            const color =
-              colorCode === "G"
-                ? "green"
-                : colorCode === "Y"
-                  ? "yellow"
-                  : "grey";
-
-            // Update the mapping of the letter to the color.
-            mostRecentGuessArr.push({ letter, color });
-          });
-        }
-
-        // Make a map of all the unique used letter color pairs from guesses
-        const newUsedKeys = usedKeys;
-
-        // Loop through the mostRecentGuessArr to add to the map
-        mostRecentGuessArr.forEach(({ letter, color }) => {
-          // If the letter is not already in the map, add it.
-          if (usedKeys.has(letter) === false) {
-            newUsedKeys.set(letter, color);
-          }
-          if (usedKeys.has(letter) === true && color === "green") {
-            newUsedKeys.set(letter, color);
-          }
-        });
-
-        setState((prevState) => ({
-          ...prevState,
-          turn: prevState.turn + 1,
-          guesses: [...prevState.guesses, mostRecentGuessArr],
-          status: newGameState.state,
-          usedKeys: newUsedKeys,
-          currentGuess: ""
-        }));
-
-        setError(null);
-
-      } catch (error) {
-        console.log(error);
-        setError("Your guess must be a valid english word. No duplicates are allowed.");
-        return; 
-      }
-
+    if (key === "Enter") { 
+      makeNewGuess()
     }
     if (key === "Backspace") {
       setState({ ...state, currentGuess: state.currentGuess.slice(0, -1) });
@@ -159,17 +162,14 @@ export default function Wordle({ gameState, setGameState }) {
   }, [state, showModal]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const handleLogin = async () => {
       if (isAuthenticated != null && isAuthenticated) {
 
         const login = await loginApi(user.sub);
         setLoginSuccessful(login);
-        console.log("Login successful: ", login)
-
         if (loginSuccessful === false) {
-          console.log("Creating user with id and username: ", user.sub, user.name)
           const createUser = await createUserApi(user.name, user.sub);
-          console.log("Create user successful: ", createUser)
+          setLoginSuccessful(createUser)
         }
 
         setError(null);
@@ -178,13 +178,13 @@ export default function Wordle({ gameState, setGameState }) {
       }
     };
 
-    fetchData();
-  }, [isAuthenticated]); 
+    handleLogin();
+  }, [isAuthenticated]);
 
   return (
     <div className="wordle-container">
       {error != null && <ErrorBadge text={error} />}
-      {isAuthenticated != null && isAuthenticated && (
+      {isAuthenticated && loginSuccessful && (
         <>
           <Grid
             guesses={state.guesses}
