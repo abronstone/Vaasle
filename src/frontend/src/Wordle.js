@@ -184,7 +184,7 @@ export default function Wordle({ gameState, setGameState }) {
   return (
     <div className="wordle-container">
       {error != null && <ErrorBadge text={error} />}
-      {isAuthenticated && loginSuccessful && (
+      {isAuthenticated && (
         <>
           <Grid
             guesses={state.guesses}
