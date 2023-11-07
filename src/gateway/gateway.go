@@ -97,7 +97,7 @@ func api_newGame(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, newGame)
+	c.JSON(http.StatusOK, newGame.GetShareable())
 }
 
 // Calls the appropriate endpoint in the engine to retrieve an existing game
@@ -142,7 +142,7 @@ func api_getGame(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, currentGame)
+	c.JSON(http.StatusOK, currentGame.GetShareable())
 }
 
 // Calls the appropriate endpoint in the engine to make a guess
@@ -199,7 +199,7 @@ func api_makeGuess(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, currentGame)
+	c.JSON(http.StatusOK, currentGame.GetShareable())
 }
 
 func api_newUser(c *gin.Context) {
