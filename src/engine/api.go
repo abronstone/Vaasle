@@ -20,7 +20,6 @@ func main() {
 	router.GET("/pingGateway", api_pingGateway)
 
 	// Endpoints for debugging
-	router.GET("/getGameExposed/:id", api_getGameExposed)
 	router.GET("/getAllGamesExposed", api_getAllGamesExposed)
 
 	router.Run("0.0.0.0:5001")
@@ -53,16 +52,6 @@ func api_newGame(c *gin.Context) {
 
 // Returns the game struct with the specified ID as a JSON object.
 func api_getGame(c *gin.Context) {
-	if game, err := getGame(c.Param("id")); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "could not find game"})
-	} else {
-		c.JSON(http.StatusOK, game)
-	}
-}
-
-// Returns the game struct with the specified ID as a JSON object.
-// Exposes the word, only used for debugging.
-func api_getGameExposed(c *gin.Context) {
 	if game, err := getGame(c.Param("id")); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "could not find game"})
 	} else {
