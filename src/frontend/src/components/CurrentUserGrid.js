@@ -1,6 +1,6 @@
 import React from "react";
 // components
-import Row from "./Row";
+import CurrentUserRow from "./CurrentUserRow";
 
 export default function CurrentUserGrid({ guesses, currentGuess, turn, status }) {
   return (
@@ -9,12 +9,12 @@ export default function CurrentUserGrid({ guesses, currentGuess, turn, status })
       <p>Turn {turn}</p>
       {guesses && guesses.length > 0 && guesses.map((guess, i) => {
         return (
-          <Row key={i} guesses={guess} />
+          <CurrentUserRow key={i} guesses={guess} />
         )
       })}
       {/* Render the current guess row if the game is not over */}
       {(status !== "won" || status !== "lost") && 
-        <Row currentGuess={currentGuess} />
+        <CurrentUserRow currentGuess={currentGuess} />
       }
     </div>
   );
