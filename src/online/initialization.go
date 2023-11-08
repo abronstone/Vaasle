@@ -38,7 +38,6 @@ func newSharedGame(c *gin.Context) {
 	sharedGame.State = "waiting"
 	sharedGame.WinnerID = ""
 	sharedGame.Word = newGame.Word
-	c.JSON(http.StatusOK, structs.Message{Message: "Check Mongo for update for game: " + newGame.Metadata.GameID + " with word " + newGame.Word})
 
 	// Send shared game to Mongo communication method
 	mongo_response, err := mongo_createSharedGame(sharedGame)
