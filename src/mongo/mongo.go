@@ -113,5 +113,11 @@ func main() {
 	router.GET("/get-user/:id", getUser)
 	router.POST("/update-user/:userId", updateUser)
 
+	router.PUT("/initializeMultiplayerGame", api_initializeMultiplayerGame)
+	router.PUT("/startMultiplayerGame/:id", api_startMultiplayerGame)
+	router.GET("/getMultiplayerGame/:id", api_getMultiplayerGame)
+	router.PUT("/registerUserInMultiplayerGame/:id", api_registerUserInMultiplayerGame)
+	router.PUT("/updateMultiplayerGame/:id", api_updateMultiplayerGame)
+
 	router.Run("0.0.0.0:8000")
 }
