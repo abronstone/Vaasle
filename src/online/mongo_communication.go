@@ -9,24 +9,24 @@ import (
 	"vaas/structs"
 )
 
-func mongo_createSharedGame(sharedGame structs.SharedGame) error {
+func mongo_createMultiplayerGame(multiplayerGame structs.MultiplayerGame) error {
 	/*
-		Takes in a shared game struct and sends it to Mongo container to insert into database
+		Takes in a multiplayer game struct and sends it to Mongo container to insert into database
 
-		@param: shared game struct (structs.SharedGame)
+		@param: multiplayer game struct (structs.MultiplayerGame)
 		@return: success response (string)
 	*/
 
-	// Marshal sharedGame
-	bodyBytes, err := json.Marshal(sharedGame)
+	// Marshal multiplayerGame
+	bodyBytes, err := json.Marshal(multiplayerGame)
 	if err != nil {
 		return err
 	}
-	sharedGameBodyBuffer := bytes.NewBuffer(bodyBytes)
+	multiplayerGameBodyBuffer := bytes.NewBuffer(bodyBytes)
 
-	// Call Mongo's "newSharedGame" endpoint
-	endpoint := "http://mongo:8000/newSharedGame/"
-	req, err := http.NewRequest(http.MethodPut, endpoint, sharedGameBodyBuffer)
+	// Call Mongo's "newMultiplayerGame" endpoint
+	endpoint := "http://mongo:8000/newMultiplayerGame/"
+	req, err := http.NewRequest(http.MethodPut, endpoint, multiplayerGameBodyBuffer)
 	if err != nil {
 		return err
 	}
@@ -48,14 +48,14 @@ func mongo_createSharedGame(sharedGame structs.SharedGame) error {
 	return nil
 }
 
-func mongo_getSharedGame(sharedGameID string) (*structs.SharedGame, error) {
+func mongo_getMultiplayerGame(multiplayerGameID string) (*structs.MultiplayerGame, error) {
 	/*
-		Takes in a shared game ID and returns the shared game associated with it from Mongo
+		Takes in a multiplayer game ID and returns the multiplayer game associated with it from Mongo
 
-		@param: shared game id (string)
-		@return: shared game (structs.SharedGame)
+		@param: multiplayer game id (string)
+		@return: multiplayer game (structs.MultiplayerGame)
 	*/
-	endpoint := "http://mongo:8000/getSharedGame/" + sharedGameID
+	endpoint := "http://mongo:8000/getMultiplayerGame/" + multiplayerGameID
 
 	res, err := http.Get(endpoint)
 	if err != nil {
@@ -68,23 +68,23 @@ func mongo_getSharedGame(sharedGameID string) (*structs.SharedGame, error) {
 		return nil, err
 	}
 
-	sharedGame := &structs.SharedGame{}
-	err = json.Unmarshal(bodyBytes, sharedGame)
+	multiplayerGame := &structs.MultiplayerGame{}
+	err = json.Unmarshal(bodyBytes, multiplayerGame)
 	if err != nil {
 		return nil, err
 	}
 
-	return sharedGame, nil
+	return multiplayerGame, nil
 }
 
-func mongo_addUserToSharedGame(sharedGameID string, gameID string, userID string) error {
+func mongo_addUserToMultiplayerGame(multiplayerGameID string, gameID string, userID string) error {
 	/*
-		Takes in a shared game ID, a new individual game ID, and a user ID to send to Mongo. Mongo should add the game ID and user ID to the 'games' map in the shared game struct associated with the shared game ID, and returns a response based off Mongo's response
+		Takes in a multiplayer game ID, a new individual game ID, and a user ID to send to Mongo. Mongo should add the game ID and user ID to the 'games' map in the multiplayer game struct associated with the multiplayer game ID, and returns a response based off Mongo's response
 
-		@param: shared game id (string), game id (string), user id (string)
+		@param: multiplayer game id (string), game id (string), user id (string)
 		@return: success response (string)
 	*/
-	endpoint := "http://mongo:8000/addUserToSharedGame/" + sharedGameID + "/" + gameID + "/" + userID
+	endpoint := "http://mongo:8000/addUserToMultiplayerGame/" + multiplayerGameID + "/" + gameID + "/" + userID
 
 	req, err := http.NewRequest(http.MethodPost, endpoint, nil)
 	if err != nil {
@@ -98,7 +98,7 @@ func mongo_addUserToSharedGame(sharedGameID string, gameID string, userID string
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return errors.New("Could not create share game due to Mongo error")
+		return errors.New("Could not create multiplayer game due to Mongo error")
 	}
 
 	return nil

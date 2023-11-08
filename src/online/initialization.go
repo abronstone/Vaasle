@@ -8,12 +8,12 @@ import (
 	"github.com/google/uuid"
 )
 
-func newSharedGame(c *gin.Context) {
+func newMultiplayerGame(c *gin.Context) {
 	/*
-		This API method takes in a metadata struct in the request body, sends it to Engine to make a new game, creates a SharedGame struct, and sends it to Mongo to store
+		This API method takes in a metadata struct in the request body, sends it to Engine to make a new game, creates a MultiplayerGame struct, and sends it to Mongo to store
 
 		@param: metadata for new game (structs.Metadata)
-		@return: new shared game created (structs.SharedGame)
+		@return: new multiplayer game created (structs.MultiplayerGame)
 	*/
 	newMetadata := structs.GameMetadata{}
 	if err := c.ShouldBindJSON(&newMetadata); err != nil {
@@ -29,54 +29,54 @@ func newSharedGame(c *gin.Context) {
 	}
 
 	/*
-		Create shared game structure. The game ID and word received in Engine response are put into the 'Games' map and 'Word' field, respectively
+		Create multiplayer game structure. The game ID and word received in Engine response are put into the 'Games' map and 'Word' field, respectively
 	*/
-	sharedGame := structs.SharedGame{
-		SharedGameID: uuid.NewString(),
-		HostID:       newMetadata.UserId,
-		Games:        make(map[string]string),
-		State:        "waiting",
-		WinnerID:     "",
-		Word:         newGame.Word,
+	multiplayerGame := structs.MultiplayerGame{
+		MultiplayerGameID: uuid.NewString(),
+		HostID:            newMetadata.UserId,
+		Games:             make(map[string]string),
+		State:             "waiting",
+		WinnerID:          "",
+		Word:              newGame.Word,
 	}
-	sharedGame.Games[newMetadata.UserId] = newGame.Metadata.GameID
+	multiplayerGame.Games[newMetadata.UserId] = newGame.Metadata.GameID
 
-	// Send shared game to Mongo communication method
-	if err = mongo_createSharedGame(sharedGame); err != nil {
+	// Send multiplayer game to Mongo communication method
+	if err = mongo_createMultiplayerGame(multiplayerGame); err != nil {
 		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
 	} else {
-		c.JSON(http.StatusOK, sharedGame)
+		c.JSON(http.StatusOK, multiplayerGame)
 	}
 }
 
-func getSharedGame(c *gin.Context) *structs.SharedGame {
+func getMultiplayerGame(c *gin.Context) *structs.MultiplayerGame {
 	/*
-		Takes in a path parameter for the shared game ID, and communicates with Mongo to return the shared game struct associated with it
+		Takes in a path parameter for the multiplayer game ID, and communicates with Mongo to return the multiplayer game struct associated with it
 
-		@param: shared game id in path parameter (string)
-		@return: shared game (structs.SharedGame)
+		@param: multiplayer game id in path parameter (string)
+		@return: multiplayer game (structs.MultiplayerGame)
 	*/
-	sharedGameID := c.Param("id")
+	multiplayerGameID := c.Param("id")
 
-	sharedGame, err := mongo_getSharedGame(sharedGameID)
+	multiplayerGame, err := mongo_getMultiplayerGame(multiplayerGameID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, structs.Message{Message: "ERROR: " + err.Error()})
 		return nil
 	}
 
-	c.JSON(http.StatusOK, sharedGame)
-	return sharedGame
+	c.JSON(http.StatusOK, multiplayerGame)
+	return multiplayerGame
 }
 
-func joinSharedGame(c *gin.Context) {
+func joinMultiplayerGame(c *gin.Context) {
 	/*
-		Takes in a metadata struct as well as a shared game ID path parameter. Gets the shared game from Mongo, sets the enforced word of a new game to the word of the shared game, and adds the game/user to the shared game
+		Takes in a metadata struct as well as a multiplayer game ID path parameter. Gets the multiplayer game from Mongo, sets the enforced word of a new game to the word of the multiplayer game, and adds the game/user to the multiplayer game
 
-		@param: metadata for new game (structs.Metadata) as well as the shared game ID (string) as a path parameter
-		@return: updated shared game (structs.SharedGame)
+		@param: metadata for new game (structs.Metadata) as well as the multiplayer game ID (string) as a path parameter
+		@return: updated multiplayer game (structs.MultiplayerGame)
 	*/
-	sharedGame := getSharedGame(c)
-	if sharedGame == nil {
+	multiplayerGame := getMultiplayerGame(c)
+	if multiplayerGame == nil {
 		c.JSON(http.StatusNotFound, structs.Message{Message: "Online: Game could not be found"})
 	}
 
@@ -87,20 +87,20 @@ func joinSharedGame(c *gin.Context) {
 	}
 
 	// Add enforced word to game metadata
-	newMetadata.EnforcedWord = sharedGame.Word
+	newMetadata.EnforcedWord = multiplayerGame.Word
 
 	// Send metadata to engine to create new game
 	newGame, err := engine_newGame(newMetadata)
 
 	// Add new user to the field
-	sharedGame.Games[newMetadata.UserId] = newGame.Metadata.GameID
+	multiplayerGame.Games[newMetadata.UserId] = newGame.Metadata.GameID
 
-	// Send shared game ID, new individual game ID, and user ID to add to new shared game in Mongo
-	if err = mongo_addUserToSharedGame(sharedGame.SharedGameID, newGame.GameID, newMetadata.UserId); err != nil {
+	// Send multiplayer game ID, new individual game ID, and user ID to add to new multiplayer game in Mongo
+	if err = mongo_addUserToMultiplayerGame(multiplayerGame.MultiplayerGameID, newGame.GameID, newMetadata.UserId); err != nil {
 		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
 		return
 	}
 
 	// Respond based on Mongo response
-	c.JSON(http.StatusOK, sharedGame)
+	c.JSON(http.StatusOK, multiplayerGame)
 }

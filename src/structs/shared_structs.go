@@ -22,13 +22,13 @@ type Game struct {
 	Word     string       `json:"word" bson:"word"`
 }
 
-type SharedGame struct {
-	SharedGameID string            `json:"sharedGameID" bson:"sharedgameid"`
-	HostID       string            `json:"hostID" bson:"hostid"`
-	Games        map[string]string `json:"games" bson:"games"`
-	State        string            `json:"state" bson:"state"`
-	WinnerID     string            `json:"winnerID" bson:"winnerid"`
-	Word         string            `json:"word" bson:"word"`
+type MultiplayerGame struct {
+	MultiplayerGameID string            `json:"multiplayerGameID" bson:"multiplayergameid"`
+	HostID            string            `json:"hostID" bson:"hostid"`
+	Games             map[string]string `json:"games" bson:"games"`
+	State             string            `json:"state" bson:"state"`
+	WinnerID          string            `json:"winnerID" bson:"winnerid"`
+	Word              string            `json:"word" bson:"word"`
 }
 
 // A guess in a Wordle game.
