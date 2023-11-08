@@ -45,7 +45,7 @@ func newSharedGame(c *gin.Context) {
 
 	// Respond based on Mongo response
 	if err != nil || mongo_response == "Could not create shared game due to Mongo error" {
-		c.JSON(http.StatusBadRequest, structs.Message{Message: err.Error()})
+		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
 	} else {
 		c.JSON(http.StatusOK, sharedGame)
 	}
