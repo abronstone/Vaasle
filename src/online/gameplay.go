@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func startSharedGame(c *gin.Context) {
-	c.JSON(http.StatusOK, structs.Message{Message: "startSharedGame working"})
+func startMultiplayerGame(c *gin.Context) {
+	c.JSON(http.StatusOK, structs.Message{Message: "startMultiplayerGame working"})
 }
 
-func refreshSharedGame(c *gin.Context) {
-	c.JSON(http.StatusOK, structs.Message{Message: "refreshSharedGame working"})
+func refreshMultiplayerGame(c *gin.Context) {
+	c.JSON(http.StatusOK, structs.Message{Message: "refreshMultiplayerGame working"})
 }
