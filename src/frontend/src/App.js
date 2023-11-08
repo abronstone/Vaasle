@@ -34,7 +34,7 @@ function App() {
   // (the game state in the CurrentUserGame component changes)
   useEffect(() => {
     if (gameState != null && gameState.metadata.gameID != null && isMultiplayerEnabled) {
-      const fetchNewExternalGameState = async () => {
+      const fetchNewExternalUserGames = async () => {
         try {
           const res = await getExternalUserGamesApi(gameState.metadata.gameID);
           setExternalGamesState(res);
@@ -44,7 +44,7 @@ function App() {
         }
       }
 
-      fetchNewExternalGameState();
+      fetchNewExternalUserGames();
     }
   }, [gameState, isMultiplayerEnabled])
 
