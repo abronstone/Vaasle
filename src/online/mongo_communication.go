@@ -117,7 +117,7 @@ func mongo_startMultiplayerGame(multiplayerGameID string) error {
 		This entails setting the state of the game to "ongoing".
 
 		@param: multiplayer game id (string)
-		@return: success response (string)
+		@return: error or nil if successful
 	*/
 
 	// 1. Create request
