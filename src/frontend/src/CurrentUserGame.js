@@ -6,11 +6,11 @@ import { useAuth0 } from "@auth0/auth0-react";
 import ErrorBadge from "./components/ErrorBadge";
 
 // components
-import Grid from "./components/Grid";
+import CurrentUserGrid from "./components/CurrentUserGrid";
 import Keypad from "./components/Keypad";
 import Modal from "./components/Modal";
 
-export default function Wordle({ gameState, setGameState }) {
+export default function CurrentUserGame({ gameState, setGameState }) {
   const { isAuthenticated, user } = useAuth0()
   const [loginSuccessful, setLoginSuccessful] = useState(false)
 
@@ -186,7 +186,7 @@ export default function Wordle({ gameState, setGameState }) {
       {error != null && <ErrorBadge text={error} />}
       {isAuthenticated && (
         <>
-          <Grid
+          <CurrentUserGrid
             guesses={state.guesses}
             currentGuess={state.currentGuess}
             turn={state.turn}

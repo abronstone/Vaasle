@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
-import Wordle from "./Wordle";
+import CurrentUserGame from "./CurrentUserGame";
+import MultiplayerGame from "./MultiplayerGame";
 import { newGameApi } from "./components/util/apiCalls";
 import { useAuth0 } from "@auth0/auth0-react";
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
   const [gameState, setGameState] = useState(null);
+  // TODO replace this with multiple pages 
+  const [isMultiplayerEnabled, setIsMultiplayerEnabled] = useState(true);
 
   const initialGameState = useCallback(async () => {
     try {
@@ -27,7 +30,8 @@ function App() {
   return (
     <div className="App">
       <h1>Vassle</h1>
-      <Wordle gameState={gameState} setGameState={setGameState} />
+      <CurrentUserGame gameState={gameState} setGameState={setGameState} />
+      {isMultiplayerEnabled && isAuthenticated && <MultiplayerGame gameState={gameState} setGameState={setGameState} />}
     </div>
   );
 }

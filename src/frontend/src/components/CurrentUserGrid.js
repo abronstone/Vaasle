@@ -2,7 +2,7 @@ import React from "react";
 // components
 import Row from "./Row";
 
-export default function Grid({ guesses, currentGuess, turn, status }) {
+export default function CurrentUserGrid({ guesses, currentGuess, turn, status }) {
   return (
     <div>
       {/* Render as many rows as there are turns, where the last row is always filled with currentGuess */}
