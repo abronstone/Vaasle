@@ -25,7 +25,7 @@ func mongo_createMultiplayerGame(multiplayerGame structs.MultiplayerGame) error 
 	multiplayerGameBodyBuffer := bytes.NewBuffer(bodyBytes)
 
 	// Call Mongo's "newMultiplayerGame" endpoint
-	endpoint := "http://mongo:8000/intializeMultiplayerGame/"
+	endpoint := "http://mongo:8000/initializeMultiplayerGame/"
 	req, err := http.NewRequest(http.MethodPut, endpoint, multiplayerGameBodyBuffer)
 	if err != nil {
 		return err
