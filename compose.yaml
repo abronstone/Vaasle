@@ -51,7 +51,7 @@ services:
       context: ./src
       target: online
     ports:
-      - "80:8000"
+      - "8080:8000"
       
   stats:
     container_name: stats
