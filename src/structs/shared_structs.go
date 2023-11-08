@@ -22,6 +22,7 @@ type Game struct {
 	Word     string       `json:"word" bson:"word"`
 }
 
+// A multiplayer game.
 type MultiplayerGame struct {
 	MultiplayerGameID string            `json:"multiplayerGameID" bson:"multiplayergameid"`
 	HostID            string            `json:"hostID" bson:"hostid"`
@@ -112,16 +113,6 @@ func (g *Game) GetUserUpdateAfterGuess() *UserUpdate {
 		ChangeInNumGames:     changeInNumGames,
 		ChangeInTotalGuesses: 1,
 	}
-}
-
-// A multiplayer game.
-type MultiplayerGame struct {
-	MultiplayerGameID string            `json:"multiplayerGameID" bson:"multiplayergameid"`
-	HostID            string            `json:"hostID" bson:"hostid"`
-	Games             map[string]string `json:"games" bson:"games"`
-	State             string            `json:"state" bson:"state"`
-	WinnerID          string            `json:"winnerID" bson:"winnerid"`
-	Word              string            `json:"word" bson:"word"`
 }
 
 // A multiplayer game update.
