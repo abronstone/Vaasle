@@ -49,23 +49,35 @@ func newMultiplayerGame(c *gin.Context) {
 	}
 }
 
-func getMultiplayerGame(c *gin.Context) *structs.MultiplayerGame {
+func getMultiplayerGame(c *gin.Context) {
 	/*
 		Takes in a path parameter for the multiplayer game ID, and communicates with Mongo to return the multiplayer game struct associated with it
 
 		@param: multiplayer game id in path parameter (string)
 		@return: multiplayer game (structs.MultiplayerGame)
 	*/
-	multiplayerGameID := c.Param("id")
+	id := c.Param("id")
+	game, err := helper_getMultiplayerGame(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, structs.Message{Message: "Online: Game could not be found"})
+		return
+	}
+	c.JSON(http.StatusOK, game)
+}
+
+func helper_getMultiplayerGame(multiplayerGameID string) (*structs.MultiplayerGame, error) {
+	/*
+		Takes in a path parameter for the multiplayer game ID, and communicates with Mongo to return the multiplayer game struct associated with it
+
+		@param: multiplayer game id in path parameter (string)
+		@return: multiplayer game (structs.MultiplayerGame)
+	*/
 
 	multiplayerGame, err := mongo_getMultiplayerGame(multiplayerGameID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, structs.Message{Message: "ERROR: " + err.Error()})
-		return nil
+		return nil, err
 	}
-
-	c.JSON(http.StatusOK, multiplayerGame)
-	return multiplayerGame
+	return multiplayerGame, nil
 }
 
 func joinMultiplayerGame(c *gin.Context) {
@@ -75,9 +87,11 @@ func joinMultiplayerGame(c *gin.Context) {
 		@param: metadata for new game (structs.Metadata) as well as the multiplayer game ID (string) as a path parameter
 		@return: updated multiplayer game (structs.MultiplayerGame)
 	*/
-	multiplayerGame := getMultiplayerGame(c)
-	if multiplayerGame == nil {
+	id := c.Param("id")
+	multiplayerGame, err := helper_getMultiplayerGame(id)
+	if err != nil {
 		c.JSON(http.StatusNotFound, structs.Message{Message: "Online: Game could not be found"})
+		return
 	}
 
 	newMetadata := structs.GameMetadata{}
