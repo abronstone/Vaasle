@@ -42,7 +42,7 @@ func mongo_createMultiplayerGame(multiplayerGame structs.MultiplayerGame) error 
 
 	// Return response based on Mongo response
 	if res.StatusCode != http.StatusOK {
-		return errors.New("Could not create share game due to Mongo error")
+		return errors.New("could not create multiplayer game due to Mongo error")
 	}
 
 	return nil
@@ -105,7 +105,41 @@ func mongo_addUserToMultiplayerGame(multiplayerGameID string, game structs.Game)
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return errors.New("Could not create multiplayer game due to Mongo error")
+		return errors.New("could not create multiplayer game due to Mongo error")
+	}
+
+	return nil
+}
+
+func mongo_startMultiplayerGame(multiplayerGameID string) error {
+	/*
+		Takes in a multiplayer game ID, and requests Mongo to start that game.
+		This entails setting the state of the game to "ongoing".
+
+		@param: multiplayer game id (string)
+		@return: success response (string)
+	*/
+
+	// 1. Create request
+	endpoint := "http://mongo:8000/startMultiplayerGame/" + multiplayerGameID
+
+	req, err := http.NewRequest(http.MethodPut, endpoint, nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// 2. Send request
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	// 3. Validate response
+	if res.StatusCode != http.StatusOK {
+		return errors.New("could not start multiplayer game due to Mongo error")
 	}
 
 	return nil
