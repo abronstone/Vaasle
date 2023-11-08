@@ -58,7 +58,7 @@ func api_newGame(c *gin.Context) {
 
 	// Bind the incoming JSON body to the newGameCustomMetadata struct
 	if err := c.ShouldBindJSON(&newGameCustomMetadata); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request format, expected {wordLength: int, maxGuesses: int}"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request format, expected {wordLength: int, maxGuesses: int, userID: string}"})
 		return
 	}
 
