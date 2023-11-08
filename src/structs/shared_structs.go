@@ -25,7 +25,7 @@ type Game struct {
 type SharedGame struct {
 	SharedGameID string            `json:"sharedGameID" bson:"sharedgameid"`
 	HostID       string            `json:"hostID" bson:"hostid"`
-	Games        map[string]string `json:"Games" bson:"Games"`
+	Games        map[string]string `json:"games" bson:"games"`
 	State        string            `json:"state" bson:"state"`
 	WinnerID     string            `json:"winnerID" bson:"winnerid"`
 	Word         string            `json:"word" bson:"word"`

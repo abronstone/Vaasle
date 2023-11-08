@@ -31,14 +31,15 @@ func newSharedGame(c *gin.Context) {
 	/*
 		Create shared game structure. The game ID and word received in Engine response are put into the 'Games' map and 'Word' field, respectively
 	*/
-	sharedGame := structs.SharedGame{}
-	sharedGame.SharedGameID = uuid.NewString()
-	sharedGame.HostID = newMetadata.UserId
-	sharedGame.Games = make(map[string]string)
+	sharedGame := structs.SharedGame{
+		SharedGameID: uuid.NewString(),
+		HostID:       newMetadata.UserId,
+		Games:        make(map[string]string),
+		State:        "waiting",
+		WinnerID:     "",
+		Word:         newGame.Word,
+	}
 	sharedGame.Games[newMetadata.UserId] = newGame.Metadata.GameID
-	sharedGame.State = "waiting"
-	sharedGame.WinnerID = ""
-	sharedGame.Word = newGame.Word
 
 	// Send shared game to Mongo communication method
 	if err = mongo_createSharedGame(sharedGame); err != nil {
