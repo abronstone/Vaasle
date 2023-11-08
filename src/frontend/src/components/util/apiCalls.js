@@ -115,3 +115,44 @@ export const loginApi = async (userName) => {
     return false;
   }
 };
+
+export const getExternalUserGamesApi = async (gameId) => {
+  const externalUserIds = ['123456', '109876', '234567', '987654'];
+  const externalUserGamesMap = new Map();
+  const state = 'ongoing';
+  const word = 'crane';
+
+  // User 123456's guesses
+  externalUserGamesMap.set('123456', [
+    ['G', 'Y', 'X', 'G', 'Y'], 
+    ['Y', 'Y', 'X', 'Y', 'Y'], 
+    ['Y', 'Y', 'X', 'Y', 'Y']
+  ]);
+
+  // User 109876's guesses
+  externalUserGamesMap.set('109876', [
+    ['X', 'Y', 'G', 'Y', 'G'], 
+    ['Y', 'G', 'Y', 'G', 'Y']
+  ]);
+
+  // User 234567's guesses
+  externalUserGamesMap.set('234567', [
+    ['G', 'G', 'Y', 'X', 'Y'], 
+    ['Y', 'Y', 'Y', 'G', 'X'],
+    ['X', 'X', 'G', 'G', 'Y']
+  ]);
+
+  // User 987654's guesses
+  externalUserGamesMap.set('987654', [
+    ['Y', 'X', 'X', 'Y', 'G'], 
+    ['G', 'Y', 'Y', 'X', 'Y'],
+    ['Y', 'G', 'Y', 'G', 'G']
+  ]);
+
+  return {
+    externalUserIds,
+    externalUserGamesMap,
+    state,
+    word
+  }
+};

@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Row({ guesses, currentGuess }) {  
+export default function CurrentUserRow({ guesses, currentGuess }) {  
   if (guesses) {
     return (
       <div className="row past">
@@ -32,6 +32,7 @@ export default function Row({ guesses, currentGuess }) {
     );
   }
 
+  // If currentGuess or guesses don't exist, then just render empty squares
   return (
     <div className="row">
       <div></div>
