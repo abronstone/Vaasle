@@ -25,7 +25,7 @@ func mongo_createMultiplayerGame(multiplayerGame structs.MultiplayerGame) error 
 	multiplayerGameBodyBuffer := bytes.NewBuffer(bodyBytes)
 
 	// Call Mongo's "newMultiplayerGame" endpoint
-	endpoint := "http://mongo:8000/newMultiplayerGame/"
+	endpoint := "http://mongo:8000/intializeMultiplayerGame/"
 	req, err := http.NewRequest(http.MethodPut, endpoint, multiplayerGameBodyBuffer)
 	if err != nil {
 		return err
@@ -77,19 +77,26 @@ func mongo_getMultiplayerGame(multiplayerGameID string) (*structs.MultiplayerGam
 	return multiplayerGame, nil
 }
 
-func mongo_addUserToMultiplayerGame(multiplayerGameID string, gameID string, userID string) error {
+func mongo_addUserToMultiplayerGame(multiplayerGameID string, game structs.Game) error {
 	/*
 		Takes in a multiplayer game ID, a new individual game ID, and a user ID to send to Mongo. Mongo should add the game ID and user ID to the 'games' map in the multiplayer game struct associated with the multiplayer game ID, and returns a response based off Mongo's response
 
 		@param: multiplayer game id (string), game id (string), user id (string)
 		@return: success response (string)
 	*/
-	endpoint := "http://mongo:8000/addUserToMultiplayerGame/" + multiplayerGameID + "/" + gameID + "/" + userID
+	endpoint := "http://mongo:8000/registerUserInMultiplayerGame/" + multiplayerGameID
 
-	req, err := http.NewRequest(http.MethodPost, endpoint, nil)
+	bodyBytes, err := json.Marshal(game)
 	if err != nil {
 		return err
 	}
+	gameBodyBuffer := bytes.NewBuffer(bodyBytes)
+
+	req, err := http.NewRequest(http.MethodPut, endpoint, gameBodyBuffer)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 	res, err := client.Do(req)

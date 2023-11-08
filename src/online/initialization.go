@@ -96,7 +96,7 @@ func joinMultiplayerGame(c *gin.Context) {
 	multiplayerGame.Games[newMetadata.UserId] = newGame.Metadata.GameID
 
 	// Send multiplayer game ID, new individual game ID, and user ID to add to new multiplayer game in Mongo
-	if err = mongo_addUserToMultiplayerGame(multiplayerGame.MultiplayerGameID, newGame.GameID, newMetadata.UserId); err != nil {
+	if err = mongo_addUserToMultiplayerGame(multiplayerGame.MultiplayerGameID, newGame); err != nil {
 		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
 		return
 	}
