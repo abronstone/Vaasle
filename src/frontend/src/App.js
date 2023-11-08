@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import CurrentUserGame from "./CurrentUserGame";
-import MultiplayerGame from "./MultiplayerGame";
+import CurrentUserGame from "./components/CurrentUserGame";
+import ExternalUserGame from "./components/ExternalUserGame";
 import { newGameApi, getExternalUserGamesApi } from "./components/util/apiCalls";
 import { useAuth0 } from "@auth0/auth0-react";
 import ErrorBadge from "./components/ErrorBadge";
@@ -48,13 +48,17 @@ function App() {
     }
   }, [gameState, isMultiplayerEnabled])
 
+  // TODO make this component the landing page for two separate pages
+  // 1) A single player page where CurrentUserGame is the only component (with Vassle header still)
+  // 2) A multiplayer page where the CurrentUserGame and x amount of ExternalUserGame components
+  // are on the same page
   return (
     <div className="App">
       <h1>Vaasle</h1>
       {error != null && <ErrorBadge text={error} />}
       <CurrentUserGame gameState={gameState} setGameState={setGameState} />
       {isMultiplayerEnabled && isAuthenticated && externalGamesState != null && Array.from(externalGamesState.externalUserGamesMap.values()).map((game) =>
-        <MultiplayerGame externalUserGameGuesses={game} />
+        <ExternalUserGame externalUserGameGuesses={game} />
       )}
     </div>
   );

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { makeGuessApi, createUserApi, loginApi } from "./components/util/apiCalls";
-import LoginButton from "./components/LoginButton";
-import LogoutButton from "./components/LogoutButton";
+import { makeGuessApi, createUserApi, loginApi } from "./util/apiCalls";
+import LoginButton from "./LoginButton";
+import LogoutButton from "./LogoutButton";
 import { useAuth0 } from "@auth0/auth0-react";
-import ErrorBadge from "./components/ErrorBadge";
+import ErrorBadge from "./ErrorBadge";
 
 // components
-import CurrentUserGrid from "./components/CurrentUserGrid";
-import Keypad from "./components/Keypad";
-import Modal from "./components/Modal";
+import CurrentUserGrid from "./CurrentUserGrid";
+import Keypad from "./Keypad";
+import Modal from "./Modal";
 
 export default function CurrentUserGame({ gameState, setGameState }) {
   const { isAuthenticated, user } = useAuth0()

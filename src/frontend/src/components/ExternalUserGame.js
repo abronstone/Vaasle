@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 // components
-import ExternalUserGrid from "./components/ExternalUserGrid";
+import ExternalUserGrid from "./ExternalUserGrid";
 
-export default function MultiplayerGame({ externalUserGameGuesses }) {
+export default function ExternalUserGame({ externalUserGameGuesses }) {
   const [corrections, setCorrections] = useState([])
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function MultiplayerGame({ externalUserGameGuesses }) {
       setCorrections(newCorrections)
     }
   }, [externalUserGameGuesses])
-  
+
   return (
     <div className="wordle-container">
       <ExternalUserGrid corrections={corrections} turn={corrections.length} />
