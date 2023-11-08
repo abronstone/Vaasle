@@ -52,6 +52,7 @@ services:
       target: online
     ports:
       - "80:8000"
+      
   stats:
     container_name: stats
     build:

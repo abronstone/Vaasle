@@ -22,6 +22,15 @@ type Game struct {
 	Word     string       `json:"word" bson:"word"`
 }
 
+type SharedGame struct {
+	SharedGameID string            `json:"sharedGameID" bson:"sharedgameid"`
+	HostID       string            `json:"hostID" bson:"hostid"`
+	Games        map[string]string `json:"Games" bson:"Games"`
+	State        string            `json:"state" bson:"state"`
+	WinnerID     string            `json:"winnerID" bson:"winnerid"`
+	Word         string            `json:"word" bson:"word"`
+}
+
 // A guess in a Wordle game.
 type Guess struct {
 	Id    string `json:"id"`

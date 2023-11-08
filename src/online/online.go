@@ -22,7 +22,7 @@ func main() {
 	router.PUT("/create-user", createUser)
 	router.PUT("/login/:username", logIn)
 
-	router.PUT("/newSharedGame/:id", newSharedGame)
+	router.PUT("/newSharedGame/", newSharedGame)
 	router.GET("/getSharedGame/:id", getSharedGame)
 	router.POST("/joinSharedGame", joinSharedGame)
 
@@ -30,7 +30,7 @@ func main() {
 
 	router.POST("/refreshSharedGame", refreshSharedGame)
 
-	router.Run("0.0.0.0:80")
+	router.Run("0.0.0.0:8000")
 }
 
 func home(c *gin.Context) {
