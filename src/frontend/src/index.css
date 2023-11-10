@@ -230,3 +230,59 @@ h1 {
   margin-top: 14px;
   margin-bottom: 14px;
 }
+
+/* Stats page styling */
+
+.stats-container {
+  text-align: left;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+}
+
+.stats-container h2 {
+  margin-bottom: 20px;
+}
+
+.stats-container ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.stats-container li {
+  margin-bottom: 10px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ff004c;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  padding: 5px 10px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* Stats Button Styling */
+.statsButton {
+  position: absolute;
+  top: 20px;
+  right: 50px;
+  text-decoration: none;
+  padding: 10px;
+  background-color: #4064f1;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Header container Styling */
+.headerContainer {
+  position: relative;
+  padding: 10px;
+}
