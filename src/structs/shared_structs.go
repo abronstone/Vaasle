@@ -120,3 +120,9 @@ type MultiplayerGameUpdate struct {
 	State    string `json:"state" bson:"state"`
 	WinnerID string `json:"winnerID" bson:"winnerid"`
 }
+
+type MultiplayerFrontendUpdate struct {
+	State           string              `json:"state" bson:"state"`
+	WinnerID        string              `json:"winnerID" bson:"winnerid"`
+	UserCorrections map[string][]string `json:"userCorrections" bson:"usercorrections"`
+}

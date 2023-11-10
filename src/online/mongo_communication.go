@@ -110,3 +110,41 @@ func mongo_addUserToMultiplayerGame(multiplayerGameID string, game structs.Game)
 
 	return nil
 }
+
+func mongo_updateMultiplayerGame(multiplayerGameID string, allLost bool, winner string) error {
+	endpoint := "http://mongo:8000/updateMultiplayerGame/" + multiplayerGameID
+
+	state := "won"
+	if allLost {
+		state = "lost"
+	}
+
+	mongoUpdate := structs.MultiplayerGameUpdate{
+		State:    state,
+		WinnerID: winner,
+	}
+
+	bodyBytes, err := json.Marshal(mongoUpdate)
+	if err != nil {
+		return err
+	}
+	updateBodyBuffer := bytes.NewBuffer(bodyBytes)
+
+	req, err := http.NewRequest(http.MethodPut, endpoint, updateBodyBuffer)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return errors.New("Could not udpate multiplayer game due to Mongo error")
+	}
+
+	return nil
+}
