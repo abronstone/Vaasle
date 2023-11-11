@@ -38,40 +38,38 @@ h1 {
 
 /* Classes for App.js that allow external user game representations
 to be laid out around the current user's game */
-/* index.css */
+/* High-level grid layout with three columns */
 .App {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  grid-template-rows: auto 1fr auto;
-  row-gap: 20px;    /* This sets the vertical gap */
-  column-gap: 10px; /* This sets the horizontal gap */  
-  justify-content: center;
-  align-items: start;
+  grid-template-columns: 1fr auto 1fr; 
+  gap: 20px; 
+  justify-content: center; 
+  align-items: start; 
 }
 
+/* Styling for CurrentUserGame to be in the center column */
 .CurrentUserGame {
-  grid-column: 2;
-  grid-row: 2;
+  grid-column: 2; 
+  grid-row: 1; 
 }
 
-.wordle-container:nth-child(odd) {
-  grid-column: 1;
-  grid-row: 2;
+/* Styling for ExternalUserGame containers to be placed in the first and third columns only */
+.wordle-container {
+  grid-column: 1 / span 3; 
 }
 
-.wordle-container:nth-child(even) {
-  grid-column: 3;
-  grid-row: 2;
+/* Adjust the placement of ExternalUserGame components to prevent them from being placed in the middle */
+/* The nth-of-type selector may need to be adjusted based on the actual number of ExternalUserGames */
+.wordle-container:nth-of-type(odd):nth-of-type(1) {
+  grid-column: 1; 
 }
 
-.wordle-container:first-of-type {
-  grid-column: 2;
-  grid-row: 1;
+.wordle-container:nth-of-type(odd):nth-of-type(n+3) {
+  grid-column: 1; 
 }
 
-.wordle-container:last-of-type {
-  grid-column: 2;
-  grid-row: 3;
+.wordle-container:nth-of-type(even) {
+  grid-column: 3; 
 }
 
 /* Container for individual representations of games */
