@@ -131,9 +131,11 @@ func api_startMultiplayerGame(c *gin.Context) {
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		c.JSON(http.StatusInternalServerError, structs.Message{Message: "could not join game"})
+		c.JSON(http.StatusInternalServerError, structs.Message{Message: "could not start game"})
 		return
 	}
+
+	c.JSON(http.StatusOK, structs.Message{Message: "started game"})
 }
 
 func api_refreshMultiplayerGame(c *gin.Context) {
