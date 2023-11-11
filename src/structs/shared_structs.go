@@ -91,6 +91,11 @@ func (g *Game) IsOngoing() bool {
 	return g.State == "ongoing"
 }
 
+// Returns whether or not a MultiplayerGame has finished.
+func (g *MultiplayerGame) IsFinished() bool {
+	return g.State == "won" || g.State == "lost"
+}
+
 // Returns a shareable version of a Game, depending on whether it is ongoing.
 func (g *Game) GetShareable() *Game {
 	if g.IsOngoing() {
@@ -113,6 +118,26 @@ func (g *Game) GetUserUpdateAfterGuess() *UserUpdate {
 		ChangeInNumGames:     changeInNumGames,
 		ChangeInTotalGuesses: 1,
 	}
+}
+
+// Obfuscate the word of a Game.
+func (g *MultiplayerGame) ObfuscateWord() *MultiplayerGame {
+	return &MultiplayerGame{
+		MultiplayerGameID: g.MultiplayerGameID,
+		HostID:            g.HostID,
+		Games:             g.Games,
+		State:             g.State,
+		WinnerID:          g.WinnerID,
+		Word:              "",
+	}
+}
+
+// Returns a shareable version of a MultiplayerGame, depending on whether it is ongoing.
+func (g *MultiplayerGame) GetShareable() *MultiplayerGame {
+	if !g.IsFinished() {
+		return g.ObfuscateWord()
+	}
+	return g
 }
 
 // A multiplayer game update.
