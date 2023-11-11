@@ -22,9 +22,9 @@ func main() {
 	router.PUT("/create-user", createUser)
 	router.PUT("/login/:username", logIn)
 
-	router.PUT("/newMultiplayerGame/", newMultiplayerGame)
+	router.POST("/newMultiplayerGame/", newMultiplayerGame)
 	router.GET("/getMultiplayerGame/:id", getMultiplayerGame)
-	router.POST("/joinMultiplayerGame/:id", joinMultiplayerGame)
+	router.PUT("/joinMultiplayerGame/:id", joinMultiplayerGame)
 
 	router.PUT("/startMultiplayerGame/:id", startMultiplayerGame)
 
