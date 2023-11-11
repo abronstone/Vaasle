@@ -8,7 +8,11 @@ import (
 )
 
 func startMultiplayerGame(c *gin.Context) {
-	c.JSON(http.StatusOK, structs.Message{Message: "startMultiplayerGame working"})
+	if err := mongo_startMultiplayerGame(c.Param("id")); err != nil {
+		c.JSON(http.StatusBadRequest, structs.Message{Message: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, structs.Message{Message: "started multiplayer game"})
 }
 
 // Convert games into an array of characters for each guess
