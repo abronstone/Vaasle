@@ -60,7 +60,7 @@ RUN go build -o cli-executable
 CMD [ "./cli-executable" ]
 
 # Front End
-FROM node:16 AS frontend
+FROM node:20.5.1-bookworm-slim AS frontend
 
 WORKDIR /src/frontend
 
