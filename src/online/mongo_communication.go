@@ -144,3 +144,31 @@ func mongo_startMultiplayerGame(multiplayerGameID string) error {
 
 	return nil
 }
+
+func mongo_updateMultiplayerGame(multiplayerGameID string, update *structs.MultiplayerGameUpdate) error {
+	endpoint := "http://mongo:8000/updateMultiplayerGame/" + multiplayerGameID
+
+	bodyBytes, err := json.Marshal(update)
+	if err != nil {
+		return err
+	}
+	updateBodyBuffer := bytes.NewBuffer(bodyBytes)
+
+	req, err := http.NewRequest(http.MethodPut, endpoint, updateBodyBuffer)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return errors.New("could not update multiplayer game due to Mongo error")
+	}
+
+	return nil
+}

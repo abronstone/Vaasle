@@ -104,6 +104,15 @@ func (g *Game) GetShareable() *Game {
 	return g
 }
 
+// Returns a slice containing the corrections of a Game.
+func (g *Game) GetCorrections() []string {
+	corrections := make([]string, len(g.Guesses))
+	for _, pair := range g.Guesses {
+		corrections = append(corrections, pair[1])
+	}
+	return corrections
+}
+
 // Makes a simple user update after a single guess.
 func (g *Game) GetUserUpdateAfterGuess() *UserUpdate {
 	changeInNumGames := 0
@@ -144,4 +153,17 @@ func (g *MultiplayerGame) GetShareable() *MultiplayerGame {
 type MultiplayerGameUpdate struct {
 	State    string `json:"state" bson:"state"`
 	WinnerID string `json:"winnerID" bson:"winnerid"`
+}
+
+// Returns whether or not a MultiplayerGameUpdate is in a finished state.
+func (u *MultiplayerGameUpdate) IsFinished() bool {
+	return u.State == "won" || u.State == "lost"
+}
+
+// A representation of a multiplayer game to be sent to the frontend.
+type MultiplayerFrontendUpdate struct {
+	State           string              `json:"state" bson:"state"`
+	WinnerID        string              `json:"winnerID" bson:"winnerid"`
+	Word            string              `json:"word" bson:"word"`
+	UserCorrections map[string][]string `json:"userCorrections" bson:"usercorrections"`
 }

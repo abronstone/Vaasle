@@ -72,7 +72,7 @@ func api_registerUserInMultiplayerGame(c *gin.Context) {
 }
 
 // PUT: Called by the Online container.
-// Updates a finished multiplayer game's state/winner.
+// Updates a multiplayer game's state/winner but does nothing if already finished.
 // Expects a MultiplayerGameUpdate struct in the request body.
 func api_updateMultiplayerGame(c *gin.Context) {
 	gameUpdate := &structs.MultiplayerGameUpdate{}
@@ -81,7 +81,7 @@ func api_updateMultiplayerGame(c *gin.Context) {
 		return
 	}
 
-	filter := bson.M{"multiplayergameid": c.Param("id")}
+	filter := bson.M{"multiplayergameid": c.Param("id"), "state": "ongoing"}
 	update := bson.M{"$set": gameUpdate}
 
 	if err := mongodb_updateMultiplayerGame(&filter, &update); err != nil {
