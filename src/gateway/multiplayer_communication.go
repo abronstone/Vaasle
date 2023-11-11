@@ -139,5 +139,45 @@ func api_startMultiplayerGame(c *gin.Context) {
 }
 
 func api_refreshMultiplayerGame(c *gin.Context) {
-	c.JSON(http.StatusOK, structs.Message{Message: "refresh endpoint called"})
+	id := c.Param("id")
+	client := &http.Client{}
+	endpoint := "http://online:8000/refreshMultiplayerGame/" + id
+
+	// Create a new request
+	req, err := http.NewRequest(http.MethodPut, endpoint, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
+		return
+	}
+
+	// Set Content-Type header
+	req.Header.Set("Content-Type", "application/json")
+
+	// Execute the request
+	res, err := client.Do(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
+		return
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		c.JSON(http.StatusInternalServerError, structs.Message{Message: "could not refresh game"})
+		return
+	}
+
+	responseBodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
+		return
+	}
+
+	update := &structs.MultiplayerGameUpdate{}
+	err = json.Unmarshal(responseBodyBytes, update)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, update)
 }
