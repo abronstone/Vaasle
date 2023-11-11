@@ -15,80 +15,104 @@ func startMultiplayerGame(c *gin.Context) {
 	c.JSON(http.StatusOK, structs.Message{Message: "started multiplayer game"})
 }
 
-// Convert games into an array of characters for each guess
-// userid: [['G','X','Y','Y','X'],['G','X','X',Y','G'],...]
 func refreshMultiplayerGame(c *gin.Context) {
-	multiplayerGameID := c.Param("id")
-	multiplayerGame, err := mongo_getMultiplayerGame(multiplayerGameID)
+	id := c.Param("id")
+	multiplayerGame, err := helper_getMultiplayerGame(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
 		return
 	}
 
-	// var hardCodedIDS = make(map[string]string)
-	// hardCodedIDS["google-oauth2|110842460204812740716"] = "f965d204-cd51-4582-91ec-4061f962adf9"
-	// hardCodedIDS["yungbron"] = "f95647ae-f088-4b66-b64c-74249e591af5"
-	// hardCodedIDS["google-oauth2|116861231659098811689"] = "2443f571-4907-497d-acd5-8ee812d942f4"
-	guesses, allLost, winner, err := convertAndValidate(multiplayerGame.Games)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-		return
+	games := make(map[string]*structs.Game)
+	populateGames(multiplayerGame, games)
+
+	// multiplayer game was already discovered to be finished by someone else
+	if multiplayerGame.State == "won" || multiplayerGame.State == "lost" {
+		c.JSON(http.StatusOK, &structs.MultiplayerFrontendUpdate{
+			State:           multiplayerGame.State,
+			WinnerID:        multiplayerGame.WinnerID,
+			Word:            multiplayerGame.Word,
+			UserCorrections: getUserCorrections(games),
+		})
 	}
-	if winner != "" || allLost {
-		err := mongo_updateMultiplayerGame(multiplayerGameID, allLost, winner)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err)
+
+	update := getNewGameUpdate(games)
+	if update.IsFinished() {
+		if err := mongo_updateMultiplayerGame(id, update); err != nil {
+			c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
 			return
 		}
+
+		// Need to get game from Mongo again in case someone else's
+		// online container already marked the multiplayer game as finished.
+		if multiplayerGame, err = helper_getMultiplayerGame(id); err != nil {
+			c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
+			return
+		}
+
+		games = make(map[string]*structs.Game)
+		populateGames(multiplayerGame, games)
+
+		update = getNewGameUpdate(games)
 	}
-	state := "ongoing"
-	if allLost {
-		state = "lost"
+
+	word := ""
+	if multiplayerGame.IsFinished() {
+		word = multiplayerGame.Word
 	}
-	if winner != "" {
-		state = "won"
-	}
-	frontEndUpdate := structs.MultiplayerFrontendUpdate{
-		State:           state,
-		WinnerID:        winner,
-		UserCorrections: guesses,
-	}
-	c.JSON(http.StatusOK, frontEndUpdate)
+
+	c.JSON(http.StatusOK, &structs.MultiplayerFrontendUpdate{
+		State:           update.State,
+		WinnerID:        update.WinnerID,
+		Word:            word,
+		UserCorrections: getUserCorrections(games),
+	})
 }
 
-func convertAndValidate(games map[string]string) (map[string][]string, bool, string, error) {
-	/*
-		Converts a mapping of user ids to game ids:
-			{userid: gameid}
-
-		...to a map of user ids to array of guesses
-			{userid: [[guess1],[guess2],...]}
-	*/
-	var winner = ""
-	var allLost = true
-	var guessesMap = make(map[string][]string)
-	for userid, gameid := range games {
-		game, err := engine_getGame(gameid)
-		if err != nil {
-			return nil, false, "", err
+// Queries Mongo to populate the given games map using gameIDs.
+func populateGames(multiplayerGame *structs.MultiplayerGame, games map[string]*structs.Game) {
+	for userID, gameID := range multiplayerGame.Games {
+		game, err := engine_getGame(gameID)
+		// Rather than erroring out if we failed to get this user's game,
+		// we will just skip this user (won't be rendered this time).
+		if err == nil {
+			games[userID] = game
 		}
-		if game.State == "won" && winner == "" {
-			winner = game.Metadata.UserId
+	}
+}
+
+// Analyze every user's game to generate a new multiplayer game update.
+func getNewGameUpdate(games map[string]*structs.Game) *structs.MultiplayerGameUpdate {
+	allLost := true
+	for _, game := range games {
+		if game.State == "won" {
+			return &structs.MultiplayerGameUpdate{
+				State:    "won",
+				WinnerID: game.Metadata.UserId,
+			}
 		}
 		if game.State != "lost" {
 			allLost = false
 		}
-		guesses := game.Guesses
-		var guessArray []string
-		for _, result := range guesses {
-			correction := result[1]
-			// var guessArray []string
-			// for _, r := range correction {
-			// 	guessArray = append(guessArray, r)
-			// }
-			guessArray = append(guessArray, correction)
-		}
-		guessesMap[userid] = guessArray
 	}
-	return guessesMap, allLost, winner, nil
+	if allLost {
+		return &structs.MultiplayerGameUpdate{
+			State:    "lost",
+			WinnerID: "",
+		}
+	} else {
+		return &structs.MultiplayerGameUpdate{
+			State:    "ongoing",
+			WinnerID: "",
+		}
+	}
+}
+
+// Generates all users' corrections from a slice of game structs.
+func getUserCorrections(games map[string]*structs.Game) map[string][]string {
+	userCorrections := make(map[string][]string)
+	for userID, game := range games {
+		userCorrections[userID] = game.GetCorrections()
+	}
+	return userCorrections
 }

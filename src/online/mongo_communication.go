@@ -145,20 +145,10 @@ func mongo_startMultiplayerGame(multiplayerGameID string) error {
 	return nil
 }
 
-func mongo_updateMultiplayerGame(multiplayerGameID string, allLost bool, winner string) error {
+func mongo_updateMultiplayerGame(multiplayerGameID string, update *structs.MultiplayerGameUpdate) error {
 	endpoint := "http://mongo:8000/updateMultiplayerGame/" + multiplayerGameID
 
-	state := "won"
-	if allLost {
-		state = "lost"
-	}
-
-	mongoUpdate := structs.MultiplayerGameUpdate{
-		State:    state,
-		WinnerID: winner,
-	}
-
-	bodyBytes, err := json.Marshal(mongoUpdate)
+	bodyBytes, err := json.Marshal(update)
 	if err != nil {
 		return err
 	}
@@ -177,7 +167,7 @@ func mongo_updateMultiplayerGame(multiplayerGameID string, allLost bool, winner 
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return errors.New("Could not udpate multiplayer game due to Mongo error")
+		return errors.New("could not update multiplayer game due to Mongo error")
 	}
 
 	return nil
