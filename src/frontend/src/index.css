@@ -286,3 +286,43 @@ h1 {
   position: relative;
   padding: 10px;
 }
+
+.gameMode {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+}
+
+/* .gameMode-butons {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-top: 20px;
+} */
+
+.gameMode-button {
+  background-color: #2c588d;
+  color: #f8f8ff;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  padding: 10px 20px;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  margin-top: 10px;
+  margin-right: 25px;
+  border-radius: 20px;
+}
+
+.gameMode-button:hover {
+  background-color: #28517c;
+}
+
+.gameID-input {
+  padding: 10px;
+  margin: 0 10px; /* Spacing around the input field */
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+}

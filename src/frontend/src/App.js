@@ -9,7 +9,9 @@ import { useAuth0 } from "@auth0/auth0-react";
 import ErrorBadge from "./components/ErrorBadge";
 import Stats from "./components/Stats";
 import Layout from "./components/Layout";
+import GameMode from "./components/GameMode";
 import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
+import MultiplayerSetUp from "./components/MultiplayerSetUp";
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
@@ -64,8 +66,9 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<GameMode />} />
         <Route
-          path="/"
+          path="/singleplayer"
           element={
             <Layout>
               <CurrentUserGame
@@ -91,7 +94,7 @@ function App() {
             </Layout>
           }
         />
-        {/* Add other routes as needed */}
+        <Route path="/multiplayersetup" element={<MultiplayerSetUp />} />
       </Routes>
     </Router>
   );
