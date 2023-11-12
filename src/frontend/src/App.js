@@ -64,45 +64,47 @@ function App() {
   // 2) A multiplayer page where the CurrentUserGame and x amount of ExternalUserGame components
   // are on the same page
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<GameMode />} />
-        <Route
-          path="/singleplayer"
-          element={
-            <Layout>
-              <CurrentUserGame
-                gameState={gameState}
-                setGameState={setGameState}
-              />
-              {isMultiplayerEnabled &&
-                isAuthenticated &&
-                externalGamesState != null &&
-                Array.from(
-                  externalGamesState.externalUserGamesMap.values()
-                ).map((game, index) => (
-                  <div
-                    className={`ExternalUserGame ${
-                      index % 2 === 0 ? "odd" : "even"
-                    }`}
-                  >
-                    <ExternalUserGame externalUserGameGuesses={game} />
-                  </div>
-                ))}
-            </Layout>
-          }
-        />
-        <Route
-          path="/stats"
-          element={
-            <Layout>
-              <Stats />
-            </Layout>
-          }
-        />
-        <Route path="/multiplayersetup" element={<MultiplayerSetUp />} />
-      </Routes>
-    </Router>
+    <div className="App">
+      <Router>
+        <Routes>
+          <Route path="/" element={<GameMode />} />
+          <Route
+            path="/singleplayer"
+            element={
+              <Layout>
+                <CurrentUserGame
+                  gameState={gameState}
+                  setGameState={setGameState}
+                />
+                {isMultiplayerEnabled &&
+                  isAuthenticated &&
+                  externalGamesState != null &&
+                  Array.from(
+                    externalGamesState.externalUserGamesMap.values()
+                  ).map((game, index) => (
+                    <div
+                      className={`ExternalUserGame ${
+                        index % 2 === 0 ? "odd" : "even"
+                      }`}
+                    >
+                      <ExternalUserGame externalUserGameGuesses={game} />
+                    </div>
+                  ))}
+              </Layout>
+            }
+          />
+          <Route
+            path="/stats"
+            element={
+              <Layout>
+                <Stats />
+              </Layout>
+            }
+          />
+          <Route path="/multiplayersetup" element={<MultiplayerSetUp />} />
+        </Routes>
+      </Router>
+    </div>
   );
 }
 
