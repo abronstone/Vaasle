@@ -8,9 +8,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func api_newUser(c *gin.Context) {
-	// Define a struct to bind the request body
+/*
+Creates a new user in the system.
+Receives a request with user details, validates the data, and sends a PUT request to the user creation endpoint.
+Returns a success message upon successful creation, or an error message in case of failure or if the user already exists.
 
+@param: User details in the request body (username and ID)
+@return: Success or error message
+*/
+func api_newUser(c *gin.Context) {
+
+	// Define a struct to bind the request body
 	type NewUserRequestBody struct {
 		UserName string `json:"userName"`
 		Id       string `json:"id"`
@@ -72,6 +80,14 @@ func api_newUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "User created successfully"})
 }
 
+/*
+Handles user login.
+Extracts the username from the URL parameter, sends a PUT request to the login endpoint.
+Returns a success message if login is successful, or an error message if the user does not exist or if there are other login issues.
+
+@param: Username from the URL parameter
+@return: Login success or error message
+*/
 func api_login(c *gin.Context) {
 	var userName string = c.Param("username")
 

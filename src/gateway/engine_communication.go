@@ -10,7 +10,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Pings the engine container to see if it is running and throws a 500 error if not
+/*
+Checks the availability of the engine container.
+Performs an HTTP GET request to the engine's health check endpoint.
+If the engine is unreachable or returns an error, respond with a 500 Internal Server Error.
+Otherwise, return the engine's response.
+
+@param: None (uses Gin context)
+@return: Response from the engine or an error message
+*/
 func api_pingEngine(c *gin.Context) {
 	res, err := http.Get("http://engine:5001/")
 	if err != nil {
@@ -28,10 +36,15 @@ func api_pingEngine(c *gin.Context) {
 	c.JSON(http.StatusOK, string(bodyBytes))
 }
 
-// Calls the appropriate endpoint in the engine to make a new game
-// and returns the game's public state as JSON.
-// Takes in an CustomMetaData and in the request body
-// and returns a game struct.
+/*
+Creates a new game instance.
+Sends a POST request to the engine's 'newGame' endpoint with custom game metadata.
+On success, returns the initial state of the new game.
+Handles errors by returning appropriate HTTP status codes and error messages.
+
+@param: Custom game metadata in the request body
+@return: Initial game state or an error message
+*/
 func api_newGame(c *gin.Context) {
 	newGameCustomMetadata := structs.GameMetadata{}
 
@@ -79,8 +92,15 @@ func api_newGame(c *gin.Context) {
 	c.JSON(http.StatusOK, newGame.GetShareable())
 }
 
-// Calls the appropriate endpoint in the engine to retrieve an existing game
-// and returns the game's public state as JSON.
+/*
+Retrieves the current state of an existing game.
+Extracts the game ID from the URL, makes a GET request to the engine's 'getGame' endpoint.
+Returns the game's state.
+Handles error scenarios such as an unreachable engine or unprocessable game ID by returning appropriate HTTP status codes and error messages.
+
+@param: Game ID from the URL path parameter
+@return: Current game state or an error message
+*/
 func api_getGame(c *gin.Context) {
 	// Get the gameID from the URL
 	gameID := c.Param("id")
@@ -124,9 +144,15 @@ func api_getGame(c *gin.Context) {
 	c.JSON(http.StatusOK, currentGame.GetShareable())
 }
 
-// Calls the appropriate endpoint in the engine to make a guess
-// and returns the game's public state as JSON if successful.
-// Throws a 400 or 500 status code otherwise
+/*
+Processes a player's guess for a game.
+Receives a guess in the request body, forwards it to the engine's 'makeGuess' endpoint.
+Returns the updated game state.
+Handles error cases like malformed requests or engine errors, responding with corresponding HTTP status codes and error messages.
+
+@param: Player's guess in the request body
+@return: Updated game state or an error message
+*/
 func api_makeGuess(c *gin.Context) {
 	// Define the format of the request body
 	guess := structs.Guess{}
