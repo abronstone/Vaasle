@@ -8,7 +8,7 @@ Dive into the world of Wordle solo or with friends with Vaasle, a new take on th
 🚀 **What Sets Vaasle Apart?**
 - **Multiplayer Functionality:** Play alongside friends in real-time, adding a dynamic social element to the classic Wordle challenge.
 - **Game Analytics:** Delve into fascinating game statistics, gaining insights into your gameplay and enhancing your word puzzle strategies.
-- **Technologically Advanced:** Crafted with a robust tech stack including Go, React, JavaScript, and MongoDB.
+- **Modern Tech Stack:** Crafted with an advanced and robust tech stack including Go, React, JavaScript, and MongoDB.
 - **Microservices Architecture:** Designed for resilience, Vaasle is built on a microservices framework, ensuring smooth and scalable performance.
 
 
