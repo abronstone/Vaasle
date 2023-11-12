@@ -21,7 +21,7 @@ Dive into the world of Wordle solo or with friends with Vaasle, a new take on th
 
 
 ## Running Locally
-1. Before running the application locally, ask for a `secrets.env` and a `.env.local` file from application owners, and add them to the `src/mongo` and `src/frontend` directories respectively. This contains the database credentials
+1. Before running the application locally, ask for a `secrets.env` and a `.env.local` file from application owners, and add them to the `src/mongo` and `src/frontend` directories respectively. These contain the database and Auth0 credentials.
 2. To start the containers and run the CLI, run the following command from the root directory of the project:
 ```
 docker-compose up --build
