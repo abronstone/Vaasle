@@ -117,42 +117,68 @@ export const loginApi = async (userName) => {
 };
 
 export const getExternalUserGamesApi = async (gameId) => {
-  const externalUserIds = ['123456', '109876', '234567', '987654'];
+  const externalUserIds = ['123456', '109876', '234567', '987654', ];
+  // ['345678', '876543', '8525001', '8525002']
   const externalUserGamesMap = new Map();
   const state = 'ongoing';
-  const word = 'crane';
 
   // User 123456's guesses
   externalUserGamesMap.set('123456', [
-    ['G', 'Y', 'X', 'G', 'Y'], 
-    ['Y', 'Y', 'X', 'Y', 'Y'], 
+    ['G', 'Y', 'X', 'G', 'Y'],
+    ['Y', 'Y', 'X', 'Y', 'Y'],
     ['Y', 'Y', 'X', 'Y', 'Y']
   ]);
 
   // User 109876's guesses
   externalUserGamesMap.set('109876', [
-    ['X', 'Y', 'G', 'Y', 'G'], 
+    ['X', 'Y', 'G', 'Y', 'G'],
     ['Y', 'G', 'Y', 'G', 'Y']
   ]);
 
   // User 234567's guesses
   externalUserGamesMap.set('234567', [
-    ['G', 'G', 'Y', 'X', 'Y'], 
+    ['G', 'G', 'Y', 'X', 'Y'],
     ['Y', 'Y', 'Y', 'G', 'X'],
     ['X', 'X', 'G', 'G', 'Y']
   ]);
 
   // User 987654's guesses
   externalUserGamesMap.set('987654', [
-    ['Y', 'X', 'X', 'Y', 'G'], 
+    ['Y', 'X', 'X', 'Y', 'G'],
     ['G', 'Y', 'Y', 'X', 'Y'],
     ['Y', 'G', 'Y', 'G', 'G']
   ]);
+
+  // // Adding new user 345678's guesses
+  // externalUserGamesMap.set('345678', [
+  //   ['X', 'G', 'Y', 'Y', 'X'],
+  //   ['G', 'X', 'G', 'Y', 'Y'],
+  //   ['Y', 'Y', 'X', 'G', 'G']
+  // ]);
+
+  // // Adding new user 876543's guesses
+  // externalUserGamesMap.set('876543', [
+  //   ['Y', 'Y', 'G', 'X', 'Y'],
+  //   ['X', 'Y', 'X', 'G', 'Y'],
+  //   ['G', 'G', 'Y', 'Y', 'X']
+  // ]);
+
+  // externalUserGamesMap.set('8525001', [
+  //   ['Y', 'Y', 'G', 'X', 'Y'],
+  //   ['X', 'Y', 'X', 'G', 'Y'],
+  //   ['G', 'G', 'Y', 'Y', 'X']
+  // ])
+
+  // externalUserGamesMap.set('8525002', [
+  //   ['Y', 'Y', 'G', 'X', 'Y'],
+  //   ['X', 'Y', 'X', 'G', 'Y'],
+  //   ['G', 'G', 'Y', 'Y', 'X']
+  // ])
+
 
   return {
     externalUserIds,
     externalUserGamesMap,
     state,
-    word
   }
 };

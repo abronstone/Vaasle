@@ -53,14 +53,22 @@ function App() {
   // 2) A multiplayer page where the CurrentUserGame and x amount of ExternalUserGame components
   // are on the same page
   return (
-    <div className="App">
+    <>
       <h1>Vaasle</h1>
-      {error != null && <ErrorBadge text={error} />}
-      <CurrentUserGame gameState={gameState} setGameState={setGameState} />
-      {isMultiplayerEnabled && isAuthenticated && externalGamesState != null && Array.from(externalGamesState.externalUserGamesMap.values()).map((game) =>
-        <ExternalUserGame externalUserGameGuesses={game} />
-      )}
-    </div>
+      <div className="App">
+        {error != null && <ErrorBadge text={error} />}
+        <div className="CurrentUserGame">
+          <CurrentUserGame gameState={gameState} setGameState={setGameState} />
+        </div>
+        {isMultiplayerEnabled && isAuthenticated && externalGamesState != null &&
+          Array.from(externalGamesState.externalUserGamesMap.values()).map((game, index) =>
+            <div className={`ExternalUserGame ${index % 2 === 0 ? 'odd' : 'even'}`}>
+              <ExternalUserGame externalUserGameGuesses={game} />
+            </div>
+          )
+        }
+      </div>
+    </>
   );
 }
 
