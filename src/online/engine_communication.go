@@ -8,6 +8,8 @@ import (
 	"vaas/structs"
 )
 
+var engineURL = "http://engine:5001"
+
 func engine_newGame(metadata structs.GameMetadata) (structs.Game, error) {
 	/*
 		This function takes in a metadata structure, and calls Engine to create a new game to return a new Game struct
@@ -23,7 +25,7 @@ func engine_newGame(metadata structs.GameMetadata) (structs.Game, error) {
 
 	bodyBuffer := bytes.NewBuffer(bodyBytes)
 
-	res, err := http.Post("http://engine:5001/newGame", "application/json", bodyBuffer)
+	res, err := http.Post(engineURL+"/newGame", "application/json", bodyBuffer)
 
 	if err != nil {
 		return newGame, err
@@ -43,4 +45,27 @@ func engine_newGame(metadata structs.GameMetadata) (structs.Game, error) {
 	}
 
 	return newGame, nil
+}
+
+func engine_getGame(id string) (*structs.Game, error) {
+	endpoint := engineURL + "/getGame/" + id
+
+	res, err := http.Get(endpoint)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	bodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	game := &structs.Game{}
+	err = json.Unmarshal(bodyBytes, game)
+	if err != nil {
+		return nil, err
+	}
+
+	return game, nil
 }

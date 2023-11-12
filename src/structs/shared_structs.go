@@ -91,12 +91,26 @@ func (g *Game) IsOngoing() bool {
 	return g.State == "ongoing"
 }
 
+// Returns whether or not a MultiplayerGame has finished.
+func (g *MultiplayerGame) IsFinished() bool {
+	return g.State == "won" || g.State == "lost"
+}
+
 // Returns a shareable version of a Game, depending on whether it is ongoing.
 func (g *Game) GetShareable() *Game {
 	if g.IsOngoing() {
 		return g.ObfuscateWord()
 	}
 	return g
+}
+
+// Returns a slice containing the corrections of a Game.
+func (g *Game) GetCorrections() []string {
+	corrections := make([]string, len(g.Guesses))
+	for _, pair := range g.Guesses {
+		corrections = append(corrections, pair[1])
+	}
+	return corrections
 }
 
 // Makes a simple user update after a single guess.
@@ -115,8 +129,41 @@ func (g *Game) GetUserUpdateAfterGuess() *UserUpdate {
 	}
 }
 
+// Obfuscate the word of a Game.
+func (g *MultiplayerGame) ObfuscateWord() *MultiplayerGame {
+	return &MultiplayerGame{
+		MultiplayerGameID: g.MultiplayerGameID,
+		HostID:            g.HostID,
+		Games:             g.Games,
+		State:             g.State,
+		WinnerID:          g.WinnerID,
+		Word:              "",
+	}
+}
+
+// Returns a shareable version of a MultiplayerGame, depending on whether it is ongoing.
+func (g *MultiplayerGame) GetShareable() *MultiplayerGame {
+	if !g.IsFinished() {
+		return g.ObfuscateWord()
+	}
+	return g
+}
+
 // A multiplayer game update.
 type MultiplayerGameUpdate struct {
 	State    string `json:"state" bson:"state"`
 	WinnerID string `json:"winnerID" bson:"winnerid"`
+}
+
+// Returns whether or not a MultiplayerGameUpdate is in a finished state.
+func (u *MultiplayerGameUpdate) IsFinished() bool {
+	return u.State == "won" || u.State == "lost"
+}
+
+// A representation of a multiplayer game to be sent to the frontend.
+type MultiplayerFrontendUpdate struct {
+	State           string              `json:"state" bson:"state"`
+	WinnerID        string              `json:"winnerID" bson:"winnerid"`
+	Word            string              `json:"word" bson:"word"`
+	UserCorrections map[string][]string `json:"userCorrections" bson:"usercorrections"`
 }

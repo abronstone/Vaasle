@@ -36,9 +36,45 @@ h1 {
   background-color: #2c4d70;
 }
 
-/* Wordle.js container */
+/* Classes for App.js that allow external user game representations
+to be laid out around the current user's game */
+/* High-level grid layout with three columns */
+.App {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; 
+  gap: 20px; 
+  justify-content: center; 
+  align-items: start; 
+}
+
+/* Styling for CurrentUserGame to be in the center column */
+.CurrentUserGame {
+  grid-column: 2; 
+  grid-row: 1; 
+}
+
+/* Styling for ExternalUserGame containers to be placed in the first and third columns only */
 .wordle-container {
-  display: flex; ;
+  grid-column: 1 / span 3; 
+}
+
+/* Adjust the placement of ExternalUserGame components to prevent them from being placed in the middle */
+/* The nth-of-type selector may need to be adjusted based on the actual number of ExternalUserGames */
+.wordle-container:nth-of-type(odd):nth-of-type(1) {
+  grid-column: 1; 
+}
+
+.wordle-container:nth-of-type(odd):nth-of-type(n+3) {
+  grid-column: 1; 
+}
+
+.wordle-container:nth-of-type(even) {
+  grid-column: 3; 
+}
+
+/* Container for individual representations of games */
+.wordle-container {
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
@@ -63,6 +99,12 @@ h1 {
   text-transform: uppercase;
   font-weight: bold;
   font-size: 2.5em;
+}
+/* Row with smaller squares for showing an external user's progress
+in multiplayer mode */
+.external-user-row > div {
+  width: 40px;
+  height: 40px;
 }
 /* ! attaching animation: flip to all colored squares */
 /* --x = variable in css */
