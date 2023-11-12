@@ -80,8 +80,14 @@ function App() {
                 externalGamesState != null &&
                 Array.from(
                   externalGamesState.externalUserGamesMap.values()
-                ).map((game) => (
-                  <ExternalUserGame externalUserGameGuesses={game} />
+                ).map((game, index) => (
+                  <div
+                    className={`ExternalUserGame ${
+                      index % 2 === 0 ? "odd" : "even"
+                    }`}
+                  >
+                    <ExternalUserGame externalUserGameGuesses={game} />
+                  </div>
                 ))}
             </Layout>
           }
