@@ -335,13 +335,6 @@ in multiplayer mode */
   align-self: center;
 }
 
-/* .gameMode-butons {
-  display: flex;
-  justify-content: center;
-  gap: 50px;
-  margin-top: 20px;
-} */
-
 .gameMode-button {
   background-color: #2c588d;
   color: #f8f8ff;

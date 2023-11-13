@@ -20,7 +20,6 @@ function App() {
   const [gameState, setGameState] = useState(null);
   const [externalGamesState, setExternalGamesState] = useState(null);
   const [error, setError] = useState(null);
-  // TODO replace this with multiple pages
   const [isMultiplayerEnabled, setIsMultiplayerEnabled] = useState(true);
 
   const initialGameState = useCallback(async () => {
@@ -61,10 +60,6 @@ function App() {
     }
   }, [gameState, isMultiplayerEnabled]);
 
-  // TODO make this component the landing page for two separate pages
-  // 1) A single player page where CurrentUserGame is the only component (with Vassle header still)
-  // 2) A multiplayer page where the CurrentUserGame and x amount of ExternalUserGame components
-  // are on the same page
   return (
     <Router>
       <Routes>
