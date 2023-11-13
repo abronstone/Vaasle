@@ -5,9 +5,10 @@ export default function MultiplayerSetUp() {
   const [gameID, setGameID] = useState("");
   const navigate = useNavigate();
 
+  // TODO: have user navigate to multiplayer, but dont expose gameID in url
   const handleJoin = () => {
     if (gameID) {
-      navigate(`/multiplayersetup/${gameID}`);
+      navigate(`/multiplayer/${gameID}`);
     }
   };
 

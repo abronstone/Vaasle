@@ -10,6 +10,7 @@ import ErrorBadge from "./components/ErrorBadge";
 import Stats from "./components/Stats";
 import Layout from "./components/Layout";
 import GameMode from "./components/GameMode";
+import Multiplayer from "./components/Multiplayer";
 import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 import MultiplayerSetUp from "./components/MultiplayerSetUp";
 
@@ -24,7 +25,7 @@ function App() {
   const initialGameState = useCallback(async () => {
     try {
       if (!isAuthenticated) return;
-      const maxGuesses = 5;
+      const maxGuesses = 6;
       const wordLength = 5;
       const initialData = await newGameApi(maxGuesses, wordLength, user.sub);
       setGameState(initialData);
@@ -71,11 +72,36 @@ function App() {
           path="/singleplayer"
           element={
             <Layout>
-              <div className="App">
+              <div className="CurrentUserGame">
                 <CurrentUserGame
                   gameState={gameState}
                   setGameState={setGameState}
                 />
+              </div>
+            </Layout>
+          }
+        />
+
+        <Route
+          path="/stats"
+          element={
+            <Layout>
+              <Stats />
+            </Layout>
+          }
+        />
+        <Route path="/multiplayersetup" element={<MultiplayerSetUp />} />
+        <Route
+          path="/multiplayer"
+          element={
+            <Layout>
+              <div className="App">
+                <div className="CurrentUserGame">
+                  <CurrentUserGame
+                    gameState={gameState}
+                    setGameState={setGameState}
+                  />
+                </div>
                 {isMultiplayerEnabled &&
                   isAuthenticated &&
                   externalGamesState != null &&
@@ -94,16 +120,6 @@ function App() {
             </Layout>
           }
         />
-
-        <Route
-          path="/stats"
-          element={
-            <Layout>
-              <Stats />
-            </Layout>
-          }
-        />
-        <Route path="/multiplayersetup" element={<MultiplayerSetUp />} />
       </Routes>
     </Router>
   );
