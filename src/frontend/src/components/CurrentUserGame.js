@@ -10,7 +10,7 @@ import CurrentUserGrid from "./CurrentUserGrid";
 import Keypad from "./Keypad";
 import Modal from "./Modal";
 
-export default function CurrentUserGame({ gameState, setGameState }) {
+export default function CurrentUserGame({ errorProp, gameState, setGameState }) {
   const { isAuthenticated, user } = useAuth0()
   const [loginSuccessful, setLoginSuccessful] = useState(false)
 
@@ -27,7 +27,7 @@ export default function CurrentUserGame({ gameState, setGameState }) {
   const [showModal, setShowModal] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [solution, setSolution] = useState(null);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(errorProp != null ? errorProp : null);
 
   const handleGameEnd = () => {
     setShowModal(true);

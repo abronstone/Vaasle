@@ -6,7 +6,6 @@ import {
   getExternalUserGamesApi,
 } from "./components/util/apiCalls";
 import { useAuth0 } from "@auth0/auth0-react";
-import ErrorBadge from "./components/ErrorBadge";
 import Stats from "./components/Stats";
 import Layout from "./components/Layout";
 import GameMode from "./components/GameMode";
@@ -17,48 +16,29 @@ import Singleplayer from "./components/Singleplayer";
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
-  const [gameState, setGameState] = useState(null);
   const [externalGamesState, setExternalGamesState] = useState(null);
-  const [error, setError] = useState(null);
   const [isMultiplayerEnabled, setIsMultiplayerEnabled] = useState(true);
-
-  const initialGameState = useCallback(async () => {
-    try {
-      if (!isAuthenticated) return;
-      const maxGuesses = 6;
-      const wordLength = 5;
-      const initialData = await newGameApi(maxGuesses, wordLength, user.sub);
-      setGameState(initialData);
-    } catch (error) {
-      setError("Failed to initialize game state: " + error);
-    }
-  }, [isAuthenticated]);
-
-  // Use useEffect to call initialGameState when the component mounts
-  useEffect(() => {
-    initialGameState();
-  }, [initialGameState]);
 
   // Fetch state of externalUserGames for multiplayer when the current user submits a guess
   // (the game state in the CurrentUserGame component changes)
-  useEffect(() => {
-    if (
-      gameState != null &&
-      gameState.metadata.gameID != null &&
-      isMultiplayerEnabled
-    ) {
-      const fetchNewExternalUserGames = async () => {
-        try {
-          const res = await getExternalUserGamesApi(gameState.metadata.gameID);
-          setExternalGamesState(res);
-        } catch (e) {
-          setError("Failed to retrieve external user games" + e);
-        }
-      };
+  // useEffect(() => {
+  //   if (
+  //     gameState != null &&
+  //     gameState.metadata.gameID != null &&
+  //     isMultiplayerEnabled
+  //   ) {
+  //     const fetchNewExternalUserGames = async () => {
+  //       try {
+  //         const res = await getExternalUserGamesApi(gameState.metadata.gameID);
+  //         setExternalGamesState(res);
+  //       } catch (e) {
+  //         setError("Failed to retrieve external user games" + e);
+  //       }
+  //     };
 
-      fetchNewExternalUserGames();
-    }
-  }, [gameState, isMultiplayerEnabled]);
+  //     fetchNewExternalUserGames();
+  //   }
+  // }, [gameState, isMultiplayerEnabled]);
 
   return (
     <Router>
@@ -67,7 +47,7 @@ function App() {
         <Route
           path="/singleplayer"
           element={
-            <Singleplayer gameState={gameState} setGameState={setGameState} />
+            <Singleplayer   />
           }
         />
 
@@ -79,7 +59,7 @@ function App() {
             </Layout>
           }
         />
-        <Route path="/multiplayersetup" element={<MultiplayerSetUp />} />
+        {/* <Route path="/multiplayersetup" element={<MultiplayerSetUp />} />
         <Route
           path="/multiplayer"
           element={
@@ -91,7 +71,7 @@ function App() {
               isAuthenticated={isAuthenticated}
             />
           }
-        />
+        /> */}
       </Routes>
     </Router>
   );
