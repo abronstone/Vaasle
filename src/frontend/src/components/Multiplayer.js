@@ -1,12 +1,38 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import Layout from "./Layout";
+import CurrentUserGame from "./CurrentUserGame";
+import ExternalUserGame from "./ExternalUserGame";
 
-// /singlerplayer/
-// /multiplayer/1231231231
-export default function Multiplayer() {
+const Multiplayer = ({
+  gameState,
+  setGameState,
+  externalGamesState,
+  isMultiplayerEnabled,
+  isAuthenticated,
+}) => {
   return (
-    <div>
-      <h2></h2>
-    </div>
+    <Layout>
+      <div className="App">
+        <div className="CurrentUserGame">
+          <CurrentUserGame gameState={gameState} setGameState={setGameState} />
+        </div>
+        {isMultiplayerEnabled &&
+          isAuthenticated &&
+          externalGamesState != null &&
+          Array.from(externalGamesState.externalUserGamesMap.values()).map(
+            (game, index) => (
+              <div
+                className={`ExternalUserGame ${
+                  index % 2 === 0 ? "odd" : "even"
+                }`}
+              >
+                <ExternalUserGame externalUserGameGuesses={game} />
+              </div>
+            )
+          )}
+      </div>
+    </Layout>
   );
-}
+};
+
+export default Multiplayer;

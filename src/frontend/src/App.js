@@ -13,6 +13,7 @@ import GameMode from "./components/GameMode";
 import Multiplayer from "./components/Multiplayer";
 import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 import MultiplayerSetUp from "./components/MultiplayerSetUp";
+import Singleplayer from "./components/Singleplayer";
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
@@ -71,14 +72,7 @@ function App() {
         <Route
           path="/singleplayer"
           element={
-            <Layout>
-              <div className="CurrentUserGame">
-                <CurrentUserGame
-                  gameState={gameState}
-                  setGameState={setGameState}
-                />
-              </div>
-            </Layout>
+            <Singleplayer gameState={gameState} setGameState={setGameState} />
           }
         />
 
@@ -94,30 +88,13 @@ function App() {
         <Route
           path="/multiplayer"
           element={
-            <Layout>
-              <div className="App">
-                <div className="CurrentUserGame">
-                  <CurrentUserGame
-                    gameState={gameState}
-                    setGameState={setGameState}
-                  />
-                </div>
-                {isMultiplayerEnabled &&
-                  isAuthenticated &&
-                  externalGamesState != null &&
-                  Array.from(
-                    externalGamesState.externalUserGamesMap.values()
-                  ).map((game, index) => (
-                    <div
-                      className={`ExternalUserGame ${
-                        index % 2 === 0 ? "odd" : "even"
-                      }`}
-                    >
-                      <ExternalUserGame externalUserGameGuesses={game} />
-                    </div>
-                  ))}
-              </div>
-            </Layout>
+            <Multiplayer
+              gameState={gameState}
+              setGameState={setGameState}
+              externalGamesState={externalGamesState}
+              isMultiplayerEnabled={isMultiplayerEnabled}
+              isAuthenticated={isAuthenticated}
+            />
           }
         />
       </Routes>
