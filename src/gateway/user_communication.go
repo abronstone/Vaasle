@@ -43,7 +43,7 @@ func api_newUser(c *gin.Context) {
 	}
 
 	// Create a new request
-	req, err := http.NewRequest(http.MethodPut, "http://online:80/create-user", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequest(http.MethodPut, "http://online:8000/create-user", bytes.NewBuffer(jsonData))
 
 	// Handle request creation error
 	if err != nil {
@@ -95,7 +95,7 @@ func api_login(c *gin.Context) {
 	client := &http.Client{}
 
 	// Create a new request
-	req, err := http.NewRequest(http.MethodPut, "http://online:80/login/"+userName, nil)
+	req, err := http.NewRequest(http.MethodPut, "http://online:8000/login/"+userName, nil)
 
 	// Handle request creation error
 	if err != nil {
