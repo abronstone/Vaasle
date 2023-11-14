@@ -59,14 +59,16 @@ func api_getStats(c *gin.Context) {
 	}
 
 	games := user.Games
-	gamesPlayed := 0
+	gamesPlayed := user.NumGames
 	gamesWon := 0
 	guesses := map[string]int{}
 
 	for element := range games {
 		var thisgame *structs.Game
-		thisgame, err = mongo_getGame(strconv.Itoa(element))
-		gamesPlayed += 1
+		thisgame, err = mongo_getGame(element)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, structs.Message{Message: "Error getting user stats" + err.Error()})
+		}
 		for _, value := range thisgame.Guesses {
 			count, ok := guesses[value[0]]
 			if ok {
@@ -81,7 +83,8 @@ func api_getStats(c *gin.Context) {
 			gamesWon += 1
 		}
 	}
-	var winPercentage = gamesWon / gamesPlayed
+
+	var winPercentage = float32(gamesWon) / float32(gamesPlayed)
 
 	var mostCommonWord = ""
 	var num = 0

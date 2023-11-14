@@ -65,9 +65,9 @@ type NewUserRequestBody struct {
 }
 
 type IndividualUserStats struct {
-	GamesPlayed     int    `json:"gamesPlayed"`
-	WinPercentage   int    `json:"winPercentage"`
-	MostGuessedWord string `json:"mostGuessedWord"`
+	GamesPlayed     int     `json:"gamesPlayed"`
+	WinPercentage   float32 `json:"winPercentage"`
+	MostGuessedWord string  `json:"mostGuessedWord"`
 }
 
 // Obfuscate the designated word of a GameMetadata.
