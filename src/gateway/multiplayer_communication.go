@@ -208,7 +208,7 @@ func api_refreshMultiplayerGame(c *gin.Context) {
 		return
 	}
 
-	update := &structs.MultiplayerGameUpdate{}
+	update := &structs.MultiplayerFrontendUpdate{}
 	err = json.Unmarshal(responseBodyBytes, update)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
