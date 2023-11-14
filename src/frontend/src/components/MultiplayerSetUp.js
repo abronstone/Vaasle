@@ -19,7 +19,7 @@ export default function MultiplayerSetUp() {
 
       <div>
         <button
-          onClick={() => navigate("/singleplayer")}
+          onClick={() => navigate("/multiplayer")}
           className="gameMode-button"
         >
           Create Lobby
