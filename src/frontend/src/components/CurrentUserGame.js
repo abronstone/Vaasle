@@ -48,7 +48,6 @@ export default function CurrentUserGame({ errorProp, gameState, setGameState }) 
     try {
       // When a guess is submitted, the API is called to get a new game state
       // and all necessary state is updated
-      console.log('gameState', gameState)
       // When a guess is submitted, call API to get a new game state
       const newGameState = await makeGuessApi(
         gameState.metadata.gameID,

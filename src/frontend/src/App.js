@@ -9,7 +9,6 @@ import MultiplayerSetUp from "./components/MultiplayerSetUp";
 import Singleplayer from "./components/Singleplayer";
 
 function App() {
-  const { isAuthenticated, user } = useAuth0()
   return (
     <Router>
       <Routes>
@@ -17,7 +16,7 @@ function App() {
         <Route
           path="/singleplayer"
           element={
-            <Singleplayer isAuthenticated={isAuthenticated} user={user} />
+            <Singleplayer />
           }
         />
 

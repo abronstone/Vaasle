@@ -12,16 +12,12 @@ const Multiplayer = () => {
   const [error, setError] = useState(null);
 
   const initialGameState = useCallback(async () => {
-    console.log('initialGameStateFunction entered')
-    console.log('isAuthenticated', isAuthenticated)
     try {
       if (!isAuthenticated) return;
-      console.log('isAuthenticated!')
       const maxGuesses = 6;
       const wordLength = 5;
       const initialData = await newGameApi(maxGuesses, wordLength, user.sub);
       setCurrentUserGameState(initialData);
-      console.log('api res', initialData)
     } catch (error) {
       setError("Failed to initialize game state: " + error);
     }

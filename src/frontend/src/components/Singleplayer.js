@@ -4,7 +4,8 @@ import CurrentUserGame from "./CurrentUserGame";
 import { useAuth0 } from "@auth0/auth0-react";
 import { newGameApi } from "./util/apiCalls";
 
-const Singleplayer = ({ isAuthenticated, user }) => {
+const Singleplayer = () => {
+  const { isAuthenticated, user } = useAuth0()
   const [gameState, setGameState] = useState(null);
   const [error, setError] = useState(null);
 
@@ -28,9 +29,9 @@ const Singleplayer = ({ isAuthenticated, user }) => {
 
   return (
     <Layout>
-        <div className="CurrentUserGame">
-          <CurrentUserGame errorProp={error} gameState={gameState} setGameState={setGameState} />
-        </div>
+      <div className="CurrentUserGame">
+        <CurrentUserGame errorProp={error} gameState={gameState} setGameState={setGameState} />
+      </div>
     </Layout>
   );
 };
