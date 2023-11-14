@@ -64,6 +64,12 @@ type NewUserRequestBody struct {
 	Id       string `json:"id"`
 }
 
+type IndividualUserStats struct {
+	GamesPlayed     int    `json:"gamesPlayed"`
+	WinPercentage   int    `json:"winPercentage"`
+	MostGuessedWord string `json:"mostGuessedWord"`
+}
+
 // Obfuscate the designated word of a GameMetadata.
 func (g *GameMetadata) ObfuscateWord() *GameMetadata {
 	return &GameMetadata{
