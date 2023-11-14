@@ -112,4 +112,6 @@ func logIn(c *gin.Context) {
 	if res.StatusCode == http.StatusNotFound {
 		c.JSON(http.StatusUnauthorized, structs.Message{Message: "Login unsuccessful"})
 	}
+
+	c.JSON(http.StatusOK, structs.Message{Message: "Login successful"})
 }
