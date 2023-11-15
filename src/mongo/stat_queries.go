@@ -76,7 +76,7 @@ func mostCommonWords(c *gin.Context) {
 		// Stage 6
 		bson.D{{"$addFields", bson.D{{"word", "$_id"}}}},
 		// Stage 7
-		bson.D{{"$sort", bson.D{{"count", 1}}}},
+		bson.D{{"$sort", bson.D{{"count", -1}}}},
 		// Stage 8
 		bson.D{{"$limit", 5}},
 	})
