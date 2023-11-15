@@ -1,13 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
-	"strconv"
 	"vaas/structs"
 
 	"github.com/gin-gonic/gin"
 )
+
+/*
+The following code is a result of the collaboration of Team Vaas and
+Peter Kelly from team Lelkolopher (Dominion)
+*/
 
 // Stats API's main method.
 func main() {
@@ -15,7 +18,6 @@ func main() {
 
 	router.GET("/", api_home)
 	router.GET("/getStats/:userId", api_getStats)
-	router.GET("/getLeaderboard/:maxNumUsers", api_getLeaderboard)
 
 	router.Run("0.0.0.0:5001")
 }
@@ -27,28 +29,35 @@ func api_home(c *gin.Context) {
 
 // Gets relevant stats for the given user.
 func api_getStats(c *gin.Context) {
-	userId := c.Param("userId")
-
-	// TODO: delete this
-	message := fmt.Sprintf("%s won π games", userId)
-	c.JSON(http.StatusOK, structs.Message{Message: message})
-
-	// TODO: query the mongo container to get relevant stats for user: userId
-	// TODO: aggregate data into presentable statistics for the frontend to display
-}
-
-// Returns the top maxNumUsers in descending order with respect to total games played.
-func api_getLeaderboard(c *gin.Context) {
-	maxNumUsers, err := strconv.Atoi(c.Param("maxNumUsers"))
+	user, err := mongo_getUser(c.Param("userId"))
 	if err != nil {
-		errorMsg := fmt.Sprintf("error: maxNumUsers must be an int, got %s", c.Param("maxNumUsers"))
-		c.JSON(http.StatusBadRequest, structs.Message{Message: errorMsg})
+		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
 		return
 	}
 
-	// TODO: delete this
-	message := fmt.Sprintf("received request for leaderboard of %d users", maxNumUsers)
-	c.JSON(http.StatusOK, structs.Message{Message: message})
+	words, err := mongo_getCommonWords(user.Id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
+		return
+	}
 
-	// TODO: query the mongo container to get the top maxNumUsers with respect to total games played.
+	mostCommonWord := ""
+	highestFrequency := 0
+	for _, word := range words {
+		if word.Count > highestFrequency {
+			mostCommonWord = word.Word
+		}
+	}
+
+	winPercentage := float32(0)
+	if user.NumGamesFinished != 0 {
+		winPercentage = float32(user.NumGamesWon) / float32(user.NumGamesFinished)
+	}
+
+	c.JSON(http.StatusOK, &structs.IndividualUserStats{
+		GamesPlayed:              user.NumGamesFinished,
+		WinPercentage:            winPercentage,
+		MostGuessedWord:          mostCommonWord,
+		MostGuessedWordFrequency: highestFrequency,
+	})
 }

@@ -68,6 +68,13 @@ type NewUserRequestBody struct {
 	Id       string `json:"id"`
 }
 
+type IndividualUserStats struct {
+	GamesPlayed              int     `json:"gamesPlayed"`
+	WinPercentage            float32 `json:"winPercentage"`
+	MostGuessedWord          string  `json:"mostGuessedWord"`
+	MostGuessedWordFrequency int     `json:"mostGuessedWordFrequency"`
+}
+
 // Obfuscate the designated word of a GameMetadata.
 func (g *GameMetadata) ObfuscateWord() *GameMetadata {
 	return &GameMetadata{
@@ -179,4 +186,10 @@ type MultiplayerFrontendUpdate struct {
 	WinnerID        string              `json:"winnerID" bson:"winnerid"`
 	Word            string              `json:"word" bson:"word"`
 	UserCorrections map[string][]string `json:"userCorrections" bson:"usercorrections"`
+}
+
+type CommonWordFrequency struct {
+	Id    string `json:"_id"`
+	Count int    `json:"count"`
+	Word  string `json:"word"`
 }
