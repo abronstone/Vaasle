@@ -247,6 +247,26 @@ export const startMultiplayerGameApi = async (gameId) => {
   }
 }
 
+
+export const refreshMultiplayerGameApi = async (gameId) => {
+  try {
+    const res = await axios.post(
+      "http://localhost:5002/refreshMultiplayerGame/" + gameId);
+
+    // Check for successful status code
+    if (res.status !== 200) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+
+    const data = res.data;
+
+    return data;
+  } catch (e) {
+    console.error(`Refreshing the multiplayer game with the id ${gameId} failed!`, e);
+    throw new Error(`Refreshing the multiplayer game with the id ${gameId} failed!`, e);
+  }
+}
+
 export const getExternalUserGamesApi = async (gameId) => {
   const externalUserIds = ['123456', '109876', '234567', '987654',];
   // ['345678', '876543', '8525001', '8525002']
