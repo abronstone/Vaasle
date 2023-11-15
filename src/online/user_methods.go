@@ -39,12 +39,15 @@ func createUser(c *gin.Context) {
 		newUserEndpoint := "http://mongo:8000/new-user/"
 
 		newUser := structs.User{
-			Id:           requestBody.Id,
-			UserName:     requestBody.UserName,
-			Games:        []string{},
-			NumGames:     0,
-			TotalGuesses: 0,
-			Playing:      false,
+			Id:               requestBody.Id,
+			UserName:         requestBody.UserName,
+			Games:            []string{},
+			NumGamesStarted:  0,
+			NumGamesFinished: 0,
+			NumGamesWon:      0,
+			NumGamesLost:     0,
+			TotalGuesses:     0,
+			Playing:          false,
 		}
 
 		userJson, err := json.Marshal(newUser)
