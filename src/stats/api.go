@@ -11,6 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+/*
+The following code is a result of the collaboration of Team Vaas and
+Peter Kelly from team Lelkolopher (Dominion)
+*/
+
 // Stats API's main method.
 func main() {
 	router := gin.Default()
@@ -94,7 +99,7 @@ func api_getStats(c *gin.Context) {
 			num = value
 		}
 	}
-	returnval := structs.IndividualUserStats{gamesPlayed, winPercentage, mostCommonWord}
+	returnval := structs.IndividualUserStats{GamesPlayed: gamesPlayed, WinPercentage: winPercentage, MostGuessedWord: mostCommonWord}
 	// returnval.GamesPlayed = gamesPlayed
 	// returnval.WinPercentage = winPercentage
 	// returnval.MostGuessedWord = mostCommonWord
