@@ -2,39 +2,29 @@ import React, { useState, useEffect, useCallback } from "react";
 import Layout from "./Layout";
 import CurrentUserGame from "./CurrentUserGame";
 import ExternalUserGame from "./ExternalUserGame";
-import { newMultiplayerGameApi, refreshMultiplayerGameApi, joinMultiplayerGameApi, getGameApi, startMultiplayerGameApi } from "./util/apiCalls";
+import { refreshMultiplayerGameApi, joinMultiplayerGameApi, getGameApi, startMultiplayerGameApi } from "./util/apiCalls";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useParams } from "react-router-dom";
 
 const Multiplayer = () => {
   const { isAuthenticated, user } = useAuth0()
+  const { multiplayerGameId } = useParams()
+
   const [multiplayerGameState, setMultiplayerGameState] = useState(null)
   const [externalGamesState, setExternalGamesState] = useState([])
   const [currentUserGameState, setCurrentUserGameState] = useState(null)
   const [error, setError] = useState(null);
   const [hasGameStarted, setHasGameStarted] = useState(false)
-  const [isHost, setIsHost] = useState(false)
-  const { multiplayerGameId } = useParams()
 
   const getInitialMultiplayerGameState = useCallback(async () => {
     try {
-      if (!isAuthenticated) return;
-      const maxGuesses = 6;
-      const wordLength = 5;
-      // Create a new multiplayer game if the user is authenticated and is not joining a game
-      if (multiplayerGameId == null) {
-        const createdGameState = await newMultiplayerGameApi(maxGuesses, wordLength, user.sub)
-        console.log('newMultiplayerGameApi res', createdGameState)
-        setMultiplayerGameState(createdGameState);
-        setIsHost(true)
-      }
-      // Join an existing multiplayer game if the user is authenticated and has the id for
-      // some one elses game
-      else {
-        const joinedGameState = await joinMultiplayerGameApi(multiplayerGameId, maxGuesses, wordLength, user.sub)
-        console.log('joinMultiplayerGameApi res', joinedGameState)
-        setMultiplayerGameState(joinedGameState)
-      }
+      if (!isAuthenticated) return
+      const maxGuesses = 6
+      const wordLength = 5
+      const joinedGameState = await joinMultiplayerGameApi(multiplayerGameId, maxGuesses, wordLength, user.sub)
+      console.log('joinMultiplayerGameApi res', joinedGameState)
+      setMultiplayerGameState(joinedGameState)
+
       console.log('multiplayerGameState,', multiplayerGameState)
     } catch (error) {
       console.error("Failed to initialize multiplayer game: " + error);
@@ -60,7 +50,7 @@ const Multiplayer = () => {
       console.error("Failed to initialize your game: " + error);
       setError("Failed to initialize your game: " + error);
     }
-  }, [multiplayerGameState, user.sub, currentUserGameState])
+  }, [multiplayerGameState, currentUserGameState])
 
   // Use useEffect to call getInitialMultiplayerGameState when the component mounts
   useEffect(() => {
@@ -75,7 +65,7 @@ const Multiplayer = () => {
   // Start a multiplayer game
   const handleStart = useCallback(async () => {
     try {
-      const res = await startMultiplayerGameApi(multiplayerGameState.multiplayerGameID)
+      const res = await startMultiplayerGameApi(multiplayerGameId)
       if (res != null && !res) {
         throw new Error("Backend failed to start new multiplayer game")
       }
@@ -91,16 +81,19 @@ const Multiplayer = () => {
   const fetchNewExternalUserGames = useCallback(async () => {
     console.log('executing fetchNewExternalUserGames!')
     try {
-      // if (currentUserGameState.metadata.gameID == null) {
-      //   throw new Error('No multiplayer game id found')
-      // }
+      if (multiplayerGameId == null) {
+        throw new Error("No multiplayer game id found")
+      }
 
-      const res = await refreshMultiplayerGameApi(multiplayerGameState.multiplayerGameID);
+      const res = await refreshMultiplayerGameApi(multiplayerGameId);
       console.log('res from refreshMultiplayerGameApi', res)
 
       // Transform res.userCorrections into a map of userIds onto their array of guesses
+      // with the current user filtered out
       // Eg. '123456' : [['G', 'Y', 'X', 'G', 'Y'],['Y', 'Y', 'X', 'Y', 'Y']]
-      const externalUserGamesMap = new Map(Object.entries(res.userCorrections));
+      const externalUserGamesMap = new Map(
+        Object.entries(res.userCorrections).filter(([key, value]) => key !== user.sub)
+      );
 
       const externalUserGamesObject = {
         state: res.state,

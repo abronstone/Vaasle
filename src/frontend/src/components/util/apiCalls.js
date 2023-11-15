@@ -146,7 +146,7 @@ export const loginApi = async (userName) => {
  * @param {number} maxGuesses 
  * @param {number} wordLength 
  * @param {string} userId 
- * @returns data object from the POST /newGame response
+ * @returns data object from the POST /createMultiplayerGame response
  */
 export const newMultiplayerGameApi = async (maxGuesses, wordLength, userId) => {
   try {
