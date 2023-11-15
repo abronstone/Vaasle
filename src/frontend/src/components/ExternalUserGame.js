@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 // components
 import ExternalUserGrid from "./ExternalUserGrid";
 
-export default function ExternalUserGame({ externalUserGameGuesses }) {
+export default function ExternalUserGame({ externalUserGameGuesses, userName }) {
   const [corrections, setCorrections] = useState([])
   const [turnCount, setTurnCount] = useState(0)
 
@@ -38,7 +38,7 @@ export default function ExternalUserGame({ externalUserGameGuesses }) {
 
   return (
     <div className="wordle-container">
-      <ExternalUserGrid corrections={corrections} turn={turnCount} />
+      <ExternalUserGrid corrections={corrections} turn={turnCount} userName={userName} />
     </div>
   );
 }

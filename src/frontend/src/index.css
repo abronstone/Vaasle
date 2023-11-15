@@ -14,7 +14,7 @@ h1 {
 
 /* Login / logout buttons */
 .auth0button {
-  background-color: #253d5b;
+  background-color: #2c588d;
   color: #f8f8ff;
   font-size: 16px;
   border: none;
@@ -28,22 +28,38 @@ h1 {
   user-select: none;
 }
 
-.auth0button:active {
-  background-color: #1c2f45;
-}
-
 .auth0button:hover {
-  background-color: #2c4d70;
+  background-color: #3b77bf;
 }
 
 .auth0button-container{
   margin-top: 60px;
 }
 
-/* Classes for App.js that allow external user game representations
-to be laid out around the current user's game */
+/* Button for use almost everywhere */
+.general-rounded-button{
+  background-color: #2c588d;
+  color: #f8f8ff;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  padding: 10px 20px;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 25px;
+  border-radius: 20px;
+}
+
+.general-rounded-button:hover {
+  background-color: #3b77bf;
+}
+
+
 /* High-level grid layout with three columns */
-.App {
+.multiplayer-container {
   display: grid;
   grid-template-columns: 1fr auto 1fr; 
   gap: 20px; 
@@ -339,7 +355,14 @@ in multiplayer mode */
   align-self: center;
 }
 
-.gameMode-button {
+.multiplayer-setup-options-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.multiplayer-setup-button {
   background-color: #2c588d;
   color: #f8f8ff;
   font-size: 16px;
@@ -350,8 +373,27 @@ in multiplayer mode */
   cursor: pointer;
   user-select: none;
   margin-top: 10px;
+  margin-bottom: 10px;
   margin-right: 25px;
   border-radius: 20px;
+  width: 100%;
+}
+
+.multiplayer-setup-button:disabled,
+.multiplayer-setup-button:disabled:hover {
+  background-color: #647891;
+  cursor: not-allowed;
+}  
+
+.multiplayer-setup-button:hover {
+  background-color: #3b77bf;
+}
+
+.join-lobby-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* This will make child elements stretch to fill the container */
+  margin-top: 30px;
 }
 
 .gameMode-button:hover {
@@ -360,7 +402,6 @@ in multiplayer mode */
 
 .gameID-input {
   padding: 10px;
-  margin: 0 10px; /* Spacing around the input field */
   font-size: 16px;
   border: 2px solid #ddd;
   border-radius: 4px;

@@ -118,26 +118,30 @@ const Multiplayer = () => {
   if (!hasGameStarted) {
     return (
       <Layout>
-        <div className="App">
-          <button onClick={handleStart}>Start Game</button>
+        <div>
+          <button onClick={handleStart} className="general-rounded-button">Start Game</button>
         </div>
       </Layout>
     )
   }
   return (
     <Layout>
-      <div className="App">
+      <h3>
+        Send this code to your friends to allow them to join!
+      </h3>
+      <p>{multiplayerGameId}</p>
+      <div className="multiplayer-container">
         <div className="CurrentUserGame">
           <CurrentUserGame errorProp={error} gameState={currentUserGameState} setGameState={setCurrentUserGameState} />
         </div>
-        {externalGamesState?.externalUserGamesMap && Array.from(externalGamesState.externalUserGamesMap.values()).map(
-          (game, index) => (
+        {externalGamesState?.externalUserGamesMap && Array.from(externalGamesState.externalUserGamesMap.entries()).map(
+          ([user, game], index) => (
             <div
               className={`ExternalUserGame ${index % 2 === 0 ? "odd" : "even"
                 }`}
               key={index}
             >
-              <ExternalUserGame externalUserGameGuesses={game} />
+              <ExternalUserGame externalUserGameGuesses={game} userName={user} />
             </div>
           )
         )}

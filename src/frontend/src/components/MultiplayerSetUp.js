@@ -26,28 +26,31 @@ export default function MultiplayerSetUp() {
   };
 
   return (
-    <div className="multiplayerSettings">
+    <div className="multiplayer-setup-container">
       <h1>Vaasle</h1>
       <h2>Create or Join Lobby</h2>
+      <div className="multiplayer-setup-options-container">
+        <div>
+          <button
+            onClick={() => handleCreateLobby()}
+            className="multiplayer-setup-button"
+          >
+            Create Lobby
+          </button>
+        </div>
 
-      <div>
-        <button
-          onClick={() => handleCreateLobby()}
-          className="gameMode-button"
-        >
-          Create Lobby
-        </button>
-
-        <input
-          type="text"
-          className="gameID-input"
-          placeholder="Enter GameID"
-          value={gameID}
-          onChange={(e) => setGameID(e.target.value)}
-        />
-        <button onClick={handleJoin} className="gameMode-button">
-          Join Lobby
-        </button>
+        <div className="join-lobby-container">
+          <input
+            type="text"
+            className="gameID-input"
+            placeholder="Enter game code..."
+            value={gameID}
+            onChange={(e) => setGameID(e.target.value)}
+          />
+          <button onClick={handleJoin} className="multiplayer-setup-button" disabled={gameID === null || gameID === ""}>
+            Join Lobby
+          </button>
+        </div>
       </div>
     </div>
   );
