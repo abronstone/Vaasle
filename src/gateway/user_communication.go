@@ -1,9 +1,8 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
+	"vaas/structs"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,34 +31,10 @@ func api_newUser(c *gin.Context) {
 		return
 	}
 
-	// Create a new HTTP client
-	client := &http.Client{}
-
-	// Convert struct to JSON
-	jsonData, err := json.Marshal(requestBody)
+	// Make PUT request, encode 'requestBody' into request, no decode needed
+	res, err := structs.MakePutRequest[structs.Game]("http://online:8000/create-user", requestBody)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error converting data to JSON"})
-		return
-	}
-
-	// Create a new request
-	req, err := http.NewRequest(http.MethodPut, "http://online:8000/create-user", bytes.NewBuffer(jsonData))
-
-	// Handle request creation error
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create a new request: " + err.Error()})
-		return
-	}
-
-	// Set Content-Type header
-	req.Header.Set("Content-Type", "application/json")
-
-	// Execute the request
-	res, err := client.Do(req)
-
-	// Handle execution error
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to execute user creation request: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "PUT request error"})
 		return
 	}
 
@@ -91,24 +66,10 @@ Returns a success message if login is successful, or an error message if the use
 func api_login(c *gin.Context) {
 	var userName string = c.Param("username")
 
-	// Create a new HTTP client
-	client := &http.Client{}
-
-	// Create a new request
-	req, err := http.NewRequest(http.MethodPut, "http://online:8000/login/"+userName, nil)
-
-	// Handle request creation error
+	// Make PUT request, no encoding/decoding needed
+	res, err := structs.MakePutRequest[any]("http://online:8000/login/"+userName, nil)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create a new request: " + err.Error()})
-		return
-	}
-
-	// Execute the request
-	res, err := client.Do(req)
-
-	// Handle execution error
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to execute login request: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "PUT request error while logging in"})
 		return
 	}
 

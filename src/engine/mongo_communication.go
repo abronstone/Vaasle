@@ -1,11 +1,7 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
-	"io"
-	"net/http"
 	"vaas/structs"
 )
 
@@ -14,40 +10,19 @@ import (
 // The API takes a metadata struct and returns an initialized game.
 // The API also initializes an empty game with this information in MongoDB.
 func mongo_submitNewGame(metadata structs.GameMetadata) (string, error) {
-	// 1. Prepare request headers and body
-	metadataJson, err := json.Marshal(metadata)
-	if err != nil {
-		return "", err
-	}
-
-	endpoint := "http://mongo:8000/new-game/"
-	byteBuffer := bytes.NewBuffer(metadataJson)
-
-	req, err := http.NewRequest(http.MethodPut, endpoint, byteBuffer)
-	if err != nil {
-		return "", err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	// 2. Send request
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer res.Body.Close()
-
-	// 3. Parse response body
-	bodyBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		return "", err
-	}
 
 	game := structs.Game{}
-	err = json.Unmarshal(bodyBytes, &game)
+	// Make PUT request, encoding 'metadata' to request body, decode response body into 'game' of type 'structs.Game'
+	_, err := structs.MakePutRequest[structs.Game]("http://mongo:8000/new-game/", metadata, &game)
 	if err != nil {
 		return "", err
 	}
+	// defer res.Body.Close()
+	// game := structs.Game{}
+	// err = structs.DecodeResponseBody(res, &game)
+	// if err != nil {
+	// 	return "", err
+	// }
 
 	if len(game.Word) == 0 {
 		return "", errors.New("could not retrieve word from database")
@@ -58,67 +33,21 @@ func mongo_submitNewGame(metadata structs.GameMetadata) (string, error) {
 
 // Asks the Mongo API (mongo.go) for the game stored under the given ID.
 func mongo_getGame(id string) (*structs.Game, error) {
-	// 1. Send request
-	endpoint := "http://mongo:8000/get-game/" + id
-
-	res, err := http.Get(endpoint)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	// 2. Parse response body
-	bodyBytes, err := io.ReadAll(res.Body)
+	game := structs.Game{}
+	// Make GET request, decode response into 'game' of type 'structs.Game'
+	_, err := structs.MakeGetRequest[structs.Game]("http://mongo:8000/get-game/"+id, &game)
 	if err != nil {
 		return nil, err
 	}
 
-	game := &structs.Game{}
-	err = json.Unmarshal(bodyBytes, game)
-	if err != nil {
-		return nil, err
-	}
-
-	return game, nil
+	return &game, nil
 }
 
 // Updates the Mongo API (mongo.go) with the new state of the given game.
 func mongo_updateGame(game *structs.Game) error {
-	// 1. Prepare request headers and body
-	gameJson, err := json.Marshal(game)
-	if err != nil {
-		return err
-	}
-
-	endpoint := "http://mongo:8000/update-game/"
-	byteBuffer := bytes.NewBuffer(gameJson)
-
-	req, err := http.NewRequest(http.MethodPut, endpoint, byteBuffer)
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	// 2. Send request
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	if res.StatusCode != http.StatusOK {
-		return errors.New("failed to send game updates to Mongo API")
-	}
-
-	defer res.Body.Close()
-
-	// 3. Parse response body
-	bodyBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-
 	result := structs.Message{}
-	err = json.Unmarshal(bodyBytes, &result)
+	// Make PUT request, encoding 'game' to request body, decode response body into 'result' of type 'structs.Message'
+	_, err := structs.MakePutRequest[structs.Message]("http://mongo:8000/update-game/", &game, &result)
 	if err != nil {
 		return err
 	}
@@ -128,33 +57,14 @@ func mongo_updateGame(game *structs.Game) error {
 
 // Asks the Mongo API (mongo.go) to make changes to the state of the given user.
 func mongo_updateUser(userId string, userUpdate *structs.UserUpdate) error {
-	// 1. Send request
-	endpoint := "http://mongo:8000/update-user/" + userId
 
-	bodyBytes, err := json.Marshal(userUpdate)
+	result := structs.Message{}
+	// Make POST request, encoding 'userUpdate' to request body, decode response body into 'result' of type 'structs.Message'
+	res, err := structs.MakePostRequest[structs.Message]("http://mongo:8000/update-user/"+userId, userUpdate, &result)
 	if err != nil {
 		return err
-	}
-
-	bodyBuffer := bytes.NewBuffer(bodyBytes)
-
-	res, err := http.Post(endpoint, "application/json", bodyBuffer)
-	if err != nil {
-		return nil
 	}
 	defer res.Body.Close()
-
-	// 2. Parse response body
-	bodyBytes, err = io.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
-
-	result := &structs.Message{}
-	err = json.Unmarshal(bodyBytes, result)
-	if err != nil {
-		return err
-	}
 
 	if result.Message != "user updated successfully" {
 		return errors.New("failed to send user updates to Mongo API")
@@ -164,41 +74,12 @@ func mongo_updateUser(userId string, userUpdate *structs.UserUpdate) error {
 }
 
 func mongo_verifyWord(word string) (bool, error) {
-	// 1. Prepare request headers and body
-	wordJson, err := json.Marshal(word)
-	if err != nil {
-		return false, err
-	}
-
-	endpoint := "http://mongo:8000/check-if-valid-word/" + word + "/"
-	byteBuffer := bytes.NewBuffer(wordJson)
-
-	req, err := http.NewRequest(http.MethodGet, endpoint, byteBuffer)
-	if err != nil {
-		return false, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	// 2. Send request
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		return false, err
-	}
-	defer res.Body.Close()
-
-	// 3. Parse response body
-	bodyBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		return false, err
-	}
-
 	result := structs.Message{}
-	err = json.Unmarshal(bodyBytes, &result)
+	// Make GET request, decode response into 'result' of type 'structs.Message'
+	_, err := structs.MakeGetRequest[structs.Message]("http://mongo:8000/check-if-valid-word/"+word+"/", &result)
 	if err != nil {
 		return false, err
 	}
-
 	if result.Message != "The word exists in the word collection" {
 		return false, nil
 	}

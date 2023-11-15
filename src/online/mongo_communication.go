@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
-	"io"
 	"net/http"
 	"vaas/structs"
 )
@@ -17,24 +14,8 @@ func mongo_createMultiplayerGame(multiplayerGame structs.MultiplayerGame) error 
 		@return: success response (string)
 	*/
 
-	// Marshal multiplayerGame
-	bodyBytes, err := json.Marshal(multiplayerGame)
-	if err != nil {
-		return err
-	}
-	multiplayerGameBodyBuffer := bytes.NewBuffer(bodyBytes)
-
-	// Call Mongo's "newMultiplayerGame" endpoint
-	endpoint := "http://mongo:8000/initializeMultiplayerGame/"
-	req, err := http.NewRequest(http.MethodPut, endpoint, multiplayerGameBodyBuffer)
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	// Send request
-	client := &http.Client{}
-	res, err := client.Do(req)
+	// Make PUT request, encoding 'multiplayerGame' to request body, no response body decoding needed
+	res, err := structs.MakePutRequest[any]("http://mongo:8000/initializeMultiplayerGame/", &multiplayerGame)
 	if err != nil {
 		return err
 	}
@@ -55,54 +36,30 @@ func mongo_getMultiplayerGame(multiplayerGameID string) (*structs.MultiplayerGam
 		@param: multiplayer game id (string)
 		@return: multiplayer game (structs.MultiplayerGame)
 	*/
-	endpoint := "http://mongo:8000/getMultiplayerGame/" + multiplayerGameID
-
-	res, err := http.Get(endpoint)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	bodyBytes, err := io.ReadAll(res.Body)
+	multiplayerGame := structs.MultiplayerGame{}
+	// Make GET request, decode response into 'multiplayerGame' of type 'structs.MultiplayerGame'
+	_, err := structs.MakeGetRequest[structs.MultiplayerGame]("http://mongo:8000/getMultiplayerGame/"+multiplayerGameID, &multiplayerGame)
 	if err != nil {
 		return nil, err
 	}
 
-	multiplayerGame := &structs.MultiplayerGame{}
-	err = json.Unmarshal(bodyBytes, multiplayerGame)
-	if err != nil {
-		return nil, err
-	}
-
-	return multiplayerGame, nil
+	return &multiplayerGame, nil
 }
 
-func mongo_addUserToMultiplayerGame(multiplayerGameID string, game structs.Game) error {
+func mongo_addUserToMultiplayerGame(multiplayerGameID string, game *structs.Game) error {
 	/*
 		Takes in a multiplayer game ID, a new individual game ID, and a user ID to send to Mongo. Mongo should add the game ID and user ID to the 'games' map in the multiplayer game struct associated with the multiplayer game ID, and returns a response based off Mongo's response
 
 		@param: multiplayer game id (string), game id (string), user id (string)
 		@return: success response (string)
 	*/
-	endpoint := "http://mongo:8000/registerUserInMultiplayerGame/" + multiplayerGameID
-
-	bodyBytes, err := json.Marshal(game)
+	// Make PUT request, encoding 'game' to request body, no response body decoding needed
+	res, err := structs.MakePutRequest[any]("http://mongo:8000/registerUserInMultiplayerGame/"+multiplayerGameID, game)
 	if err != nil {
 		return err
 	}
-	gameBodyBuffer := bytes.NewBuffer(bodyBytes)
 
-	req, err := http.NewRequest(http.MethodPut, endpoint, gameBodyBuffer)
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		return err
-	}
+	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
 		return errors.New("could not create multiplayer game due to Mongo error")
@@ -120,24 +77,13 @@ func mongo_startMultiplayerGame(multiplayerGameID string) error {
 		@return: error or nil if successful
 	*/
 
-	// 1. Create request
-	endpoint := "http://mongo:8000/startMultiplayerGame/" + multiplayerGameID
-
-	req, err := http.NewRequest(http.MethodPut, endpoint, nil)
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	// 2. Send request
-	client := &http.Client{}
-	res, err := client.Do(req)
+	// Make PUT request, no encoding/decoding needed
+	res, err := structs.MakePutRequest[any]("http://mongo:8000/startMultiplayerGame/"+multiplayerGameID, nil)
 	if err != nil {
 		return err
 	}
 	defer res.Body.Close()
 
-	// 3. Validate response
 	if res.StatusCode != http.StatusOK {
 		return errors.New("could not start multiplayer game due to Mongo error")
 	}
@@ -146,25 +92,13 @@ func mongo_startMultiplayerGame(multiplayerGameID string) error {
 }
 
 func mongo_updateMultiplayerGame(multiplayerGameID string, update *structs.MultiplayerGameUpdate) error {
-	endpoint := "http://mongo:8000/updateMultiplayerGame/" + multiplayerGameID
 
-	bodyBytes, err := json.Marshal(update)
+	// Make PUT request, encoding 'update' to request body, no response body decoding needed
+	res, err := structs.MakePutRequest[any]("http://mongo:8000/updateMultiplayerGame/"+multiplayerGameID, update)
 	if err != nil {
 		return err
 	}
-	updateBodyBuffer := bytes.NewBuffer(bodyBytes)
-
-	req, err := http.NewRequest(http.MethodPut, endpoint, updateBodyBuffer)
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{}
-	res, err := client.Do(req)
-	if err != nil {
-		return err
-	}
+	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
 		return errors.New("could not update multiplayer game due to Mongo error")

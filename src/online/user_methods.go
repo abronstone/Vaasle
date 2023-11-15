@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"vaas/structs"
 
@@ -19,12 +16,8 @@ func createUser(c *gin.Context) {
 		return
 	}
 
-	// Use the id from the request body as the user ID
-
-	existingUserEndpoint := "http://mongo:8000/get-user/" + requestBody.Id
-
-	// Check for existing user
-	res, err := http.Get(existingUserEndpoint)
+	// Make GET request, no decoding needed
+	res, err := structs.MakeGetRequest[any]("http://mongo:8000/get-user/"+requestBody.Id, nil)
 	if err != nil {
 		fmt.Println("No call to existing user endpoint: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -36,8 +29,6 @@ func createUser(c *gin.Context) {
 
 	if res.StatusCode == http.StatusNotFound {
 		// User not found, create a new one
-		newUserEndpoint := "http://mongo:8000/new-user/"
-
 		newUser := structs.User{
 			Id:           requestBody.Id,
 			UserName:     requestBody.UserName,
@@ -46,29 +37,15 @@ func createUser(c *gin.Context) {
 			TotalGuesses: 0,
 			Playing:      false,
 		}
-
-		userJson, err := json.Marshal(newUser)
+		// Make PUT request, encoding 'newUser' to request body, no response body decoding needed
+		res, err := structs.MakePutRequest[any]("http://mongo:8000/new-user/", newUser)
+		defer res.Body.Close()
 		if err != nil {
-			fmt.Println("Error marshaling new user to JSON: " + err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-
-		// Create and send request to create new user
-		request, err := http.NewRequest(http.MethodPut, newUserEndpoint, bytes.NewBuffer(userJson))
-		if err != nil {
-			fmt.Println("Error making request to Mongo: " + err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		request.Header.Set("Content-Type", "application/json")
-
-		client := &http.Client{}
-		_, err = client.Do(request)
-		if err != nil {
-			fmt.Println("Error from Mongo request: " + err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if res.StatusCode != http.StatusOK {
+			c.JSON(res.StatusCode, gin.H{"message": "Bad request in online container"})
 			return
 		}
 
@@ -92,25 +69,19 @@ func logIn(c *gin.Context) {
 	username := c.Param("username")
 
 	// Call the mongo service to retrieve the user if it exists
-	existingUserEndpoint := "http://mongo:8000/get-user/" + username
-	res, err := http.Get(existingUserEndpoint)
-	if err != nil || res == nil {
+	user := structs.User{}
+	// Make GET request, decode response into 'user' of type 'structs.User'
+	res, err := structs.MakeGetRequest[structs.User]("http://mongo:8000/get-user/"+username, &user)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
+		return
 	}
 	defer res.Body.Close()
-	bodyBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-	}
-	user := &structs.User{}
-	err = json.Unmarshal(bodyBytes, user)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-	}
 
 	// If the user does not exist respond with status code 401. Otherwise, respond with status code 200
 	if res.StatusCode == http.StatusNotFound {
 		c.JSON(http.StatusUnauthorized, structs.Message{Message: "Login unsuccessful"})
+		return
 	}
 
 	c.JSON(http.StatusOK, structs.Message{Message: "Login successful"})

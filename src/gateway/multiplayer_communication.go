@@ -1,9 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
-	"io"
 	"net/http"
 	"vaas/structs"
 
@@ -26,29 +23,9 @@ func api_createMultiplayerGame(c *gin.Context) {
 		return
 	}
 
-	bodyBytes, err := json.Marshal(newGameCustomMetadata)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to marshal the request body: " + err.Error()})
-		return
-	}
-	bodyBuffer := bytes.NewBuffer(bodyBytes)
-
-	res, err := http.Post("http://online:8000/newMultiplayerGame", "application/json", bodyBuffer)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
-		return
-	}
-	defer res.Body.Close()
-
 	game := structs.MultiplayerGame{}
-
-	responseBodyBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
-		return
-	}
-
-	err = json.Unmarshal(responseBodyBytes, &game)
+	// Make POST request, encoding 'newGameCustomMetadata' to request body, decode response body into 'game' of type 'structs.Game'
+	_, err := structs.MakePostRequest[structs.MultiplayerGame]("http://online:8000/newMultiplayerGame", newGameCustomMetadata, &game)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
 		return
@@ -75,48 +52,9 @@ func api_joinMultiplayerGame(c *gin.Context) {
 		return
 	}
 
-	// Create a new HTTP client
-	client := &http.Client{}
-	endpoint := "http://online:8000/joinMultiplayerGame/" + id
-
-	// Convert struct to JSON
-	jsonData, err := json.Marshal(newGameCustomMetadata)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
-		return
-	}
-
-	// Create a new request
-	req, err := http.NewRequest(http.MethodPut, endpoint, bytes.NewBuffer(jsonData))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
-		return
-	}
-
-	// Set Content-Type header
-	req.Header.Set("Content-Type", "application/json")
-
-	// Execute the request
-	res, err := client.Do(req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
-		return
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		c.JSON(http.StatusInternalServerError, structs.Message{Message: "could not join game"})
-		return
-	}
-
-	responseBodyBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
-		return
-	}
-
-	game := &structs.MultiplayerGame{}
-	err = json.Unmarshal(responseBodyBytes, game)
+	game := structs.Game{}
+	// Make PUT request, encoding 'newGameCustomMetadata' to request body, decode response body into 'game' of type 'structs.Game'
+	_, err := structs.MakePutRequest[structs.Game]("http://online:8000/joinMultiplayerGame/"+id, newGameCustomMetadata, &game)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
 		return
@@ -136,21 +74,9 @@ Handles errors by returning appropriate HTTP status codes and error messages.
 */
 func api_startMultiplayerGame(c *gin.Context) {
 	id := c.Param("id")
-	client := &http.Client{}
-	endpoint := "http://online:8000/startMultiplayerGame/" + id
 
-	// Create a new request
-	req, err := http.NewRequest(http.MethodPut, endpoint, nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
-		return
-	}
-
-	// Set Content-Type header
-	req.Header.Set("Content-Type", "application/json")
-
-	// Execute the request
-	res, err := client.Do(req)
+	// Make PUT request, no encoding/decoding needed
+	res, err := structs.MakePutRequest[any]("http://online:8000/startMultiplayerGame/"+id, nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
 		return
@@ -176,21 +102,9 @@ Handles errors by returning appropriate HTTP status codes and error messages.
 */
 func api_refreshMultiplayerGame(c *gin.Context) {
 	id := c.Param("id")
-	client := &http.Client{}
-	endpoint := "http://online:8000/refreshMultiplayerGame/" + id
-
-	// Create a new request
-	req, err := http.NewRequest(http.MethodPut, endpoint, nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
-		return
-	}
-
-	// Set Content-Type header
-	req.Header.Set("Content-Type", "application/json")
-
-	// Execute the request
-	res, err := client.Do(req)
+	update := structs.MultiplayerFrontendUpdate{}
+	// Make PUT request, no request body, decode response body into 'update' of type 'structs.MultiplayerFrontendUpdate'
+	res, err := structs.MakePutRequest[structs.MultiplayerFrontendUpdate]("http://online:8000/refreshMultiplayerGame/"+id, nil, &update)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
 		return
@@ -199,19 +113,6 @@ func api_refreshMultiplayerGame(c *gin.Context) {
 
 	if res.StatusCode != http.StatusOK {
 		c.JSON(http.StatusInternalServerError, structs.Message{Message: "could not refresh game"})
-		return
-	}
-
-	responseBodyBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
-		return
-	}
-
-	update := &structs.MultiplayerFrontendUpdate{}
-	err = json.Unmarshal(responseBodyBytes, update)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
 		return
 	}
 

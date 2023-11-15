@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"io"
 	"net/http"
 	"vaas/structs"
 
@@ -97,20 +95,12 @@ func api_makeGuess(c *gin.Context) {
 
 // Pings the gateway endpoint and forwards its response.
 func api_pingGateway(c *gin.Context) {
-	res, err := http.Get("http://gateway:5001/")
+	result := structs.Message{}
+	// Make GET request, decode response into 'result' of type 'structs.Message'
+	_, err := structs.MakeGetRequest[structs.Message]("http://gateway:5001/", &result)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "ping to gateway failed"})
 		return
 	}
-	defer res.Body.Close()
-
-	bodyBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failure to parse gateway response body: " + err.Error()})
-		return
-	}
-
-	result := structs.Message{}
-	json.Unmarshal(bodyBytes, &result)
 	c.JSON(http.StatusOK, &result)
 }
