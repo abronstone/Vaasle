@@ -45,15 +45,13 @@ type Message struct {
 
 // A user.
 type User struct {
-	Id               string   `json:"id" bson:"id"`
-	UserName         string   `json:"username" bson:"username"`
-	Games            []string `json:"games" bson:"games"`
-	NumGamesStarted  int      `json:"numgamesstarted" bson:"numgamesstarted"`
-	NumGamesFinished int      `json:"numgamesfinished" bson:"numgamesfinished"`
-	NumGamesWon      int      `json:"numgameswon" bson:"numgameswon"`
-	NumGamesLost     int      `json:"numgameslost" bson:"numgameslost"`
-	TotalGuesses     int      `json:"totalguesses" bson:"totalguesses"`
-	Playing          bool     `json:"playing" bson:"playing"`
+	Id               string `json:"id" bson:"id"`
+	UserName         string `json:"username" bson:"username"`
+	NumGamesStarted  int    `json:"numgamesstarted" bson:"numgamesstarted"`
+	NumGamesFinished int    `json:"numgamesfinished" bson:"numgamesfinished"`
+	NumGamesWon      int    `json:"numgameswon" bson:"numgameswon"`
+	NumGamesLost     int    `json:"numgameslost" bson:"numgameslost"`
+	TotalGuesses     int    `json:"totalguesses" bson:"totalguesses"`
 }
 
 // An update to make for a given user.

@@ -41,13 +41,11 @@ func createUser(c *gin.Context) {
 		newUser := structs.User{
 			Id:               requestBody.Id,
 			UserName:         requestBody.UserName,
-			Games:            []string{},
 			NumGamesStarted:  0,
 			NumGamesFinished: 0,
 			NumGamesWon:      0,
 			NumGamesLost:     0,
 			TotalGuesses:     0,
-			Playing:          false,
 		}
 
 		userJson, err := json.Marshal(newUser)
