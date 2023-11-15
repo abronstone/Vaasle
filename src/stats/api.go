@@ -46,6 +46,7 @@ func api_getStats(c *gin.Context) {
 	for _, word := range words {
 		if word.Count > highestFrequency {
 			mostCommonWord = word.Word
+			highestFrequency = word.Count
 		}
 	}
 
