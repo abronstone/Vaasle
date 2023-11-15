@@ -117,7 +117,7 @@ func (g *Game) GetShareable() *Game {
 
 // Returns a slice containing the corrections of a Game.
 func (g *Game) GetCorrections() []string {
-	corrections := make([]string, len(g.Guesses))
+	corrections := make([]string, 0, len(g.Guesses))
 	for _, pair := range g.Guesses {
 		corrections = append(corrections, pair[1])
 	}
