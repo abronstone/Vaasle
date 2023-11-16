@@ -45,23 +45,34 @@ type Message struct {
 
 // A user.
 type User struct {
-	Id           string   `json:"id" bson:"id"`
-	UserName     string   `json:"username" bson:"username"`
-	Games        []string `json:"games" bson:"games"`
-	NumGames     int      `json:"numgames" bson:"numgames"`
-	TotalGuesses int      `json:"totalguesses" bson:"totalguesses"`
-	Playing      bool     `json:"playing" bson:"playing"`
+	Id               string `json:"id" bson:"id"`
+	UserName         string `json:"username" bson:"username"`
+	NumGamesStarted  int    `json:"numgamesstarted" bson:"numgamesstarted"`
+	NumGamesFinished int    `json:"numgamesfinished" bson:"numgamesfinished"`
+	NumGamesWon      int    `json:"numgameswon" bson:"numgameswon"`
+	NumGamesLost     int    `json:"numgameslost" bson:"numgameslost"`
+	TotalGuesses     int    `json:"totalguesses" bson:"totalguesses"`
 }
 
 // An update to make for a given user.
 type UserUpdate struct {
-	ChangeInNumGames     int `json:"changeInNumGames"`
-	ChangeInTotalGuesses int `json:"changeInTotalGuesses"`
+	ChangeInNumGamesStarted  int `json:"changeInNumGamesStarted"`
+	ChangeInNumGamesFinished int `json:"changeInNumGamesFinished"`
+	ChangeInNumGamesWon      int `json:"changeInNumGamesWon"`
+	ChangeInNumGamesLost     int `json:"changeInNumGamesLost"`
+	ChangeInTotalGuesses     int `json:"changeInTotalGuesses"`
 }
 
 type NewUserRequestBody struct {
 	UserName string `json:"userName"`
 	Id       string `json:"id"`
+}
+
+type IndividualUserStats struct {
+	GamesPlayed              int     `json:"gamesPlayed"`
+	WinPercentage            float32 `json:"winPercentage"`
+	MostGuessedWord          string  `json:"mostGuessedWord"`
+	MostGuessedWordFrequency int     `json:"mostGuessedWordFrequency"`
 }
 
 // Obfuscate the designated word of a GameMetadata.
@@ -91,6 +102,11 @@ func (g *Game) IsOngoing() bool {
 	return g.State == "ongoing"
 }
 
+// Returns whether or not a MultiplayerGame has finished.
+func (g *MultiplayerGame) IsFinished() bool {
+	return g.State == "won" || g.State == "lost"
+}
+
 // Returns a shareable version of a Game, depending on whether it is ongoing.
 func (g *Game) GetShareable() *Game {
 	if g.IsOngoing() {
@@ -99,24 +115,81 @@ func (g *Game) GetShareable() *Game {
 	return g
 }
 
+// Returns a slice containing the corrections of a Game.
+func (g *Game) GetCorrections() []string {
+	corrections := make([]string, 0, len(g.Guesses))
+	for _, pair := range g.Guesses {
+		corrections = append(corrections, pair[1])
+	}
+	return corrections
+}
+
 // Makes a simple user update after a single guess.
 func (g *Game) GetUserUpdateAfterGuess() *UserUpdate {
-	changeInNumGames := 0
+	changeInNumGamesFinished := 0
+	changeInNumGamesWon := 0
+	changeInNumGamesLost := 0
 
 	// If the game is not ongoing anymore, then it has just ended.
 	// This means that we can increment the number of played games by one.
 	if !g.IsOngoing() {
-		changeInNumGames += 1
+		changeInNumGamesFinished = 1
+		if g.State == "won" {
+			changeInNumGamesWon = 1
+		} else {
+			changeInNumGamesLost = 1
+		}
 	}
 
 	return &UserUpdate{
-		ChangeInNumGames:     changeInNumGames,
-		ChangeInTotalGuesses: 1,
+		ChangeInNumGamesFinished: changeInNumGamesFinished,
+		ChangeInNumGamesWon:      changeInNumGamesWon,
+		ChangeInNumGamesLost:     changeInNumGamesLost,
+		ChangeInTotalGuesses:     1,
 	}
+}
+
+// Obfuscate the word of a Game.
+func (g *MultiplayerGame) ObfuscateWord() *MultiplayerGame {
+	return &MultiplayerGame{
+		MultiplayerGameID: g.MultiplayerGameID,
+		HostID:            g.HostID,
+		Games:             g.Games,
+		State:             g.State,
+		WinnerID:          g.WinnerID,
+		Word:              "",
+	}
+}
+
+// Returns a shareable version of a MultiplayerGame, depending on whether it is ongoing.
+func (g *MultiplayerGame) GetShareable() *MultiplayerGame {
+	if !g.IsFinished() {
+		return g.ObfuscateWord()
+	}
+	return g
 }
 
 // A multiplayer game update.
 type MultiplayerGameUpdate struct {
 	State    string `json:"state" bson:"state"`
 	WinnerID string `json:"winnerID" bson:"winnerid"`
+}
+
+// Returns whether or not a MultiplayerGameUpdate is in a finished state.
+func (u *MultiplayerGameUpdate) IsFinished() bool {
+	return u.State == "won" || u.State == "lost"
+}
+
+// A representation of a multiplayer game to be sent to the frontend.
+type MultiplayerFrontendUpdate struct {
+	State           string              `json:"state" bson:"state"`
+	WinnerID        string              `json:"winnerID" bson:"winnerid"`
+	Word            string              `json:"word" bson:"word"`
+	UserCorrections map[string][]string `json:"userCorrections" bson:"usercorrections"`
+}
+
+type CommonWordFrequency struct {
+	Id    string `json:"_id"`
+	Count int    `json:"count"`
+	Word  string `json:"word"`
 }

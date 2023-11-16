@@ -10,7 +10,7 @@ import CurrentUserGrid from "./CurrentUserGrid";
 import Keypad from "./Keypad";
 import Modal from "./Modal";
 
-export default function CurrentUserGame({ gameState, setGameState }) {
+export default function CurrentUserGame({ errorProp, gameState, setGameState }) {
   const { isAuthenticated, user } = useAuth0()
   const [loginSuccessful, setLoginSuccessful] = useState(false)
 
@@ -27,7 +27,7 @@ export default function CurrentUserGame({ gameState, setGameState }) {
   const [showModal, setShowModal] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [solution, setSolution] = useState(null);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(errorProp != null ? errorProp : null);
 
   const handleGameEnd = () => {
     setShowModal(true);
@@ -48,7 +48,6 @@ export default function CurrentUserGame({ gameState, setGameState }) {
     try {
       // When a guess is submitted, the API is called to get a new game state
       // and all necessary state is updated
-
       // When a guess is submitted, call API to get a new game state
       const newGameState = await makeGuessApi(
         gameState.metadata.gameID,
@@ -59,7 +58,7 @@ export default function CurrentUserGame({ gameState, setGameState }) {
       setGameState(newGameState);
 
       if (newGameState == null || newGameState.guesses == null) {
-        setError("Your guess must be a valid english word. No duplicates are allowed.");
+        setError("Your guess must be a valid English word. No duplicates are allowed.");
         return;
       }
 
@@ -124,7 +123,7 @@ export default function CurrentUserGame({ gameState, setGameState }) {
       setError(null);
 
     } catch (error) {
-      setError("Your guess must be a valid english word. No duplicates are allowed.");
+      setError("Your guess must be a valid English word. No duplicates are allowed.");
       return;
     }
 

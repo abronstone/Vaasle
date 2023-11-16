@@ -119,5 +119,7 @@ func main() {
 	router.PUT("/registerUserInMultiplayerGame/:id", api_registerUserInMultiplayerGame)
 	router.PUT("/updateMultiplayerGame/:id", api_updateMultiplayerGame)
 
+	router.GET("/most-common-words/:userid", mostCommonWords)
+
 	router.Run("0.0.0.0:8000")
 }

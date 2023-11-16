@@ -110,7 +110,10 @@ func updateUser(c *gin.Context) {
 	}
 	update := bson.D{
 		{Key: "$inc", Value: bson.D{
-			{Key: "numgames", Value: userUpdateData.ChangeInNumGames},
+			{Key: "numgamesstarted", Value: userUpdateData.ChangeInNumGamesStarted},
+			{Key: "numgamesfinished", Value: userUpdateData.ChangeInNumGamesFinished},
+			{Key: "numgameswon", Value: userUpdateData.ChangeInNumGamesWon},
+			{Key: "numgameslost", Value: userUpdateData.ChangeInNumGamesLost},
 			{Key: "totalguesses", Value: userUpdateData.ChangeInTotalGuesses},
 		}},
 	}

@@ -39,12 +39,13 @@ func createUser(c *gin.Context) {
 		newUserEndpoint := "http://mongo:8000/new-user/"
 
 		newUser := structs.User{
-			Id:           requestBody.Id,
-			UserName:     requestBody.UserName,
-			Games:        []string{},
-			NumGames:     0,
-			TotalGuesses: 0,
-			Playing:      false,
+			Id:               requestBody.Id,
+			UserName:         requestBody.UserName,
+			NumGamesStarted:  0,
+			NumGamesFinished: 0,
+			NumGamesWon:      0,
+			NumGamesLost:     0,
+			TotalGuesses:     0,
 		}
 
 		userJson, err := json.Marshal(newUser)
@@ -112,4 +113,6 @@ func logIn(c *gin.Context) {
 	if res.StatusCode == http.StatusNotFound {
 		c.JSON(http.StatusUnauthorized, structs.Message{Message: "Login unsuccessful"})
 	}
+
+	c.JSON(http.StatusOK, structs.Message{Message: "Login successful"})
 }

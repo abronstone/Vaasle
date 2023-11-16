@@ -105,6 +105,10 @@ func joinMultiplayerGame(c *gin.Context) {
 
 	// Send metadata to engine to create new game
 	newGame, err := engine_newGame(newMetadata)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
+		return
+	}
 
 	// Add new user to the field
 	multiplayerGame.Games[newMetadata.UserId] = newGame.Metadata.GameID
