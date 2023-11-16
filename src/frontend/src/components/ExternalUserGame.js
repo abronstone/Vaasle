@@ -8,8 +8,6 @@ export default function ExternalUserGame({ externalUserGameGuesses, userName }) 
 
   useEffect(() => {
     if (externalUserGameGuesses != null) {
-      console.log('externalUserGameGuesses in ExternalUserGame')
-      console.log(externalUserGameGuesses)
       const newCorrections = []
       let turnCounter = 0
       // Transform the guesses array into a format that the FE can understand

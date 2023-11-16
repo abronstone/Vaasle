@@ -7,113 +7,93 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useParams } from "react-router-dom";
 
 const Multiplayer = () => {
-  const { isAuthenticated, user } = useAuth0()
-  const { multiplayerGameId } = useParams()
+  const { isAuthenticated, user } = useAuth0();
+  const { multiplayerGameId } = useParams();
 
-  const [multiplayerGameState, setMultiplayerGameState] = useState(null)
-  const [externalGamesState, setExternalGamesState] = useState([])
-  const [currentUserGameState, setCurrentUserGameState] = useState(null)
+  const [multiplayerGameState, setMultiplayerGameState] = useState(null);
+  const [externalGamesState, setExternalGamesState] = useState([]);
+  const [currentUserGameState, setCurrentUserGameState] = useState(null);
   const [error, setError] = useState(null);
-  const [hasGameStarted, setHasGameStarted] = useState(false)
+  const [hasGameStarted, setHasGameStarted] = useState(false);
+
+  const handleError = (message, error) => {
+    console.error(message + error);
+    setError(message + error);
+  };
 
   const getInitialMultiplayerGameState = useCallback(async () => {
     try {
-      if (!isAuthenticated) return
-      const maxGuesses = 6
-      const wordLength = 5
-      const joinedGameState = await joinMultiplayerGameApi(multiplayerGameId, maxGuesses, wordLength, user.sub)
-      console.log('joinMultiplayerGameApi res', joinedGameState)
-      setMultiplayerGameState(joinedGameState)
-
-      console.log('multiplayerGameState,', multiplayerGameState)
+      if (!isAuthenticated) return;
+      const maxGuesses = 6;
+      const wordLength = 5;
+      const joinedGameState = await joinMultiplayerGameApi(multiplayerGameId, maxGuesses, wordLength, user.sub);
+      setMultiplayerGameState(joinedGameState);
     } catch (error) {
-      console.error("Failed to initialize multiplayer game: " + error);
-      setError("Failed to initialize multiplayer game: " + error);
+      handleError("Failed to initialize multiplayer game: ", error);
     }
-  }, [isAuthenticated, multiplayerGameId, multiplayerGameState]);
+  }, [isAuthenticated, multiplayerGameId, user.sub]);
 
   const getInitialCurrentUserGameState = useCallback(async () => {
     try {
-      // if (multiplayerGameState == null) {
-      //   throw new Error("no multiplayer game state found")
-      // }
-      // if (multiplayerGameState.games == null) {
-      //   throw new Error("no games found in multiplayer game state")
-      // }
-      const currentUserGameId = multiplayerGameState.games[user.sub]
-      console.log('currentUserGameId', currentUserGameId)
-      const res = await getGameApi(currentUserGameId)
-      console.log('get game for current user res,', res)
-      setCurrentUserGameState(res)
-      console.log('currentUserGameState', currentUserGameState)
+      const currentUserGameId = multiplayerGameState?.games[user.sub];
+      if (currentUserGameId == null) {
+        throw new Error("No current user game ID found");
+      }
+      const res = await getGameApi(currentUserGameId);
+      setCurrentUserGameState(res);
     } catch (error) {
-      console.error("Failed to initialize your game: " + error);
-      setError("Failed to initialize your game: " + error);
+      handleError("Failed to initialize your game: ", error);
     }
-  }, [multiplayerGameState, currentUserGameState])
+  }, [multiplayerGameState, user.sub]);
 
-  // Use useEffect to call getInitialMultiplayerGameState when the component mounts
   useEffect(() => {
     getInitialMultiplayerGameState();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getInitialMultiplayerGameState]);
 
-  useEffect(() => {
-    console.log('multiplayerGameState updated:', multiplayerGameState);
-  }, [multiplayerGameState]);
-
-  // Start a multiplayer game
   const handleStart = useCallback(async () => {
     try {
-      const res = await startMultiplayerGameApi(multiplayerGameId)
-      if (res != null && !res) {
-        throw new Error("Backend failed to start new multiplayer game")
+      const res = await startMultiplayerGameApi(multiplayerGameId);
+      if (res == null || !res) {
+        throw new Error("Backend failed to start new multiplayer game");
       }
-      getInitialCurrentUserGameState()
-      setHasGameStarted(true)
+      getInitialCurrentUserGameState();
+      setHasGameStarted(true);
+    } catch (error) {
+      handleError("Failed to start new multiplayer game", error);
     }
-    catch (error) {
-      console.error("Failed to start new multiplayer game" + error)
-      setError("Failed to start new multiplayer game" + error)
-    }
-  }, [multiplayerGameId, getInitialCurrentUserGameState])
+  }, [multiplayerGameId, getInitialCurrentUserGameState]);
 
   const fetchNewExternalUserGames = useCallback(async () => {
-    console.log('executing fetchNewExternalUserGames!')
     try {
       if (multiplayerGameId == null) {
-        throw new Error("No multiplayer game id found")
+        throw new Error("No multiplayer game id found");
       }
-
       const res = await refreshMultiplayerGameApi(multiplayerGameId);
-      console.log('res from refreshMultiplayerGameApi', res)
-
-      // Transform res.userCorrections into a map of userIds onto their array of guesses
-      // with the current user filtered out
-      // Eg. '123456' : [['G', 'Y', 'X', 'G', 'Y'],['Y', 'Y', 'X', 'Y', 'Y']]
       const externalUserGamesMap = new Map(
-        Object.entries(res.userCorrections).filter(([key, value]) => key !== user.sub)
+        Object.entries(res.userCorrections).filter(([key]) => key !== user.sub)
       );
-
-      const externalUserGamesObject = {
-        state: res.state,
-        externalUserGamesMap
-      }
-
-      setExternalGamesState(externalUserGamesObject);
+      setExternalGamesState({ state: res.state, externalUserGamesMap });
     } catch (e) {
-      console.error("Failed to retrieve external user games" + e)
-      setError("Failed to retrieve external user games" + e);
+      handleError("Failed to retrieve external user games", e);
     }
-  }, [multiplayerGameId, currentUserGameState, multiplayerGameState])
+  }, [multiplayerGameId, user.sub]);
 
-  //   Fetch state of externalUserGames for multiplayer when the current user submits a guess
-  // (the game state in the CurrentUserGame component changes)
   useEffect(() => {
-    console.log('fetchNewExternalUserGames useEffect triggered!')
     fetchNewExternalUserGames();
-  }
-    , [currentUserGameState]);
+  }, [currentUserGameState, fetchNewExternalUserGames]);
+
+  // Render a grid representation of every external user's guesses 
+  const renderExternalUserGames = () => {
+    const games = externalGamesState?.externalUserGamesMap;
+    return games && Array.from(games.entries()).map(([user, game], index) => (
+      <div
+        className={`ExternalUserGame ${index % 2 === 0 ? "odd" : "even"}`}
+        key={index}
+      >
+        <ExternalUserGame externalUserGameGuesses={game} userName={user} />
+      </div>
+    ));
+  };
 
   if (!hasGameStarted) {
     return (
@@ -122,29 +102,18 @@ const Multiplayer = () => {
           <button onClick={handleStart} className="general-rounded-button">Start Game</button>
         </div>
       </Layout>
-    )
+    );
   }
+
   return (
     <Layout>
-      <h3>
-        Send this code to your friends to allow them to join!
-      </h3>
+      <h3>Send this code to your friends to allow them to join!</h3>
       <p>{multiplayerGameId}</p>
       <div className="multiplayer-container">
         <div className="CurrentUserGame">
           <CurrentUserGame errorProp={error} gameState={currentUserGameState} setGameState={setCurrentUserGameState} />
         </div>
-        {externalGamesState?.externalUserGamesMap && Array.from(externalGamesState.externalUserGamesMap.entries()).map(
-          ([user, game], index) => (
-            <div
-              className={`ExternalUserGame ${index % 2 === 0 ? "odd" : "even"
-                }`}
-              key={index}
-            >
-              <ExternalUserGame externalUserGameGuesses={game} userName={user} />
-            </div>
-          )
-        )}
+        {renderExternalUserGames()}
       </div>
     </Layout>
   );
