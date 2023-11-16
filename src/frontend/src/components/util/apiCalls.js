@@ -194,7 +194,7 @@ export const getStatsApi = async (userId) => {
     }
     return res.data;
   } catch (error) {
-    console.error("Fetch failed");
+    console.error("Fetch failed", error);
     throw new Error("Fetch failed", error);
   }
 };
