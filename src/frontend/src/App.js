@@ -1,5 +1,4 @@
 import React from "react";
-import { useAuth0 } from "@auth0/auth0-react";
 import Stats from "./components/Stats";
 import Layout from "./components/Layout";
 import GameMode from "./components/GameMode";
@@ -30,11 +29,8 @@ function App() {
         />
         <Route path="/multiplayersetup" element={<MultiplayerSetUp />} />
         <Route
-          path="/multiplayer"
-          element={
-            <Multiplayer
-            />
-          }
+          path="/multiplayer/:multiplayerGameId?"
+          element={<Multiplayer />}
         />
       </Routes>
     </Router>
