@@ -180,7 +180,7 @@ func api_refreshMultiplayerGame(c *gin.Context) {
 	endpoint := "http://online:8000/refreshMultiplayerGame/" + id
 
 	// Create a new request
-	req, err := http.NewRequest(http.MethodPut, endpoint, nil)
+	req, err := http.NewRequest(http.MethodPost, endpoint, nil)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
 		return

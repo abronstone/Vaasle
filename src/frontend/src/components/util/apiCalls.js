@@ -33,10 +33,35 @@ export const newGameApi = async (maxGuesses, wordLength, userId) => {
 
     return data;
   } catch (e) {
-    console.error("Fetch failed!!", e);
-    throw new Error("Fetch failed!!", e);
+    console.error("Creating a new game failed!", e);
+    throw new Error("Creating a new game failed!", e);
   }
 };
+
+/**
+ * Gets a game with the specified gameId by calling GET /getGame/:gameId in gateway
+ * @param {string} gameId 
+ * @returns single player game representation of the specified game 
+ */
+export const getGameApi = async (gameId) => {
+  try {
+    const res = await axios.get(
+      "http://localhost:5002/getGame/" + gameId);
+
+    // Check for successful status code
+    if (res.status !== 200) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+
+    const data = res.data;
+
+    return data;
+  } catch (e) {
+    console.error(`Getting the game with the id ${gameId} failed!`, e);
+    throw new Error(`Getting the game with the id ${gameId} failed!`, e);
+  }
+
+}
 
 /**
  * Calls gateway's POST /makeGuess endpoint
@@ -69,8 +94,8 @@ export const makeGuessApi = async (gameId, guess) => {
 
     return data;
   } catch (e) {
-    console.error("Fetch failed!!", e);
-    throw new Error("Fetch failed!!", e);
+    console.error("Making a new guess failed!", e);
+    throw new Error("Making a new guess failed!", e);
   }
 };
 
@@ -119,6 +144,132 @@ export const loginApi = async (userName) => {
     return false;
   }
 };
+
+/**
+ * Calls gateway's POST /createMultiplayerGame endpoint
+ * @param {number} maxGuesses 
+ * @param {number} wordLength 
+ * @param {string} userId 
+ * @returns data object from the POST /createMultiplayerGame response
+ */
+export const newMultiplayerGameApi = async (maxGuesses, wordLength, userId) => {
+  try {
+    const res = await axios.post(
+      "http://localhost:5002/createMultiplayerGame",
+      {
+        maxGuesses,
+        wordLength,
+        userId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Check for successful status code
+    if (res.status !== 200) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+
+    const data = res.data;
+
+    return data;
+  } catch (e) {
+    console.error("Creating a new multiplayer game failed!", e);
+    throw new Error("Creating a new multiplayer game failed!", e);
+  }
+}
+
+/**
+ * Calls gateway's PUT /joinMultiplayerGame/:id endpoint
+ * @param {string} gameId
+ * @param {number} maxGuesses 
+ * @param {number} wordLength 
+ * @param {string} userId 
+ * @returns data object from the POST /newGame response
+ */
+export const joinMultiplayerGameApi = async (gameId, maxGuesses, wordLength, userId) => {
+  try {
+    const res = await axios.put(
+      "http://localhost:5002/joinMultiplayerGame/" + gameId,
+      {
+        maxGuesses,
+        wordLength,
+        userId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Check for successful status code
+    if (res.status !== 200) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+
+    const data = res.data;
+
+    return data;
+  } catch (e) {
+    console.error(`Joining the multiplayer game with the id ${gameId} failed!`, e);
+    throw new Error(`Joining the multiplayer game with the id ${gameId} failed!`, e);
+  }
+}
+
+/**
+ * Starts a multiplayer game by calling PUT /startMultiplayerGame in gateway
+ * @param {string} gameId 
+ * @returns {boolean} true if game was successfully started false otherwise
+ */
+export const startMultiplayerGameApi = async (gameId) => {
+  try {
+    const res = await axios.put(
+      "http://localhost:5002/startMultiplayerGame/" + gameId);
+
+    // Check for successful status code
+    if (res.status !== 200) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+
+    const data = res.data;
+    if (data.message == null) {
+      throw new Error("no message from gateway received in request body")
+    }
+
+    if (data.message !== "started game") {
+      throw new Error("request body message is not \"started game\"")
+    }
+
+    return true;
+  } catch (e) {
+    console.error('Starting a new multiplayer game failed!' + e)
+    return false
+  }
+}
+
+
+export const refreshMultiplayerGameApi = async (gameId) => {
+  try {
+    const res = await axios.post(
+      "http://localhost:5002/refreshMultiplayerGame/" + gameId);
+
+    // Check for successful status code
+    if (res.status !== 200) {
+      throw new Error(`HTTP error! Status: ${res.status}`);
+    }
+
+    const data = res.data;
+
+    return data;
+  } catch (e) {
+    console.error(`Refreshing the multiplayer game with the id ${gameId} failed!`, e);
+    throw new Error(`Refreshing the multiplayer game with the id ${gameId} failed!`, e);
+  }
+}
 
 export const getExternalUserGamesApi = async (gameId) => {
   const externalUserIds = ["123456", "109876", "234567", "987654"];

@@ -34,6 +34,7 @@ func refreshMultiplayerGame(c *gin.Context) {
 			Word:            multiplayerGame.Word,
 			UserCorrections: getUserCorrections(games),
 		})
+		return
 	}
 
 	update := getNewGameUpdate(games)

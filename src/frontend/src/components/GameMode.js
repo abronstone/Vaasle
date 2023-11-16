@@ -20,10 +20,10 @@ export default function GameMode() {
           <>
             <h2>Select Game Mode</h2>
             <div>
-              <Link to="/singleplayer" className="gameMode-button">
+              <Link to="/singleplayer" className="general-rounded-button">
                 Single Player
               </Link>
-              <Link to="/multiplayersetup" className="gameMode-button">
+              <Link to="/multiplayersetup" className="general-rounded-button">
                 Multiplayer
               </Link>
             </div>

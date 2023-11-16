@@ -9,9 +9,10 @@ import (
 // Gets the game with the specified ID.
 // Queries the Mongo API if not already present in the engine's cache.
 func getGame(id string) (*structs.Game, error) {
-	if game, ok := games.load(id); ok {
-		return game, nil
-	}
+	// For multiplayer, we do not want to check the cache
+	// if game, ok := games.load(id); ok {
+	// 	return game, nil
+	// }
 
 	game, err := mongo_getGame(id)
 	if err != nil {
