@@ -33,6 +33,10 @@ func api_newUser(c *gin.Context) {
 
 	// Make PUT request, encode 'requestBody' into request, no decode needed
 	res, err := structs.MakePutRequest[structs.Game]("http://online:8000/create-user", requestBody)
+	if res != nil && res.StatusCode == http.StatusBadRequest {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User already exists"})
+		return
+	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "PUT request error"})
 		return
@@ -40,17 +44,6 @@ func api_newUser(c *gin.Context) {
 
 	// Close the response body
 	defer res.Body.Close()
-
-	// Check for status codes
-	if res.StatusCode == http.StatusBadRequest {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User already exists"})
-		return
-	}
-
-	if res.StatusCode != http.StatusOK {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating user"})
-		return
-	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "User created successfully"})
 }
@@ -68,6 +61,11 @@ func api_login(c *gin.Context) {
 
 	// Make PUT request, no encoding/decoding needed
 	res, err := structs.MakePutRequest[any]("http://online:8000/login/"+userName, nil)
+	// Check for status codes
+	if res != nil && res.StatusCode == http.StatusUnauthorized {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User does not exist"})
+		return
+	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "PUT request error while logging in"})
 		return
@@ -75,17 +73,6 @@ func api_login(c *gin.Context) {
 
 	// Close the response body
 	defer res.Body.Close()
-
-	// Check for status codes
-	if res.StatusCode == http.StatusUnauthorized {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User does not exist"})
-		return
-	}
-
-	if res.StatusCode != http.StatusOK {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error logging in"})
-		return
-	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 }

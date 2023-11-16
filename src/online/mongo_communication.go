@@ -1,8 +1,6 @@
 package main
 
 import (
-	"errors"
-	"net/http"
 	"vaas/structs"
 )
 
@@ -20,11 +18,6 @@ func mongo_createMultiplayerGame(multiplayerGame structs.MultiplayerGame) error 
 		return err
 	}
 	defer res.Body.Close()
-
-	// Return response based on Mongo response
-	if res.StatusCode != http.StatusOK {
-		return errors.New("could not create multiplayer game due to Mongo error")
-	}
 
 	return nil
 }
@@ -61,10 +54,6 @@ func mongo_addUserToMultiplayerGame(multiplayerGameID string, game *structs.Game
 
 	defer res.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
-		return errors.New("could not create multiplayer game due to Mongo error")
-	}
-
 	return nil
 }
 
@@ -84,10 +73,6 @@ func mongo_startMultiplayerGame(multiplayerGameID string) error {
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
-		return errors.New("could not start multiplayer game due to Mongo error")
-	}
-
 	return nil
 }
 
@@ -99,10 +84,6 @@ func mongo_updateMultiplayerGame(multiplayerGameID string, update *structs.Multi
 		return err
 	}
 	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return errors.New("could not update multiplayer game due to Mongo error")
-	}
 
 	return nil
 }

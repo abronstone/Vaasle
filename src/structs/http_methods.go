@@ -156,9 +156,6 @@ func MakeGetRequest[T any](endpoint string, responseStructPointer ...*T) (*http.
 	if err != nil {
 		return nil, err
 	}
-	if res.StatusCode != http.StatusOK {
-		return res, errors.New("GET request returned status code " + strconv.Itoa(res.StatusCode))
-	}
 
 	// Step 2: Check to see if responseStructPointer variadic parameter has a single value. If so, decode the response into it
 	if len(responseStructPointer) == 1 {

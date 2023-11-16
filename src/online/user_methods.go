@@ -18,7 +18,7 @@ func createUser(c *gin.Context) {
 
 	// Make GET request, no decoding needed
 	res, err := structs.MakeGetRequest[any]("http://mongo:8000/get-user/"+requestBody.Id, nil)
-	if err != nil {
+	if err != nil && res == nil {
 		fmt.Println("No call to existing user endpoint: " + err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -39,15 +39,11 @@ func createUser(c *gin.Context) {
 		}
 		// Make PUT request, encoding 'newUser' to request body, no response body decoding needed
 		res, err := structs.MakePutRequest[any]("http://mongo:8000/new-user/", newUser)
-		defer res.Body.Close()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		if res.StatusCode != http.StatusOK {
-			c.JSON(res.StatusCode, gin.H{"message": "Bad request in online container"})
-			return
-		}
+		defer res.Body.Close()
 
 		c.JSON(http.StatusOK, structs.Message{Message: "Account created successfully"})
 	} else {
@@ -72,6 +68,10 @@ func logIn(c *gin.Context) {
 	user := structs.User{}
 	// Make GET request, decode response into 'user' of type 'structs.User'
 	res, err := structs.MakeGetRequest[structs.User]("http://mongo:8000/get-user/"+username, &user)
+	if res != nil && res.StatusCode == http.StatusNotFound {
+		c.JSON(http.StatusUnauthorized, structs.Message{Message: "Login unsuccessful"})
+		return
+	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)
 		return
@@ -79,10 +79,6 @@ func logIn(c *gin.Context) {
 	defer res.Body.Close()
 
 	// If the user does not exist respond with status code 401. Otherwise, respond with status code 200
-	if res.StatusCode == http.StatusNotFound {
-		c.JSON(http.StatusUnauthorized, structs.Message{Message: "Login unsuccessful"})
-		return
-	}
 
 	c.JSON(http.StatusOK, structs.Message{Message: "Login successful"})
 }

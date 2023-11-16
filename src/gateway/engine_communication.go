@@ -79,7 +79,6 @@ func api_getGame(c *gin.Context) {
 	currentGame := structs.Game{}
 	// Make GET request, decode response into 'currentGame' of type 'structs.Game'
 	_, err := structs.MakeGetRequest[structs.Game]("http://engine:5001/getGame/"+gameID, &currentGame)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get game from engine: " + err.Error()})
 		return
@@ -120,11 +119,6 @@ func api_makeGuess(c *gin.Context) {
 		return
 	}
 	defer res.Body.Close()
-
-	if res.StatusCode != 200 {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to make guess, please enter a valid 5 letter english word"})
-		return
-	}
 
 	if currentGame.Metadata.GameID == "" {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get game from engine: " + err.Error()})
