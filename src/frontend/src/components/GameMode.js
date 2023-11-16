@@ -9,8 +9,12 @@ export default function GameMode() {
   const { isAuthenticated } = useAuth0();
   return (
     <>
-      <h1>Vaasle</h1>
-      {isAuthenticated != null && !isAuthenticated && (<ErrorBadge text={'You must be logged into to play'} />)}
+      <Link to="/">
+        <h1>Vaasle</h1>
+      </Link>
+      {isAuthenticated != null && !isAuthenticated && (
+        <ErrorBadge text={"You must be logged into to play"} />
+      )}
       <div className="gameMode">
         {isAuthenticated != null && isAuthenticated && (
           <>
@@ -24,13 +28,15 @@ export default function GameMode() {
               </Link>
             </div>
           </>
-        )
-        }
+        )}
       </div>
       <div className="auth0button-container">
-        {isAuthenticated != null && isAuthenticated ? (<LogoutButton />) : (<LoginButton />)}
+        {isAuthenticated != null && isAuthenticated ? (
+          <LogoutButton />
+        ) : (
+          <LoginButton />
+        )}
       </div>
     </>
-
   );
 }

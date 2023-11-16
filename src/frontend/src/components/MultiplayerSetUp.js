@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function MultiplayerSetUp() {
   const [gameID, setGameID] = useState("");
@@ -14,7 +14,9 @@ export default function MultiplayerSetUp() {
 
   return (
     <div className="multiplayerSettings">
-      <h1>Vaasle</h1>
+      <Link to="/">
+        <h1>Vaasle</h1>
+      </Link>
       <h2>Create or Join Lobby</h2>
 
       <div>
