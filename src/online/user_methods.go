@@ -30,12 +30,13 @@ func createUser(c *gin.Context) {
 	if res.StatusCode == http.StatusNotFound {
 		// User not found, create a new one
 		newUser := structs.User{
-			Id:           requestBody.Id,
-			UserName:     requestBody.UserName,
-			Games:        []string{},
-			NumGames:     0,
-			TotalGuesses: 0,
-			Playing:      false,
+			Id:               requestBody.Id,
+			UserName:         requestBody.UserName,
+			NumGamesStarted:  0,
+			NumGamesFinished: 0,
+			NumGamesWon:      0,
+			NumGamesLost:     0,
+			TotalGuesses:     0,
 		}
 		// Make PUT request, encoding 'newUser' to request body, no response body decoding needed
 		res, err := structs.MakePutRequest[any]("http://mongo:8000/new-user/", newUser)

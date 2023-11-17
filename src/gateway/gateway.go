@@ -31,6 +31,9 @@ func main() {
 	router.PUT("/startMultiplayerGame/:id", api_startMultiplayerGame)
 	router.POST("/refreshMultiplayerGame/:id", api_refreshMultiplayerGame)
 
+	// Stats
+	router.GET("/getStats/:userId", api_getStats)
+
 	router.Run("0.0.0.0:5001")
 }
 

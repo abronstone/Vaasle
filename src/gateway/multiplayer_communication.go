@@ -97,6 +97,7 @@ Handles errors by returning appropriate HTTP status codes and error messages.
 */
 func api_refreshMultiplayerGame(c *gin.Context) {
 	id := c.Param("id")
+  
 	update := structs.MultiplayerFrontendUpdate{}
 	// Make PUT request, no request body, decode response body into 'update' of type 'structs.MultiplayerFrontendUpdate'
 	res, err := structs.MakePutRequest[structs.MultiplayerFrontendUpdate]("http://online:8000/refreshMultiplayerGame/"+id, nil, &update)

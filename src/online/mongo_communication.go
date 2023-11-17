@@ -4,6 +4,34 @@ import (
 	"vaas/structs"
 )
 
+func mongo_getUser(userid string) (*structs.User, error) {
+	/*
+		Takes in a userid string and requests the user struct from Mongo associated with that user id
+
+		@param: user id (string)
+		@return: user (structs.User)
+	*/
+	res, err := http.Get("http://mongo:8000/get-user/" + userid)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	bodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	user := structs.User{}
+	err = json.Unmarshal(bodyBytes, &user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+
+}
+
 func mongo_createMultiplayerGame(multiplayerGame structs.MultiplayerGame) error {
 	/*
 		Takes in a multiplayer game struct and sends it to Mongo container to insert into database

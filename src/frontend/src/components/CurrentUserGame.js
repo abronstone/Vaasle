@@ -58,7 +58,7 @@ export default function CurrentUserGame({ errorProp, gameState, setGameState }) 
       setGameState(newGameState);
 
       if (newGameState == null || newGameState.guesses == null) {
-        setError("Your guess must be a valid english word. No duplicates are allowed.");
+        setError("Your guess must be a valid English word. No duplicates are allowed.");
         return;
       }
 
@@ -123,7 +123,7 @@ export default function CurrentUserGame({ errorProp, gameState, setGameState }) 
       setError(null);
 
     } catch (error) {
-      setError("Your guess must be a valid english word. No duplicates are allowed.");
+      setError("Your guess must be a valid English word. No duplicates are allowed.");
       return;
     }
 

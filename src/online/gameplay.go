@@ -25,6 +25,11 @@ func refreshMultiplayerGame(c *gin.Context) {
 
 	games := make(map[string]*structs.Game)
 	populateGames(multiplayerGame, games)
+	userNames, err := getUserNames(multiplayerGame.Games)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, structs.Message{Message: "Error mapping user ids to usernames: " + err.Error()})
+		return
+	}
 
 	// multiplayer game was already discovered to be finished by someone else
 	if multiplayerGame.State == "won" || multiplayerGame.State == "lost" {
@@ -33,7 +38,9 @@ func refreshMultiplayerGame(c *gin.Context) {
 			WinnerID:        multiplayerGame.WinnerID,
 			Word:            multiplayerGame.Word,
 			UserCorrections: getUserCorrections(games),
+			UserNames:       userNames,
 		})
+		return
 	}
 
 	update := getNewGameUpdate(games)
@@ -66,6 +73,7 @@ func refreshMultiplayerGame(c *gin.Context) {
 		WinnerID:        update.WinnerID,
 		Word:            word,
 		UserCorrections: getUserCorrections(games),
+		UserNames:       userNames,
 	})
 }
 
@@ -115,4 +123,17 @@ func getUserCorrections(games map[string]*structs.Game) map[string][]string {
 		userCorrections[userID] = game.GetCorrections()
 	}
 	return userCorrections
+}
+
+// Generate all users' usernames from a map of user ids to game ids
+func getUserNames(games map[string]string) (map[string]string, error) {
+	output := make(map[string]string)
+	for k := range games {
+		user, err := mongo_getUser(k)
+		if err != nil {
+			return nil, err
+		}
+		output[k] = user.UserName
+	}
+	return output, nil
 }

@@ -44,6 +44,14 @@ func api_newGame(c *gin.Context) {
 		return
 	}
 
+	err = mongo_updateUser(newGame.Metadata.UserId, &structs.UserUpdate{
+		ChangeInNumGamesStarted: 1,
+	})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	registerGame(newGame)
 	c.JSON(http.StatusOK, newGame)
 }
