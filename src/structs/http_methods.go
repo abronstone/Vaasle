@@ -62,7 +62,13 @@ func MakePutRequest[T any](endpoint string, requestStruct interface{}, responseS
 	}
 
 	// Step 2: Make request
-	req, err := http.NewRequest(http.MethodPut, endpoint, bodyBuffer)
+	var req *http.Request
+	var err error
+	if bodyBuffer != nil {
+		req, err = http.NewRequest(http.MethodPut, endpoint, bodyBuffer)
+	} else {
+		req, err = http.NewRequest(http.MethodPut, endpoint, nil)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +83,7 @@ func MakePutRequest[T any](endpoint string, requestStruct interface{}, responseS
 		return res, errors.New("PUT request returned status code " + strconv.Itoa(res.StatusCode))
 	}
 	// Step 3: Check to see if responseStructPointer variadic parameter has a single value. If so, decode the response into it
-	if len(responseStructPointer) == 1 {
+	if len(responseStructPointer) == 1 && responseStructPointer[0] != nil {
 		err = DecodeResponseBody(res, responseStructPointer[0])
 		if err != nil {
 			return nil, err
@@ -116,7 +122,13 @@ func MakePostRequest[T any](endpoint string, requestStruct interface{}, response
 	}
 
 	// Step 2: Make request
-	res, err := http.Post(endpoint, "application/json", bodyBuffer)
+	var res *http.Response
+	var err error
+	if bodyBuffer != nil {
+		res, err = http.Post(endpoint, "application/json", bodyBuffer)
+	} else {
+		res, err = http.Post(endpoint, "application/json", nil)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +137,7 @@ func MakePostRequest[T any](endpoint string, requestStruct interface{}, response
 	}
 
 	// Step 3: Check to see if responseStructPointer variadic parameter has a single value. If so, decode the response into it
-	if len(responseStructPointer) == 1 {
+	if len(responseStructPointer) == 1 && responseStructPointer[0] != nil {
 		err = DecodeResponseBody(res, responseStructPointer[0])
 		if err != nil {
 			return nil, err
@@ -161,7 +173,7 @@ func MakeGetRequest[T any](endpoint string, responseStructPointer ...*T) (*http.
 	}
 
 	// Step 2: Check to see if responseStructPointer variadic parameter has a single value. If so, decode the response into it
-	if len(responseStructPointer) == 1 {
+	if len(responseStructPointer) == 1 && responseStructPointer[0] != nil {
 		err = DecodeResponseBody(res, responseStructPointer[0])
 		if err != nil {
 			return nil, err
