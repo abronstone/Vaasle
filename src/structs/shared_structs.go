@@ -186,6 +186,7 @@ type MultiplayerFrontendUpdate struct {
 	WinnerID        string              `json:"winnerID" bson:"winnerid"`
 	Word            string              `json:"word" bson:"word"`
 	UserCorrections map[string][]string `json:"userCorrections" bson:"usercorrections"`
+	UserNames       map[string]string   `json:"userNames" bson:"usernames"`
 }
 
 type CommonWordFrequency struct {
