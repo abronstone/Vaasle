@@ -174,6 +174,12 @@ func mongo_startMultiplayerGame(multiplayerGameID string) error {
 }
 
 func mongo_updateMultiplayerGame(multiplayerGameID string, update *structs.MultiplayerGameUpdate) error {
+	/*
+		Sends a multiplayer game update to the Mongo container
+
+		@param: multiplayer game ID (string), multiplayer game update (structs.MultiplayerGameUpdate)
+		@return: error
+	*/
 	endpoint := "http://mongo:8000/updateMultiplayerGame/" + multiplayerGameID
 
 	bodyBytes, err := json.Marshal(update)

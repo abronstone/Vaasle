@@ -8,6 +8,12 @@ import (
 )
 
 func startMultiplayerGame(c *gin.Context) {
+	/*
+		Sends a request to the Mongo container to start the shared game
+
+		@param: multiplayer game ID (expected as path parameter)
+		@return: confirmation message in HTTP response (structs.Message)
+	*/
 	if err := mongo_startMultiplayerGame(c.Param("id")); err != nil {
 		c.JSON(http.StatusBadRequest, structs.Message{Message: err.Error()})
 		return
@@ -16,6 +22,18 @@ func startMultiplayerGame(c *gin.Context) {
 }
 
 func refreshMultiplayerGame(c *gin.Context) {
+	/*
+		Upon receiving a multiplayer game ID in the path parameters, does the following:
+
+			1. Gets the multiplayer game
+			2. Gets all game structs associated with the game ID's in multiplayerGame.Games
+			3. Checks if the game state was changed to either "won" or "lost". If so, returns the multiplayer game with the word included
+			4. Gets a new game update to get guesses of other users
+			5. Returns the game update
+
+		@param: multiplayer game ID (expected as path parameter)
+		@return: multiplayer front end updatae structure (structs.MultiplayerFrontendUpdate)
+	*/
 	id := c.Param("id")
 	multiplayerGame, err := helper_getMultiplayerGame(id)
 	if err != nil {
