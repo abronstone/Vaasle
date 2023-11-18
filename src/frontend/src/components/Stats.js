@@ -29,7 +29,7 @@ export default function Stats() {
       <h2>Statistics</h2>
       <ul>
         <li>Games Played: {statsData.gamesPlayed}</li>
-        <li>Win %: {statsData.winPercentage}</li>
+        <li>Win Ratio: {statsData.winPercentage}</li>
         <li>Most Guessed Word: {statsData.mostGuessedWord}</li>
       </ul>
       <Link to="/" className="close-btn">
