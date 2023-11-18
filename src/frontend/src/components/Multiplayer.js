@@ -15,7 +15,6 @@ const Multiplayer = () => {
   const queryParams = new URLSearchParams(location.search);
   const isHost = queryParams.get('host') === 'true';
 
-  const [initialMultiplayerGameState, setInitialMultiplayerGameState] = useState(null)
   const [multiplayerGameState, setMultiplayerGameState] = useState(null);
   const [externalGamesState, setExternalGamesState] = useState(null);
   const [currentUserGameState, setCurrentUserGameState] = useState(null);
@@ -48,7 +47,7 @@ const Multiplayer = () => {
     } catch (error) {
       handleError("Failed to initialize multiplayer game: ", error);
     }
-  }, [isAuthenticated, multiplayerGameId, user.sub]);
+  }, [isAuthenticated, multiplayerGameId]);
 
   useEffect(() => {
     getInitialMultiplayerGameState();
@@ -89,11 +88,11 @@ const Multiplayer = () => {
     } catch (e) {
       handleError("Failed to retrieve external user games", e);
     }
-  }, [multiplayerGameId, user.sub]);
+  }, [multiplayerGameId]);
 
   useEffect(() => {
     fetchNewExternalUserGames();
-  }, [currentUserGameState, fetchNewExternalUserGames]);
+  }, [currentUserGameState]);
 
   // Render a grid representation of every external user's guesses 
   const renderExternalUserGames = () => {
