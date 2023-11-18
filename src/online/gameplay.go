@@ -43,7 +43,7 @@ func refreshMultiplayerGame(c *gin.Context) {
 		return
 	}
 
-	update := getNewGameUpdate(multiplayerGame.state, games)
+	update := getNewGameUpdate(multiplayerGame.State, games)
 	if update.IsFinished() {
 		if err := mongo_updateMultiplayerGame(id, update); err != nil {
 			c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
