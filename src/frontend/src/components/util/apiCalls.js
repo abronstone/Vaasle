@@ -345,7 +345,7 @@ export const getStatsApi = async (userId) => {
     }
     return res.data;
   } catch (error) {
-    console.error("Fetch failed", error);
-    throw new Error("Fetch failed", error);
+    console.error("Error setting up HTTP Request", error);
+    throw new Error("Error in request setup", error);
   }
 };
