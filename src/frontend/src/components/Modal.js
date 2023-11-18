@@ -8,7 +8,7 @@
             <h1>You Win!</h1>
             <p>The word was: </p>
             {solution && <p className="solution">{solution}</p>}
-            <p>You found the solution in {turn + 1} guess{turn > 1 ? "es" : ""} :)</p>
+            <p>You found the solution in {turn + 1} guess{turn + 1 > 1 ? "es" : ""} :)</p>
         </div>
         )}
         {!isCorrect && (

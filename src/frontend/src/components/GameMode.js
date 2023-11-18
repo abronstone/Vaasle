@@ -10,7 +10,7 @@ export default function GameMode() {
   return (
     <>
       <h1>Vaasle</h1>
-      {isAuthenticated != null && !isAuthenticated && (<ErrorBadge text={'You must be logged into to play'} />)}
+      {isAuthenticated != null && !isAuthenticated && (<ErrorBadge text={'You must be logged in to to play'} />)}
       <div className="gameMode">
         {isAuthenticated != null && isAuthenticated && (
           <>

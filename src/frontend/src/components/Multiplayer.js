@@ -75,7 +75,7 @@ const Multiplayer = () => {
       }
       const refreshedMultiplayerGameState = await refreshMultiplayerGameApi(multiplayerGameId);
       console.log('refreshedMultiplayerGameState: ', refreshedMultiplayerGameState)
-      
+
       if (refreshedMultiplayerGameState.state != null && refreshedMultiplayerGameState.state === "won" && refreshedMultiplayerGameState.winnerID !== user.sub) {
         setExternalUserHasWon(true)
       }
@@ -112,6 +112,9 @@ const Multiplayer = () => {
   if (!hasGameStarted) {
     return (
       <Layout>
+        <h3>Send this code to your friends to allow them to join!</h3>
+        <p>{multiplayerGameId}</p>
+        <p>Once all of your friends are on this screen everyone start the game at the same time!</p>
         <div>
           <button onClick={handleStart} className="general-rounded-button">Start Game</button>
         </div>
@@ -121,17 +124,17 @@ const Multiplayer = () => {
 
   return (
     <>
-    <Layout>
-      <h3>Send this code to your friends to allow them to join!</h3>
-      <p>{multiplayerGameId}</p>
-      <div className="multiplayer-container">
-        <div className="CurrentUserGame">
-          <CurrentUserGame errorProp={error} gameState={currentUserGameState} setGameState={setCurrentUserGameState} />
+      <Layout>
+        <h3>Send this code to your friends to allow them to join!</h3>
+        <p>{multiplayerGameId}</p>
+        <div className="multiplayer-container">
+          <div className="CurrentUserGame">
+            <CurrentUserGame errorProp={error} gameState={currentUserGameState} setGameState={setCurrentUserGameState} />
+          </div>
+          {renderExternalUserGames()}
         </div>
-        {renderExternalUserGames()}
-      </div>
-    </Layout>
-    {externalUserHasWon && <MultiplayerModal winner={externalGamesState.externalUserIdsToNamesMap.get(multiplayerGameState.winnerID)} solution={multiplayerGameState.word} />}
+      </Layout>
+      {externalUserHasWon && <MultiplayerModal winner={externalGamesState.externalUserIdsToNamesMap.get(multiplayerGameState.winnerID)} solution={multiplayerGameState.word} />}
     </>
   );
 };
