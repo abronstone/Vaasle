@@ -90,30 +90,28 @@ func populateGames(multiplayerGame *structs.MultiplayerGame, games map[string]*s
 }
 
 // Analyze every user's game to generate a new multiplayer game update.
-func getNewGameUpdate(games map[string]*structs.Game) *structs.MultiplayerGameUpdate {
+func getNewGameUpdate(state string, games map[string]*structs.Game) *structs.MultiplayerGameUpdate {
+	update := structs.MultiplayerGameUpdate{
+		State:    state,
+		WinnerID: "",
+	}
 	allLost := true
 	for _, game := range games {
 		if game.State == "won" {
-			return &structs.MultiplayerGameUpdate{
-				State:    "won",
-				WinnerID: game.Metadata.UserId,
-			}
+			update.State = "won"
+			update.WinnerID = game.Metadata.UserId
+			return &update
 		}
 		if game.State != "lost" {
 			allLost = false
 		}
 	}
 	if allLost {
-		return &structs.MultiplayerGameUpdate{
-			State:    "lost",
-			WinnerID: "",
-		}
-	} else {
-		return &structs.MultiplayerGameUpdate{
-			State:    "ongoing",
-			WinnerID: "",
-		}
+		update.State = "lost"
+	} else if state != "waiting" {
+		update.State = "ongoing"
 	}
+	return &update
 }
 
 // Generates all users' corrections from a slice of game structs.
