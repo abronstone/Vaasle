@@ -34,17 +34,6 @@ services:
     expose:
       - 8000
 
-  cli:
-    container_name: cli
-    build:
-      context: ./src
-      target: cli
-    stdin_open: true
-    tty: true
-    depends_on:
-      - engine
-      - gateway
-
   online:
     container_name: online
     build:
