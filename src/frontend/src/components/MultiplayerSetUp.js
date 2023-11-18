@@ -16,7 +16,7 @@ export default function MultiplayerSetUp() {
     // Create a new multiplayer game if the user is authenticated and is not joining a game
     // Then redirect them to the multiplayer page for their newly created game
     const createdGameState = await newMultiplayerGameApi(maxGuesses, wordLength, user.sub)
-    navigate(`/multiplayer/${createdGameState.multiplayerGameID}`)
+    navigate(`/multiplayer/${createdGameState.multiplayerGameID}?host=true`)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, navigate])
 

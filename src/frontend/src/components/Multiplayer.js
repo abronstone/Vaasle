@@ -4,12 +4,16 @@ import CurrentUserGame from "./CurrentUserGame";
 import ExternalUserGame from "./ExternalUserGame";
 import { refreshMultiplayerGameApi, joinMultiplayerGameApi, getGameApi, startMultiplayerGameApi } from "./util/apiCalls";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import MultiplayerModal from "./MultiplayerModal";
+import ErrorBadge from "./ErrorBadge";
 
 const Multiplayer = () => {
   const { isAuthenticated, user } = useAuth0();
   const { multiplayerGameId } = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const isHost = queryParams.get('host') === 'true';
 
   const [multiplayerGameState, setMultiplayerGameState] = useState(null);
   const [externalGamesState, setExternalGamesState] = useState({});
@@ -68,6 +72,7 @@ const Multiplayer = () => {
     }
   }, [multiplayerGameId, getInitialCurrentUserGameState]);
 
+
   const fetchNewExternalUserGames = useCallback(async () => {
     try {
       if (multiplayerGameId == null) {
@@ -109,34 +114,117 @@ const Multiplayer = () => {
     ));
   };
 
-  if (!hasGameStarted) {
+  const handleRefreshLobby = useCallback(async () => {
+    try {
+
+      if (multiplayerGameId == null) {
+        throw new Error("No multiplayer game id found");
+      }
+      const refreshedMultiplayerGameState = await refreshMultiplayerGameApi(multiplayerGameId);
+      console.log('refreshedMultiplayerGameState: ', refreshedMultiplayerGameState)
+
+      if (refreshedMultiplayerGameState.status !== "waiting") {
+        if (refreshedMultiplayerGameState.status !== "ongoing") {
+          throw new Error("The game you are trying to join has already finished")
+        }
+        else {
+          setHasGameStarted(true)
+          const externalUserGamesMap = new Map(
+            Object.entries(refreshedMultiplayerGameState.userCorrections).filter(([key]) => key !== user.sub)
+          );
+          const externalUserIdsToNamesMap = new Map(Object.entries(refreshedMultiplayerGameState.userNames))
+
+          setExternalGamesState({ state: refreshedMultiplayerGameState.state, externalUserGamesMap, externalUserIdsToNamesMap });
+          setMultiplayerGameState(refreshedMultiplayerGameState)
+          setError(null)
+        }
+      }
+      else {
+        const externalUserGamesMap = new Map(
+          Object.entries(refreshedMultiplayerGameState.userCorrections).filter(([key]) => key !== user.sub)
+        );
+        const externalUserIdsToNamesMap = new Map(Object.entries(refreshedMultiplayerGameState.userNames))
+
+        setExternalGamesState({ state: refreshedMultiplayerGameState.state, externalUserGamesMap, externalUserIdsToNamesMap });
+        setMultiplayerGameState(refreshedMultiplayerGameState)
+        setError(null)
+      }
+
+    }
+    catch (e) {
+      handleError("Error: " + e)
+    }
+  })
+
+  useEffect(() => {
+    handleRefreshLobby()
+  }, [])
+
+  // Render a list of all current users in the lobby
+  const renderCurrentUsersInLobby = () => {
+    return (
+      <>
+        <h3>Players</h3>
+        {externalGamesState != null && externalGamesState.externalUserIdsToNamesMap != null && Array.from(externalGamesState.externalUserIdsToNamesMap?.values() ?? []).map((userName) => (
+          <p key={userName}>{userName}</p>
+        ))}
+      </>
+    );
+  };
+
+
+  if (!hasGameStarted && isHost) {
     return (
       <Layout>
+        {error != null && <ErrorBadge text={error} />}
         <h3>Send this code to your friends to allow them to join!</h3>
         <p>{multiplayerGameId}</p>
         <p>Once all of your friends are on this screen everyone start the game at the same time!</p>
         <div>
           <button onClick={handleStart} className="general-rounded-button">Start Game</button>
         </div>
+        <div>
+          <button onClick={handleRefreshLobby} className="general-rounded-button">Refresh Lobby</button>
+        </div>
+        {renderCurrentUsersInLobby()}
       </Layout>
     );
   }
 
-  return (
-    <>
+  else if (!hasGameStarted) {
+    return (
       <Layout>
-        <h3>Send this code to your friends to allow them to join!</h3>
+        {error != null && <ErrorBadge text={error} />}
+        <h3>Please wait for the host to join this game</h3>
+        <p>Click refresh to refresh the lobby, you will automatically enter the game after pressing this once the host starts the game</p>
+        <p>While you wait, send your friends the code to join!</p>
         <p>{multiplayerGameId}</p>
-        <div className="multiplayer-container">
-          <div className="CurrentUserGame">
-            <CurrentUserGame errorProp={error} gameState={currentUserGameState} setGameState={setCurrentUserGameState} />
-          </div>
-          {renderExternalUserGames()}
+        <p>Once all of your friends are on this screen everyone start the game at the same time!</p>
+        <div>
+          <button onClick={handleRefreshLobby} className="general-rounded-button">Refresh Lobby</button>
         </div>
+        {renderCurrentUsersInLobby()}
       </Layout>
-      {externalUserHasWon && <MultiplayerModal winner={externalGamesState.externalUserIdsToNamesMap.get(multiplayerGameState.winnerID)} solution={multiplayerGameState.word} />}
-    </>
-  );
+    )
+  }
+
+  else {
+    return (
+      <>
+        <Layout>
+          <h3>Send this code to your friends to allow them to join!</h3>
+          <p>{multiplayerGameId}</p>
+          <div className="multiplayer-container">
+            <div className="CurrentUserGame">
+              <CurrentUserGame errorProp={error} gameState={currentUserGameState} setGameState={setCurrentUserGameState} />
+            </div>
+            {renderExternalUserGames()}
+          </div>
+        </Layout>
+        {externalUserHasWon && <MultiplayerModal winner={externalGamesState.externalUserIdsToNamesMap.get(multiplayerGameState.winnerID)} solution={multiplayerGameState.word} />}
+      </>
+    );
+  }
 };
 
 export default Multiplayer;
