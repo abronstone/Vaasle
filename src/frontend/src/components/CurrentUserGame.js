@@ -11,6 +11,7 @@ import Keypad from "./Keypad";
 import Modal from "./Modal";
 
 export default function CurrentUserGame({ errorProp, gameState, setGameState }) {
+  console.log("currentUserGameStaet on CurrentUserGame render: ", gameState)
   const { isAuthenticated, user } = useAuth0()
   const [loginSuccessful, setLoginSuccessful] = useState(false)
 

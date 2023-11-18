@@ -16,7 +16,7 @@ const Multiplayer = () => {
   const isHost = queryParams.get('host') === 'true';
 
   const [multiplayerGameState, setMultiplayerGameState] = useState(null);
-  const [externalGamesState, setExternalGamesState] = useState({});
+  const [externalGamesState, setExternalGamesState] = useState(null);
   const [currentUserGameState, setCurrentUserGameState] = useState(null);
   const [error, setError] = useState(null);
   const [hasGameStarted, setHasGameStarted] = useState(false);
@@ -32,6 +32,7 @@ const Multiplayer = () => {
       if (!isAuthenticated) return;
       const maxGuesses = 6;
       const wordLength = 5;
+      console.log('attempting to join game for user: ', user.sub)
       const joinedGameState = await joinMultiplayerGameApi(multiplayerGameId, maxGuesses, wordLength, user.sub);
       if (joinedGameState.state != null && joinedGameState.state === "won" && joinedGameState.winnerID !== user.sub) {
         setExternalUserHasWon(true)
@@ -41,32 +42,34 @@ const Multiplayer = () => {
       handleError("Failed to initialize multiplayer game: ", error);
     }
   }, [isAuthenticated, multiplayerGameId, user.sub]);
+  
+  useEffect(() => {
+    getInitialMultiplayerGameState();
+  }, [getInitialMultiplayerGameState]);
 
   const getInitialCurrentUserGameState = useCallback(async () => {
     try {
       const currentUserGameId = multiplayerGameState?.games[user.sub];
       if (currentUserGameId == null) {
         throw new Error("No current user game ID found");
-      }
+      }  
       const res = await getGameApi(currentUserGameId);
       setCurrentUserGameState(res);
     } catch (error) {
       handleError("Failed to initialize your game: ", error);
-    }
-  }, [multiplayerGameState, user.sub]);
-
-  useEffect(() => {
-    getInitialMultiplayerGameState();
-  }, [getInitialMultiplayerGameState]);
+    }  
+  }, [multiplayerGameState, user.sub]);  
 
   const handleStart = useCallback(async () => {
     try {
-      const res = await startMultiplayerGameApi(multiplayerGameId);
-      if (res == null || !res) {
-        throw new Error("Backend failed to start new multiplayer game");
-      }
-      getInitialCurrentUserGameState();
-      setHasGameStarted(true);
+      setTimeout(async () => {
+        const res = await startMultiplayerGameApi(multiplayerGameId);
+        if (res == null || !res) {
+          throw new Error("Backend failed to start new multiplayer game");
+        }
+        getInitialCurrentUserGameState();
+        setHasGameStarted(true);
+      }, 1000)
     } catch (error) {
       handleError("Failed to start new multiplayer game", error);
     }
@@ -116,45 +119,41 @@ const Multiplayer = () => {
 
   const handleRefreshLobby = useCallback(async () => {
     try {
-
       if (multiplayerGameId == null) {
         throw new Error("No multiplayer game id found");
       }
       const refreshedMultiplayerGameState = await refreshMultiplayerGameApi(multiplayerGameId);
-      console.log('refreshedMultiplayerGameState: ', refreshedMultiplayerGameState)
+      console.log('refreshedMultiplayerGameState: ', refreshedMultiplayerGameState);
 
-      if (refreshedMultiplayerGameState.status !== "waiting") {
-        if (refreshedMultiplayerGameState.status !== "ongoing") {
-          throw new Error("The game you are trying to join has already finished")
-        }
-        else {
-          setHasGameStarted(true)
-          const externalUserGamesMap = new Map(
-            Object.entries(refreshedMultiplayerGameState.userCorrections).filter(([key]) => key !== user.sub)
-          );
-          const externalUserIdsToNamesMap = new Map(Object.entries(refreshedMultiplayerGameState.userNames))
+      // Common logic for setting state
+      const externalUserGamesMap = new Map(
+        Object.entries(refreshedMultiplayerGameState.userCorrections).filter(([key]) => key !== user.sub)
+      );
+      const externalUserIdsToNamesMap = new Map(Object.entries(refreshedMultiplayerGameState.userNames));
+      setExternalGamesState({ state: refreshedMultiplayerGameState.state, externalUserGamesMap, externalUserIdsToNamesMap });
+      setMultiplayerGameState(refreshedMultiplayerGameState);
 
-          setExternalGamesState({ state: refreshedMultiplayerGameState.state, externalUserGamesMap, externalUserIdsToNamesMap });
-          setMultiplayerGameState(refreshedMultiplayerGameState)
-          setError(null)
-        }
-      }
-      else {
-        const externalUserGamesMap = new Map(
-          Object.entries(refreshedMultiplayerGameState.userCorrections).filter(([key]) => key !== user.sub)
-        );
-        const externalUserIdsToNamesMap = new Map(Object.entries(refreshedMultiplayerGameState.userNames))
-
-        setExternalGamesState({ state: refreshedMultiplayerGameState.state, externalUserGamesMap, externalUserIdsToNamesMap });
-        setMultiplayerGameState(refreshedMultiplayerGameState)
-        setError(null)
+      switch (refreshedMultiplayerGameState.state) {
+        case "waiting":
+          break;
+        case "ongoing":
+          handleStart()
+          break;
+        case "won":
+          throw new Error("The game you are trying to join has already finished");
+        case "lost":
+          throw new Error("The game you are trying to join has already finished");
+        default:
+          console.warn(`Unhandled game state: ${refreshedMultiplayerGameState.state}`);
+          return;
       }
 
+      setError(null); // Clearing any existing errors
+
+    } catch (error) {
+      handleError("Failed to refresh lobby: ", error);
     }
-    catch (e) {
-      handleError("Error: " + e)
-    }
-  })
+  }, [multiplayerGameId, user.sub]);
 
   useEffect(() => {
     handleRefreshLobby()
@@ -209,22 +208,29 @@ const Multiplayer = () => {
   }
 
   else {
+    console.log("Current User Game State: ", currentUserGameState); // Add this for debugging
+  
     return (
       <>
         <Layout>
-          <h3>Send this code to your friends to allow them to join!</h3>
-          <p>{multiplayerGameId}</p>
-          <div className="multiplayer-container">
-            <div className="CurrentUserGame">
-              <CurrentUserGame errorProp={error} gameState={currentUserGameState} setGameState={setCurrentUserGameState} />
-            </div>
+          {/* ... rest of your code */}
+          <div>
+            {currentUserGameState != null ? (
+              <div className="multiplayer-container">
+                <div className="CurrentUserGame">
+                  <CurrentUserGame errorProp={error} gameState={currentUserGameState} setGameState={setCurrentUserGameState} />
+                </div>
+              </div>
+            ) : (
+              <p>Loading game...</p> // This will indicate if the state is still null
+            )}
             {renderExternalUserGames()}
           </div>
         </Layout>
-        {externalUserHasWon && <MultiplayerModal winner={externalGamesState.externalUserIdsToNamesMap.get(multiplayerGameState.winnerID)} solution={multiplayerGameState.word} />}
+        {/* ... rest of your code */}
       </>
     );
   }
-};
+  };
 
 export default Multiplayer;
