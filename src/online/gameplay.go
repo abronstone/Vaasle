@@ -95,6 +95,9 @@ func getNewGameUpdate(state string, games map[string]*structs.Game) *structs.Mul
 		State:    state,
 		WinnerID: "",
 	}
+	if state == "waiting" {
+		return &update
+	}
 	allLost := true
 	for _, game := range games {
 		if game.State == "won" {
