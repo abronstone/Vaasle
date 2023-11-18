@@ -60,7 +60,7 @@ func refreshMultiplayerGame(c *gin.Context) {
 		games = make(map[string]*structs.Game)
 		populateGames(multiplayerGame, games)
 
-		update = getNewGameUpdate(multiplayerGame.state, games)
+		update = getNewGameUpdate(multiplayerGame.State, games)
 	}
 
 	word := ""
