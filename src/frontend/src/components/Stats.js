@@ -12,8 +12,7 @@ export default function Stats() {
   const { isAuthenticated, user } = useAuth0();
 
   useEffect(() => {
-    // ? not sure if we're only using user or isAuth as well.
-    if (isAuthenticated && user != null) {
+    if (isAuthenticated) {
       // get the user from their UUID, take the data then setStatsSata
       getStatsApi(user.sub)
         .then((data) => {
@@ -23,7 +22,7 @@ export default function Stats() {
           console.error("ERROR FETCHING STATS", error);
         });
     }
-  }, [isAuthenticated, user]); // check for autheticated user
+  }, [isAuthenticated, user]); // check for authenticated user
 
   return (
     <div className="stats-container">

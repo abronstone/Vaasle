@@ -4,14 +4,12 @@ import { Link } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
 import LoginButton from "./LoginButton";
 import ErrorBadge from "./ErrorBadge";
+import Layout from "./Layout";
 
 export default function GameMode() {
   const { isAuthenticated } = useAuth0();
   return (
-    <>
-      <Link to="/">
-        <h1>Vaasle</h1>
-      </Link>
+    <Layout>
       {isAuthenticated != null && !isAuthenticated && (
         <ErrorBadge text={"You must be logged into to play"} />
       )}
@@ -37,6 +35,6 @@ export default function GameMode() {
           <LoginButton />
         )}
       </div>
-    </>
+    </Layout>
   );
 }
