@@ -11,7 +11,7 @@ const Multiplayer = () => {
   const { multiplayerGameId } = useParams();
 
   const [multiplayerGameState, setMultiplayerGameState] = useState(null);
-  const [externalGamesState, setExternalGamesState] = useState([]);
+  const [externalGamesState, setExternalGamesState] = useState({});
   const [currentUserGameState, setCurrentUserGameState] = useState(null);
   const [error, setError] = useState(null);
   const [hasGameStarted, setHasGameStarted] = useState(false);
@@ -72,7 +72,9 @@ const Multiplayer = () => {
       const externalUserGamesMap = new Map(
         Object.entries(res.userCorrections).filter(([key]) => key !== user.sub)
       );
-      setExternalGamesState({ state: res.state, externalUserGamesMap });
+      const externalUserIdsToNamesMap = new Map(Object.entries(res.userNames)) 
+
+      setExternalGamesState({ state: res.state, externalUserGamesMap, externalUserIdsToNamesMap });
     } catch (e) {
       handleError("Failed to retrieve external user games", e);
     }
@@ -90,7 +92,7 @@ const Multiplayer = () => {
         className={`ExternalUserGame ${index % 2 === 0 ? "odd" : "even"}`}
         key={index}
       >
-        <ExternalUserGame externalUserGameGuesses={game} userName={user} />
+        <ExternalUserGame externalUserGameGuesses={game} userName={externalGamesState.externalUserIdsToNamesMap.get(user) ?? 'Guest'} />
       </div>
     ));
   };

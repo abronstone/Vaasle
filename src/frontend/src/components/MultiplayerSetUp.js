@@ -17,6 +17,7 @@ export default function MultiplayerSetUp() {
     // Then redirect them to the multiplayer page for their newly created game
     const createdGameState = await newMultiplayerGameApi(maxGuesses, wordLength, user.sub)
     navigate(`/multiplayer/${createdGameState.multiplayerGameID}`)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, navigate])
 
   const handleJoin = () => {
