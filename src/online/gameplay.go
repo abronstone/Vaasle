@@ -43,7 +43,7 @@ func refreshMultiplayerGame(c *gin.Context) {
 		return
 	}
 
-	update := getNewGameUpdate(games)
+	update := getNewGameUpdate(multiplayerGame.state, games)
 	if update.IsFinished() {
 		if err := mongo_updateMultiplayerGame(id, update); err != nil {
 			c.JSON(http.StatusInternalServerError, structs.Message{Message: err.Error()})
@@ -60,7 +60,7 @@ func refreshMultiplayerGame(c *gin.Context) {
 		games = make(map[string]*structs.Game)
 		populateGames(multiplayerGame, games)
 
-		update = getNewGameUpdate(games)
+		update = getNewGameUpdate(multiplayerGame.state, games)
 	}
 
 	word := ""
@@ -108,8 +108,6 @@ func getNewGameUpdate(state string, games map[string]*structs.Game) *structs.Mul
 	}
 	if allLost {
 		update.State = "lost"
-	} else if state != "waiting" {
-		update.State = "ongoing"
 	}
 	return &update
 }
