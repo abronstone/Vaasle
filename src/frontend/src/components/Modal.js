@@ -10,7 +10,7 @@ return (
         <p>The word was: </p>
         {solution && <p className="solution">{solution}</p>}
         <p>You found the solution in {turn + 1} guess{turn + 1 > 1 ? "es" : ""} :)</p>
-        <Link to="/" className="general-rounded-button">
+        <Link to="/" className="home-nav-button">
             Return Home
         </Link>
     </div>
@@ -21,7 +21,7 @@ return (
         <p>The word was: </p>
         {solution && <p className="solution">{solution}</p>}
         <p>Better luck next time :)</p>
-        <Link to="/" className="general-rounded-button">
+        <Link to="/" className="home-nav-button">
             Return Home
         </Link>
     </div>
