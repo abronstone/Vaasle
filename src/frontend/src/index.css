@@ -12,6 +12,11 @@ h1 {
   color: #333;
 }
 
+img{
+  width: 400px;
+  height: 80px;
+  }
+
 /* Login / logout buttons */
 .auth0button {
   background-color: #2c588d;
@@ -406,3 +411,4 @@ in multiplayer mode */
   border: 2px solid #ddd;
   border-radius: 4px;
 }
+
