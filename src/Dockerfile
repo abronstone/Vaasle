@@ -46,19 +46,6 @@ RUN go build -o gateway-executable
 
 CMD [ "./gateway-executable" ]
 
-# CLI
-FROM golang:1.21.1 as cli
-
-WORKDIR /src/cli
-
-COPY ./cli/go.mod ./
-RUN go mod download
-
-COPY ./cli/*.go ./
-RUN go build -o cli-executable
-
-CMD [ "./cli-executable" ]
-
 # Front End
 FROM node:16 AS frontend
 
