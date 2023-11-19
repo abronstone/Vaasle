@@ -15,9 +15,12 @@ const Multiplayer = () => {
   const queryParams = new URLSearchParams(location.search);
   const isHost = queryParams.get('host') === 'true';
 
-  const [multiplayerGameState, setMultiplayerGameState] = useState(null);
+  // State variables
+  // Contains response from /refreshGame endpoint  modified to be useful to the FE
   const [externalGamesState, setExternalGamesState] = useState(null);
+  // Contains unmodified response from /getGame endpoint for the current user's game
   const [currentUserGameState, setCurrentUserGameState] = useState(null);
+  // Error handling and flags
   const [error, setError] = useState(null);
   const [hasGameStarted, setHasGameStarted] = useState(false);
   const [externalUserHasWon, setExternalUserHasWon] = useState(false);
@@ -27,36 +30,43 @@ const Multiplayer = () => {
     setError(message + error);
   };
 
+  // Try and join the multiplayer game specified with the id in the url 
+  // and get the state of the game assigned to the current user and pass
+  // it to the CurrentUserGame component
   const getInitialMultiplayerGameState = useCallback(async () => {
     try {
       if (!isAuthenticated) return;
+      // Values are hardcoded for now but could be dynamically set
       const maxGuesses = 6;
       const wordLength = 5;
-      console.log('attempting to join game for user: ', user.sub)
+
       const joinedGameState = await joinMultiplayerGameApi(multiplayerGameId, maxGuesses, wordLength, user.sub);
+      // Handle if the game has already been won by someone else
       if (joinedGameState.state != null && joinedGameState.state === "won" && joinedGameState.winnerID !== user.sub) {
         setExternalUserHasWon(true)
       }
-      console.log("joinedGameState", joinedGameState)
+
       const currentUserGameId = joinedGameState?.games[user.sub];
       if (currentUserGameId == null) {
         throw new Error("No current user game ID found");
       }
-      const res = await getGameApi(currentUserGameId);
-      setCurrentUserGameState(res);
+      const currentUserGame = await getGameApi(currentUserGameId);
+      setCurrentUserGameState(currentUserGame);
     } catch (error) {
       handleError("Failed to initialize multiplayer game: ", error);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, multiplayerGameId]);
-
+  
   useEffect(() => {
     getInitialMultiplayerGameState();
   }, [getInitialMultiplayerGameState]);
 
+  // Start a game and update the FE's internal state
   const handleStart = useCallback(async () => {
     try {
-        const res = await startMultiplayerGameApi(multiplayerGameId);
-        if (res == null || !res) {
+        const startGameRes = await startMultiplayerGameApi(multiplayerGameId);
+        if (startGameRes == null || !startGameRes) {
           throw new Error("Backend failed to start new multiplayer game");
         }
         setHasGameStarted(true);
@@ -65,33 +75,37 @@ const Multiplayer = () => {
     }
   }, [multiplayerGameId]);
 
-
+  // Refresh a multiplayer game by calling /refreshMultiplayerGame
+  // Take the relevant keys of its response object and setExternalGamesState with
+  // FE friendly versions of these keys
   const fetchNewExternalUserGames = useCallback(async () => {
     try {
       if (multiplayerGameId == null) {
         throw new Error("No multiplayer game id found");
       }
       const refreshedMultiplayerGameState = await refreshMultiplayerGameApi(multiplayerGameId);
-      console.log('refreshedMultiplayerGameState: ', refreshedMultiplayerGameState)
 
+      // If someone else has won the game, pop update the flag to popup the MultiplayerModal
       if (refreshedMultiplayerGameState.state != null && refreshedMultiplayerGameState.state === "won" && refreshedMultiplayerGameState.winnerID !== user.sub) {
         setExternalUserHasWon(true)
       }
 
+      // Transform userCorrections and userNames into FE friendly equivalents
       const externalUserGamesMap = new Map(
         Object.entries(refreshedMultiplayerGameState.userCorrections).filter(([key]) => key !== user.sub)
       );
       const externalUserIdsToNamesMap = new Map(Object.entries(refreshedMultiplayerGameState.userNames))
 
-      setExternalGamesState({ state: refreshedMultiplayerGameState.state, externalUserGamesMap, externalUserIdsToNamesMap });
-      setMultiplayerGameState(refreshedMultiplayerGameState)
+      setExternalGamesState({ state: refreshedMultiplayerGameState.state, externalUserGamesMap, externalUserIdsToNamesMap, winnerID: refreshedMultiplayerGameState.winnerID, word: refreshedMultiplayerGameState.word });
     } catch (e) {
       handleError("Failed to retrieve external user games", e);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [multiplayerGameId]);
 
   useEffect(() => {
     fetchNewExternalUserGames();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUserGameState]);
 
   // Render a grid representation of every external user's guesses 
@@ -107,6 +121,7 @@ const Multiplayer = () => {
     ));
   };
 
+  // Render different lobby screens based on whether the user is a host or not
   if (!hasGameStarted && isHost) {
     return (
       <Layout>
@@ -135,6 +150,7 @@ const Multiplayer = () => {
     )
   }
 
+  // Once the game has started, render the main game screen
   else {
     return (
       <>
@@ -148,7 +164,7 @@ const Multiplayer = () => {
             {renderExternalUserGames()}
           </div>
         </Layout>
-        {externalUserHasWon && <MultiplayerModal winner={externalGamesState.externalUserIdsToNamesMap.get(multiplayerGameState.winnerID)} solution={multiplayerGameState.word} />}
+        {externalUserHasWon && <MultiplayerModal winner={externalGamesState.externalUserIdsToNamesMap.get(externalGamesState.winnerID)} solution={externalGamesState.word} />}
       </>
     );
   }
