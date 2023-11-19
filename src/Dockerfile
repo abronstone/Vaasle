@@ -21,7 +21,7 @@ WORKDIR /src/structs
 COPY /structs/* ./
 
 WORKDIR /src/mongo
-COPY ./mongo/go.mod mongo/go.sum ./
+COPY ./mongo/go.mod mongo/go.sum mongo/secrets.env ./
 
 RUN go mod download
 COPY ./mongo/*.go ./
@@ -30,31 +30,65 @@ RUN go build -o mongo-executable
 CMD [ "./mongo-executable" ]
 
 
-# Play-Game
-FROM golang:1.21.1 as play-game
+# Gateway
+FROM golang:1.21.1 as gateway
 
 WORKDIR /src/structs
 COPY /structs/* ./
 
-WORKDIR /src/play-game
+WORKDIR /src/gateway
 
-COPY ./play-game/go.mod ./play-game/go.sum ./
+COPY ./gateway/go.mod ./gateway/go.sum ./
 RUN go mod download
 
-COPY ./play-game/*.go ./
-RUN go build -o playGame-executable
+COPY ./gateway/*.go ./
+RUN go build -o gateway-executable
 
-CMD [ "./playGame-executable" ]
+CMD [ "./gateway-executable" ]
 
-# CLI
-FROM golang:1.21.1 as cli
+# Front End
+FROM node:16 AS frontend
 
-WORKDIR /src/cli
+WORKDIR /src/frontend
 
-COPY ./cli/go.mod ./
+COPY ./frontend/package.json ./
+
+RUN npm install
+
+COPY ./frontend ./
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start"]
+
+# ONLINE
+FROM golang:1.21.1 as online
+
+WORKDIR /src/structs
+COPY /structs/* ./
+
+WORKDIR /src/online
+
+COPY ./online/go.mod ./online/go.sum ./
 RUN go mod download
 
-COPY ./cli/*.go ./
-RUN go build -o cli-executable
+COPY ./online/*.go ./
+RUN go build -o online-executable
 
-CMD [ "./cli-executable" ]
+CMD [ "./online-executable" ]
+
+# Stats
+FROM golang:1.21.1 as stats
+
+WORKDIR /src/structs
+COPY /structs/* ./
+
+WORKDIR /src/stats
+
+COPY ./stats/go.mod ./stats/go.sum ./
+RUN go mod download
+
+COPY ./stats/*.go ./
+RUN go build -o stats-executable
+
+CMD [ "./stats-executable" ]

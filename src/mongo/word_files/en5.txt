@@ -68,7 +68,6 @@ money
 lines
 order
 group
-among
 learn
 known
 space
@@ -95,7 +94,6 @@ built
 heart
 ready
 quite
-class
 bring
 round
 horse
@@ -138,7 +136,6 @@ clear
 named
 books
 child
-glass
 human
 takes
 party
@@ -169,7 +166,6 @@ speed
 women
 metal
 south
-grass
 scale
 cells
 lower
@@ -350,7 +346,6 @@ sweet
 topic
 extra
 plate
-title
 knife
 fence
 falls
@@ -513,7 +508,6 @@ kings
 forty
 trial
 cards
-brass
 opera
 chose
 owner
@@ -620,7 +614,6 @@ fired
 bands
 thumb
 shout
-canal
 habit
 reply
 ruled
@@ -825,7 +818,6 @@ tenth
 hides
 comma
 sweep
-spoon
 stern
 crept
 maple
@@ -1490,7 +1482,6 @@ dries
 mates
 sworn
 baker
-spice
 oasis
 boils
 spurs
@@ -1594,7 +1585,6 @@ lowly
 abide
 depot
 oases
-asses
 sheds
 fudge
 pills
@@ -1638,7 +1628,6 @@ awful
 discs
 erase
 posed
-asset
 cider
 taper
 theft
@@ -1677,7 +1666,6 @@ risky
 warns
 fling
 berry
-grape
 flank
 drags
 squid
@@ -1721,7 +1709,6 @@ argon
 nudge
 skiff
 amber
-sexes
 rouse
 salts
 hitch
@@ -1735,7 +1722,6 @@ melon
 cheat
 reefs
 llama
-lasso
 debut
 quota
 oaths
@@ -1977,7 +1963,6 @@ strut
 sloop
 prowl
 roach
-cocks
 bland
 dials
 plume
@@ -2029,12 +2014,10 @@ aches
 trawl
 claps
 undid
-spicy
 hoist
 fades
 vicar
 acorn
-pussy
 gruff
 musty
 tarts
@@ -2065,7 +2048,6 @@ slugs
 aspen
 homer
 croak
-tithe
 halts
 avert
 havoc
@@ -2118,7 +2100,6 @@ panda
 flier
 axles
 plied
-booby
 patio
 rabbi
 petal
@@ -2175,7 +2156,6 @@ forum
 venom
 moody
 alder
-sassy
 flair
 guild
 prays
@@ -2232,7 +2212,6 @@ goody
 gazes
 dowel
 calms
-bitch
 scowl
 gulps
 coded
@@ -2269,7 +2248,6 @@ twain
 clink
 scamp
 pawed
-grope
 bravo
 gable
 stink
@@ -2289,7 +2267,6 @@ hefty
 nines
 throb
 pecan
-butts
 pence
 sills
 jails
@@ -2527,7 +2504,6 @@ dents
 gummy
 grays
 hooky
-butte
 dogie
 poled
 reams
@@ -2542,7 +2518,6 @@ rogue
 spiky
 opals
 miser
-cocky
 coyly
 balmy
 slosh
@@ -2613,7 +2588,6 @@ vices
 jumbo
 blobs
 blots
-spunk
 acrid
 topaz
 cubed
@@ -2650,7 +2624,6 @@ eider
 bayou
 mulch
 fasts
-amass
 damps
 morns
 friar
@@ -2750,7 +2723,6 @@ preys
 treks
 quell
 peeks
-assay
 lurks
 eject
 boars
@@ -2783,7 +2755,6 @@ kayak
 slews
 toted
 saner
-drape
 patty
 raves
 sulfa
@@ -2797,7 +2768,6 @@ homey
 moped
 runts
 serge
-kinky
 rills
 corns
 brats
@@ -2828,7 +2798,6 @@ karat
 jolts
 peons
 beers
-horny
 pales
 wreak
 lairs
@@ -2914,14 +2883,12 @@ hulks
 pried
 brims
 irked
-aspic
 swipe
 mealy
 skimp
 bluer
 slake
 dowdy
-penis
 brays
 pupas
 egret
@@ -2986,7 +2953,6 @@ keels
 sties
 racer
 etude
-sucks
 sulks
 micas
 czars
@@ -3123,7 +3089,6 @@ prude
 diked
 floss
 flogs
-scums
 dopes
 bogie
 pinky
@@ -3146,7 +3111,6 @@ dunce
 crony
 joist
 tunas
-boner
 malls
 parch
 avers
@@ -3445,7 +3409,6 @@ piper
 waxer
 calyx
 basil
-coons
 seine
 piney
 lemma
@@ -3515,7 +3478,6 @@ xenon
 hullo
 pique
 roger
-negro
 hadst
 gecko
 beget
@@ -3524,7 +3486,6 @@ aloes
 louis
 quint
 clunk
-raped
 salvo
 diode
 matey
@@ -3581,7 +3542,6 @@ blocs
 welch
 ghoul
 vitae
-cumin
 dinky
 bronc
 tabor
@@ -3612,16 +3572,13 @@ stein
 jello
 audit
 echos
-fagot
 letup
 eyrie
 fount
 caped
 axons
 amuck
-banal
 riled
-petit
 umber
 miler
 fibre
@@ -3654,7 +3611,6 @@ circa
 tibia
 afoul
 mommy
-titer
 carne
 kooky
 motes
@@ -3708,13 +3664,11 @@ shies
 hasps
 brung
 holed
-swank
 looky
 melee
 huffy
 loamy
 pimps
-titan
 binge
 shunt
 femur
@@ -3728,7 +3682,6 @@ zowie
 jihad
 savvy
 nadir
-basso
 monic
 maned
 mousy
@@ -3766,7 +3719,6 @@ blued
 whomp
 sward
 metro
-skeet
 chine
 aerie
 bowie
@@ -3778,7 +3730,6 @@ slobs
 trike
 funky
 ducat
-dewey
 skoal
 wadis
 oomph
@@ -3816,7 +3767,6 @@ cotta
 matzo
 lager
 zebus
-crass
 dacha
 kneed
 dicta
@@ -3826,7 +3776,6 @@ runny
 unpin
 julep
 globs
-nudes
 sushi
 tacky
 stoke
@@ -3895,7 +3844,6 @@ moire
 scion
 henna
 kraut
-dicks
 lifer
 prigs
 bebop
@@ -3906,7 +3854,6 @@ gibes
 aural
 tempi
 hooch
-rapes
 snuck
 harts
 techs
@@ -3977,7 +3924,6 @@ apses
 imbue
 belie
 chary
-spoof
 phyla
 clime
 babel
@@ -3999,7 +3945,6 @@ argot
 ducky
 faker
 vibes
-gassy
 unlit
 nervy
 femme
@@ -4034,7 +3979,6 @@ pates
 blabs
 splay
 talus
-porno
 moola
 nixed
 kilos
@@ -4227,7 +4171,6 @@ phage
 fiats
 caulk
 cavil
-panty
 roans
 bilks
 hones
@@ -4237,7 +4180,6 @@ sully
 sooth
 gelds
 ahold
-raper
 pager
 fixer
 infix
@@ -4269,7 +4211,6 @@ piton
 hussy
 torts
 disco
-whore
 boozy
 gibed
 vamps
@@ -4368,7 +4309,6 @@ kefir
 burgs
 unmet
 cuspy
-boobs
 boons
 hypes
 dynes
@@ -4409,7 +4349,6 @@ lamas
 sutra
 dinar
 whams
-busty
 spays
 mambo
 nabob
@@ -4497,7 +4436,6 @@ naiad
 hider
 nuked
 fatso
-sluts
 obits
 narcs
 tyros
@@ -4627,7 +4565,6 @@ supra
 wetly
 plasm
 buffa
-semen
 pukka
 tagua
 paras
@@ -4705,7 +4642,6 @@ amahs
 blowy
 wahoo
 lubra
-mecum
 whooo
 coqui
 sabra
@@ -4725,7 +4661,6 @@ laves
 purls
 yawny
 teary
-masse
 largo
 bazar
 pssst
@@ -4747,7 +4682,6 @@ solon
 didot
 kerfs
 rayed
-wassa
 chile
 begat
 nippy
@@ -4802,12 +4736,10 @@ weirs
 mahua
 scops
 manse
-titre
 curia
 kebob
 cycad
 talky
-fucks
 tapis
 amide
 dolce
@@ -4874,7 +4806,6 @@ muser
 excon
 hoars
 sibyl
-passe
 joeys
 lotsa
 lepta
@@ -4914,7 +4845,6 @@ diems
 ginny
 degum
 polos
-desex
 unman
 dungy
 vitam
@@ -4976,12 +4906,10 @@ airer
 ovate
 torah
 apian
-smuts
 pocks
 yurts
 exurb
 defog
-nuder
 bosky
 nimbi
 mothy
@@ -5035,7 +4963,6 @@ zloty
 viers
 unapt
 poops
-fecal
 kepis
 taxon
 eyers
@@ -5054,7 +4981,6 @@ herby
 pryer
 oakum
 dinks
-titty
 sepoy
 penes
 fusee
@@ -5067,7 +4993,6 @@ ousel
 umiak
 cuppy
 hames
-shits
 azine
 glads
 tacet
@@ -5187,7 +5112,6 @@ trued
 zayin
 liest
 barfs
-bassi
 qophs
 roily
 flabs
@@ -5203,7 +5127,6 @@ lurer
 magus
 obeah
 atria
-twink
 palmy
 pocky
 pends
@@ -5232,7 +5155,6 @@ tubal
 voxel
 dixit
 beery
-assai
 lades
 actin
 ghoti
@@ -5260,7 +5182,6 @@ duomo
 musos
 shier
 hayer
-porgy
 hived
 litho
 fisty
@@ -5299,7 +5220,6 @@ amped
 shlep
 vinca
 yahoo
-vulva
 zooey
 dryad
 nixie
@@ -5314,12 +5234,10 @@ miaow
 gouts
 mynas
 mazer
-kikes
 oxeye
 stoup
 jujus
 debar
-pubes
 taels
 defun
 rands
@@ -5336,8 +5254,6 @@ kluge
 tubed
 sahib
 ganef
-scats
-sputa
 vaned
 acned
 taxol
@@ -5359,7 +5275,6 @@ glary
 beamy
 hexad
 bonks
-tecum
 kerbs
 filar
 frier
@@ -5386,10 +5301,8 @@ unsay
 liers
 piing
 weald
-sexed
 folic
 poxed
-cunts
 anile
 kiths
 becks
@@ -5576,7 +5489,6 @@ agley
 corgi
 dashy
 doser
-dildo
 apsos
 xored
 laker
@@ -5589,7 +5501,6 @@ demit
 whoso
 rials
 sawer
-spics
 bedim
 snugs
 fanin
@@ -5633,7 +5544,6 @@ poler
 yecch
 fluky
 doeth
-twats
 cruds
 bebug
 bider
@@ -5680,7 +5590,6 @@ molas
 cirri
 huzza
 agone
-unsex
 unwon
 peats
 toile
@@ -5736,7 +5645,6 @@ bocce
 kicky
 taros
 lings
-dicky
 nerdy
 abend
 stela
@@ -5748,7 +5656,6 @@ gooks
 wonky
 stied
 hypos
-assed
 spumy
 osier
 roble

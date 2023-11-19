@@ -644,7 +644,6 @@ antia
 antro
 anual
 anuda
-anude
 anudo
 anula
 anule
@@ -934,7 +933,6 @@ aspee
 aspen
 aspeo
 aspes
-aspic
 aspid
 aspro
 aster
@@ -1244,7 +1242,6 @@ balto
 bamba
 bambi
 bambu
-banal
 banas
 banca
 banco
@@ -1789,7 +1786,6 @@ camon
 campa
 campe
 campo
-canal
 cande
 candi
 caney
@@ -2593,11 +2589,6 @@ culpe
 culpo
 culta
 culto
-cumba
-cumbe
-cumbo
-cumel
-cumpa
 cunad
 cunan
 cunar
@@ -3226,7 +3217,6 @@ facto
 faena
 faene
 faeno
-fagot
 faina
 faino
 fajad
@@ -3255,7 +3245,6 @@ falta
 falte
 falto
 falua
-fanal
 fango
 fante
 faqui
@@ -3296,7 +3285,6 @@ fañes
 febea
 febeo
 feble
-fecal
 fecha
 feche
 fecho
@@ -3854,7 +3842,6 @@ grane
 grano
 grant
 grapa
-grape
 grapo
 grasa
 graso
@@ -5203,11 +5190,9 @@ mamen
 mames
 mamey
 mamia
-mamon
 mamua
 mamut
 manad
-manal
 manan
 manar
 manas
@@ -5234,7 +5219,6 @@ mansa
 manso
 manta
 manto
-manus
 maoma
 maori
 mapea
@@ -5611,8 +5595,6 @@ monea
 monee
 moneo
 monfi
-monga
-mongo
 monis
 monja
 monje
@@ -5851,7 +5833,6 @@ negad
 negar
 negas
 negra
-negro
 negue
 negus
 neldo
@@ -6023,8 +6004,6 @@ ocrey
 octal
 ocuje
 oculo
-ocume
-ocumo
 ocupa
 ocupe
 ocupo
@@ -6351,7 +6330,6 @@ palto
 pamba
 pampa
 pamue
-panal
 panca
 panco
 panda
@@ -6362,7 +6340,6 @@ panga
 panji
 pansa
 panti
-panty
 panul
 panza
 papad
@@ -6869,7 +6846,6 @@ popes
 popti
 porca
 porco
-porno
 porra
 porro
 porta
@@ -6960,7 +6936,6 @@ puara
 puare
 puase
 puber
-pubes
 pubis
 pucha
 pucho
@@ -7041,7 +7016,6 @@ purgo
 purin
 puspa
 puspo
-putal
 putea
 putee
 puteo
@@ -7083,8 +7057,6 @@ quier
 quijo
 quila
 quilo
-quima
-quimo
 quina
 quino
 quipa
@@ -7177,9 +7149,6 @@ rapan
 rapar
 rapas
 rapaz
-rapel
-rapen
-rapes
 rapta
 rapte
 rapto
@@ -7852,7 +7821,6 @@ sella
 selle
 sello
 selva
-semen
 semis
 senda
 senil
@@ -7891,16 +7859,6 @@ sesil
 sesma
 sesmo
 setal
-sexad
-sexan
-sexar
-sexas
-sexen
-sexes
-sexma
-sexmo
-sexta
-sexto
 señad
 señal
 señan
@@ -8511,13 +8469,6 @@ tirso
 tirte
 tisis
 tiste
-titan
-titar
-titea
-titee
-titeo
-titil
-titis
 tizna
 tizne
 tizno
@@ -8665,7 +8616,6 @@ trama
 trame
 tramo
 trapa
-trape
 trapo
 traro
 trata
@@ -8886,7 +8836,6 @@ upare
 upase
 upeis
 upupa
-urape
 urato
 urdan
 urdas
@@ -9099,7 +9048,6 @@ veraz
 verba
 verbo
 verde
-verga
 verge
 veria
 veril
@@ -9273,7 +9221,6 @@ vuesa
 vueso
 vulgo
 vulto
-vulva
 vusco
 weber
 xenon

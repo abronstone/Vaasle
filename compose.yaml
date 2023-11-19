@@ -8,18 +8,18 @@ services:
     ports:
       - 5001:5001
 
-  play-game:
-    container_name: play-game
+  gateway:
+    container_name: gateway
     build:
       context: ./src
-      target: play-game
+      target: gateway
     ports:
       - 5002:5001
 
   frontend:
     container_name: frontend
     build:
-      context: ./src/frontend
+      context: ./src
       target: frontend
     ports:
       - "3000:3000"
@@ -34,13 +34,18 @@ services:
     expose:
       - 8000
 
-  cli:
-    container_name: cli
+  online:
+    container_name: online
     build:
       context: ./src
-      target: cli
-    stdin_open: true
-    tty: true
-    depends_on:
-      - engine
-      - play-game
+      target: online
+    ports:
+      - "8080:8000"
+      
+  stats:
+    container_name: stats
+    build:
+      context: ./src
+      target: stats
+    ports:
+      - 5003:5001

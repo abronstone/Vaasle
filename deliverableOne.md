@@ -99,7 +99,7 @@ Varun Saini, Aaron Bronstone, Aidan Roessler, Serafin Patino, Anti-Intelligence
 
 - Deciding colors of letter in gameplay logic
 
-- Playgame
+- Gateway
 
 - Adding letters
 
@@ -137,7 +137,7 @@ Varun Saini, Aaron Bronstone, Aidan Roessler, Serafin Patino, Anti-Intelligence
 
 - Deciding colors of letter in gameplay logic
 
-- Playgame
+- Gateway
 
 - Adding letters
 

@@ -23,6 +23,10 @@ func newGameMetadata(c *gin.Context) *structs.GameMetadata {
 		metadata.MaxGuesses = defaultMaxGuesses
 	}
 
+	if metadata.UserId == "" {
+		metadata.UserId = "default"
+	}
+
 	metadata.GameID = uuid.NewString()
 	metadata.DateCreated = time.Now()
 	return &metadata

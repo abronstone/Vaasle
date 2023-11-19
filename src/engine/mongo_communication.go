@@ -105,6 +105,10 @@ func mongo_updateGame(game *structs.Game) error {
 	if err != nil {
 		return err
 	}
+	if res.StatusCode != http.StatusOK {
+		return errors.New("failed to send game updates to Mongo API")
+	}
+
 	defer res.Body.Close()
 
 	// 3. Parse response body
@@ -119,9 +123,85 @@ func mongo_updateGame(game *structs.Game) error {
 		return err
 	}
 
-	if result.Message != "game updated successfully" {
-		return errors.New("failed to send game updates to Mongo API")
+	return nil
+}
+
+// Asks the Mongo API (mongo.go) to make changes to the state of the given user.
+func mongo_updateUser(userId string, userUpdate *structs.UserUpdate) error {
+	// 1. Send request
+	endpoint := "http://mongo:8000/update-user/" + userId
+
+	bodyBytes, err := json.Marshal(userUpdate)
+	if err != nil {
+		return err
+	}
+
+	bodyBuffer := bytes.NewBuffer(bodyBytes)
+
+	res, err := http.Post(endpoint, "application/json", bodyBuffer)
+	if err != nil {
+		return nil
+	}
+	defer res.Body.Close()
+
+	// 2. Parse response body
+	bodyBytes, err = io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
+	result := &structs.Message{}
+	err = json.Unmarshal(bodyBytes, result)
+	if err != nil {
+		return err
+	}
+
+	if result.Message != "user updated successfully" {
+		return errors.New("failed to send user updates to Mongo API")
 	}
 
 	return nil
+}
+
+func mongo_verifyWord(word string) (bool, error) {
+	// 1. Prepare request headers and body
+	wordJson, err := json.Marshal(word)
+	if err != nil {
+		return false, err
+	}
+
+	endpoint := "http://mongo:8000/check-if-valid-word/" + word + "/"
+	byteBuffer := bytes.NewBuffer(wordJson)
+
+	req, err := http.NewRequest(http.MethodGet, endpoint, byteBuffer)
+	if err != nil {
+		return false, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// 2. Send request
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		return false, err
+	}
+	defer res.Body.Close()
+
+	// 3. Parse response body
+	bodyBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return false, err
+	}
+
+	result := structs.Message{}
+	err = json.Unmarshal(bodyBytes, &result)
+	if err != nil {
+		return false, err
+	}
+
+	if result.Message != "The word exists in the word collection" {
+		return false, nil
+	}
+
+	return true, nil
 }

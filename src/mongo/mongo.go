@@ -18,29 +18,27 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-/*
-Word structure schema
-*/
-type Word struct {
-	Word     string `bson:"word"`
-	Length   int    `bson:"length"`
-	Language string `bson:"language"`
-}
 
 func getDatabase() *mongo.Client {
 	/*
 		Returns a MongoDB Client instance
 	*/
 	// MongoDB connection string
-	CONNECTION_STRING := "mongodb+srv://vaas_admin:adv1software2design3@vaasdatabase.sarpr4r.mongodb.net"
+	err := godotenv.Load("secrets.env")
+	if err != nil {
+		log.Fatal("NO SECRETS FILE FOUND")
+	}
+	CONNECTION_STRING := os.Getenv("MONGO_URI")
 
 	// Set up client options
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
@@ -79,11 +77,6 @@ func initializeDB(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to clear games collection: " + err.Error()})
 		return
 	}
-	// _, err = db.Collection("words").DeleteMany(context.Background(), bson.M{})
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to clear words collection: " + err.Error()})
-	// 	return
-	// }
 	c.JSON(http.StatusOK, map[string]string{"message": "RESET DATABASE"})
 }
 
@@ -110,10 +103,23 @@ func main() {
 
 	router.GET("/get-words/:length", getWords)
 	router.GET("/insert-word/:word", insertWord)
+	router.GET("/check-if-valid-word/:word", checkIfValidWord)
 
 	router.PUT("/new-game/", newGame)
 	router.GET("/get-game/:id", getGame)
 	router.PUT("/update-game/", updateGameState)
+
+	router.PUT("/new-user", newUser)
+	router.GET("/get-user/:id", getUser)
+	router.POST("/update-user/:userId", updateUser)
+
+	router.PUT("/initializeMultiplayerGame", api_initializeMultiplayerGame)
+	router.PUT("/startMultiplayerGame/:id", api_startMultiplayerGame)
+	router.GET("/getMultiplayerGame/:id", api_getMultiplayerGame)
+	router.PUT("/registerUserInMultiplayerGame/:id", api_registerUserInMultiplayerGame)
+	router.PUT("/updateMultiplayerGame/:id", api_updateMultiplayerGame)
+
+	router.GET("/most-common-words/:userid", mostCommonWords)
 
 	router.Run("0.0.0.0:8000")
 }

@@ -9,9 +9,10 @@ import (
 // Gets the game with the specified ID.
 // Queries the Mongo API if not already present in the engine's cache.
 func getGame(id string) (*structs.Game, error) {
-	if game, ok := games.load(id); ok {
-		return game, nil
-	}
+	// For multiplayer, we do not want to check the cache
+	// if game, ok := games.load(id); ok {
+	// 	return game, nil
+	// }
 
 	game, err := mongo_getGame(id)
 	if err != nil {
@@ -28,8 +29,28 @@ func makeGuess(g *structs.Game, guess string) error {
 	if len(guess) != g.Metadata.WordLength {
 		return fmt.Errorf(`guess "%s" is not of length %d`, guess, g.Metadata.WordLength)
 	}
-	if g.State != "ongoing" {
+	if !g.IsOngoing() {
 		return fmt.Errorf(`game has already finished with state "%s"`, g.State)
+	}
+
+	// Check to see if the guess is a valid word by calling mongo
+	isValidWord, err := mongo_verifyWord(guess)
+
+	if isValidWord != true || err != nil {
+		return fmt.Errorf(`guess "%s" is not a valid word`, guess)
+	}
+
+	// Check to see if a guess has already been made.
+	guessesContainsCurrentGuess := false
+	for _, existingGuess := range g.Guesses {
+		if existingGuess[0] == guess {
+			guessesContainsCurrentGuess = true
+			break
+		}
+	}
+
+	if g.Guesses != nil && len(g.Guesses) > 0 && guessesContainsCurrentGuess {
+		return fmt.Errorf(`guess "%s" has already been made`, guess)
 	}
 
 	g.Guesses = append(g.Guesses, [2]string{guess, getCorrections(guess, g.Word)})
