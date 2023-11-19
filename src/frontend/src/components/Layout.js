@@ -10,7 +10,7 @@ const Layout = ({ children }) => {
     <div>
       <div className="headerContainer">
         <Link to="/">
-          <img src={logo} />
+          <img src={logo} alt="Vaasle spelled out in Wordle style blocks"/>
         </Link>
         {isAuthenticated && (
           <Link to="/stats" className="statsButton">
