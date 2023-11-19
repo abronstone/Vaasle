@@ -48,6 +48,12 @@ func engine_newGame(metadata structs.GameMetadata) (structs.Game, error) {
 }
 
 func engine_getGame(id string) (*structs.Game, error) {
+	/*
+		This function sends a request to Engine with the game id parameter to receive the game structure associated with that game id
+
+		@param: game id (string)
+		@return: game returned by engine (*structs.Game)
+	*/
 	endpoint := engineURL + "/getGame/" + id
 
 	res, err := http.Get(endpoint)
