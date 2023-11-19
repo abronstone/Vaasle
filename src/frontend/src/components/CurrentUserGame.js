@@ -158,6 +158,7 @@ export default function CurrentUserGame({ errorProp, gameState, setGameState }) 
     window.addEventListener("keyup", handleKeyup);
 
     return () => window.removeEventListener("keyup", handleKeyup);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, showModal]);
 
   useEffect(() => {
@@ -178,6 +179,7 @@ export default function CurrentUserGame({ errorProp, gameState, setGameState }) 
     };
 
     handleLogin();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
   return (
