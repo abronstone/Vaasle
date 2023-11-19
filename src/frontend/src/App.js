@@ -6,6 +6,7 @@ import Multiplayer from "./components/Multiplayer";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import MultiplayerSetUp from "./components/MultiplayerSetUp";
 import Singleplayer from "./components/Singleplayer";
+import NotFound from "./components/Notfound";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           path="/multiplayer/:multiplayerGameId?"
           element={<Multiplayer />}
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

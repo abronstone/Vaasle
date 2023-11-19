@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import { newMultiplayerGameApi } from "./util/apiCalls";
+import Layout from "./Layout";
 
 export default function MultiplayerSetUp() {
   const { isAuthenticated, user } = useAuth0()
@@ -26,32 +27,33 @@ export default function MultiplayerSetUp() {
   };
 
   return (
-    <div className="multiplayer-setup-container">
-      <h1>Vaasle</h1>
-      <h2>Create or Join Lobby</h2>
-      <div className="multiplayer-setup-options-container">
-        <div>
-          <button
-            onClick={() => handleCreateLobby()}
-            className="multiplayer-setup-button"
-          >
-            Create Lobby
-          </button>
-        </div>
+    <Layout>
+      <div className="multiplayer-setup-container">
+        <h2>Create or Join Lobby</h2>
+        <div className="multiplayer-setup-options-container">
+          <div>
+            <button
+              onClick={() => handleCreateLobby()}
+              className="multiplayer-setup-button"
+            >
+              Create Lobby
+            </button>
+          </div>
 
-        <div className="join-lobby-container">
-          <input
-            type="text"
-            className="gameID-input"
-            placeholder="Enter game code..."
-            value={gameID}
-            onChange={(e) => setGameID(e.target.value)}
-          />
-          <button onClick={handleJoin} className="multiplayer-setup-button" disabled={gameID === null || gameID === ""}>
-            Join Lobby
-          </button>
+          <div className="join-lobby-container">
+            <input
+              type="text"
+              className="gameID-input"
+              placeholder="Enter game code..."
+              value={gameID}
+              onChange={(e) => setGameID(e.target.value)}
+            />
+            <button onClick={handleJoin} className="multiplayer-setup-button" disabled={gameID === null || gameID === ""}>
+              Join Lobby
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }

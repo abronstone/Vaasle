@@ -4,13 +4,15 @@ import { Link } from "react-router-dom";
 import LogoutButton from "./LogoutButton";
 import LoginButton from "./LoginButton";
 import ErrorBadge from "./ErrorBadge";
+import Layout from "./Layout";
 
 export default function GameMode() {
   const { isAuthenticated } = useAuth0();
   return (
-    <>
-      <h1>Vaasle</h1>
-      {isAuthenticated != null && !isAuthenticated && (<ErrorBadge text={'You must be logged into to play'} />)}
+    <Layout>
+      {isAuthenticated != null && !isAuthenticated && (
+        <ErrorBadge text={"You must be logged into to play"} />
+      )}
       <div className="gameMode">
         {isAuthenticated != null && isAuthenticated && (
           <>
@@ -24,13 +26,15 @@ export default function GameMode() {
               </Link>
             </div>
           </>
-        )
-        }
+        )}
       </div>
       <div className="auth0button-container">
-        {isAuthenticated != null && isAuthenticated ? (<LogoutButton />) : (<LoginButton />)}
+        {isAuthenticated != null && isAuthenticated ? (
+          <LogoutButton />
+        ) : (
+          <LoginButton />
+        )}
       </div>
-    </>
-
+    </Layout>
   );
 }
