@@ -1,5 +1,5 @@
 # Vaasle: Enhanced Wordle 
-**Carleton College CS 348 (Advanced Software Design) - Final Project**
+**Carleton College CS 347 (Advanced Software Design) - Final Project**
 
 🌟 **Elevate Your Wordle Experience with Vaasle** 🌟
 
@@ -19,7 +19,9 @@ Dive into the world of Wordle solo or with friends with Vaasle, a new take on th
 - [**A**idan Roessler](https://github.com/AidanRoessler)
 - [**S**erafín Patiño](https://github.com/spatino1234)
 
-*Thank you to [Peter Kelly](https://github.com/pqk314) for implementing our [Stats API](/src/stats/api.go)!*
+**Special thanks to**
+- [Peter Kelly](https://github.com/pqk314) for implementing our [Stats API](/src/stats/api.go)!
+- [Net Ninja](https://www.youtube.com/watch?v=ZSWl5UwhHcs&list=PL4cUxeGkcC9gXdVXVJBmHpSI7zCEcjLUX) for their React Tutorial that we adapted to bootstrap our front end
 
 
 ## Running Locally
