@@ -1,15 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import logo from "./second.png"; // with import
 
 const Layout = ({ children }) => {
-  const { isAuthenticated } = useAuth0(); 
+  const { isAuthenticated } = useAuth0();
 
   return (
     <div>
       <div className="headerContainer">
         <Link to="/">
-          <h1>Vaasle</h1>
+          <img src={logo} />
         </Link>
         {isAuthenticated && (
           <Link to="/stats" className="statsButton">
