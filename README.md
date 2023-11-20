@@ -1,5 +1,5 @@
 # Vaasle: Enhanced Wordle 
-**Carleton College CS 348 (Advanced Software Design) - Final Project**
+**Carleton College CS 347 (Advanced Software Design) - Final Project**
 
 🌟 **Elevate Your Wordle Experience with Vaasle** 🌟
 
